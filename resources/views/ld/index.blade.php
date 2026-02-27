@@ -184,8 +184,23 @@
   font-size:.82rem; outline:none; width:260px;
 }
 .records-modal-search input:focus { border-color:var(--maroon); }
-.records-modal-body { max-height:calc(90vh - 180px); overflow-y:auto; overflow-x:auto; }
-/* records rendered as horizontally scrollable table */
+.records-modal-body {
+  max-height:calc(90vh - 180px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.records-scroll-wrap {
+  overflow-x:auto;
+  overflow-y:visible;
+  flex:1;
+}
+.records-scroll-wrap::-webkit-scrollbar { height:10px; }
+.records-scroll-wrap::-webkit-scrollbar-track { background:#f1f1f1; }
+.records-scroll-wrap::-webkit-scrollbar-thumb { background:#c7c7c7; border-radius:6px; }
+.records-scroll-wrap::-webkit-scrollbar-thumb:hover { background:#a0a0a0; }
+.records-scroll-wrap { scrollbar-width:thin; scrollbar-color:#c7c7c7 #f1f1f1; }
 .records-modal-footer {
   padding:.6rem 1.25rem; background:#f9fafb;
   border-top:1px solid #e5e7eb;
@@ -344,6 +359,10 @@
       @endif
 
       {{-- db bar --}}
+      <div class="db-bar">
+        <span class="db-bar-label">📊 Quick Add Row</span>
+        <button class="btn-db" onclick="toggleQA('qa-participation')">＋ Add Row</button>
+      </div>
       <div class="qa-grid" id="qa-participation">
         <form method="POST" action="{{ route('ld.store') }}" id="qaf-participation">
           @csrf
@@ -469,6 +488,10 @@
         <div class="empty-state"><div class="empty-icon">📅</div><p>No attendance requests yet.</p></div>
       @endif
 
+      <div class="db-bar">
+        <span class="db-bar-label">📊 Quick Add Row</span>
+        <button class="btn-db" onclick="toggleQA('qa-attendance')">＋ Add Row</button>
+      </div>
       <div class="qa-grid" id="qa-attendance">
         <form method="POST" action="{{ route('ld.attendance.store') }}" id="qaf-attendance">
           @csrf
@@ -598,6 +621,10 @@
         <div class="empty-state"><div class="empty-icon">📰</div><p>No publication incentive requests yet.</p></div>
       @endif
 
+      <div class="db-bar">
+        <span class="db-bar-label">📊 Quick Add Row</span>
+        <button class="btn-db" onclick="toggleQA('qa-publication')">＋ Add Row</button>
+      </div>
       <div class="qa-grid" id="qa-publication">
         <form method="POST" action="{{ route('ld.publication.store') }}" id="qaf-publication">
           @csrf
@@ -714,7 +741,10 @@
         <div class="empty-state"><div class="empty-icon">💰</div><p>No reimbursement requests yet.</p></div>
       @endif
 
-  
+      <div class="db-bar">
+        <span class="db-bar-label">📊 Quick Add Row</span>
+        <button class="btn-db" onclick="toggleQA('qa-reimbursement')">＋ Add Row</button>
+      </div>
       <div class="qa-grid" id="qa-reimbursement">
         <form method="POST" action="{{ route('ld.reimbursement.store') }}" id="qaf-reimbursement">
           @csrf
@@ -820,7 +850,10 @@
         <div class="empty-state"><div class="empty-icon">✈️</div><p>No travel authority requests yet.</p></div>
       @endif
 
-     
+      <div class="db-bar">
+        <span class="db-bar-label">📊 Quick Add Row</span>
+        <button class="btn-db" onclick="toggleQA('qa-travel')">＋ Add Row</button>
+      </div>
       <div class="qa-grid" id="qa-travel">
         <form method="POST" action="{{ route('ld.travel.store') }}" id="qaf-travel">
           @csrf
@@ -917,12 +950,51 @@
       </div>
     </div>
     <div class="records-modal-search">
-      <input type="text" id="recordsSearchInput" placeholder="🔍 Filter records..." oninput="filterRecordsTable(this.value)">
-      <span id="recordsCountLabel" style="font-size:.78rem;color:#6b7280;margin-left:.5rem;"></span>
+      {{-- Row 1: search + download --}}
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;width:100%;">
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+          <input type="text" id="recordsSearchInput" placeholder="🔍 Search all fields..." oninput="applyRecordsFilters()" style="width:220px;">
+          <select id="recordsFilterMonth" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+            <option value="">All Months</option>
+            <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+            <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+            <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+          </select>
+          <select id="recordsFilterYear" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+            <option value="">All Years</option>
+          </select>
+          <select id="recordsFilterLevel" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+            <option value="">All Levels</option>
+            <option>Local</option><option>Regional</option><option>National</option><option>International</option>
+          </select>
+          <select id="recordsFilterFinancial" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+            <option value="">Financial — All</option>
+            <option value="1">Financial — Yes</option>
+            <option value="0">Financial — No</option>
+          </select>
+          <button onclick="clearRecordsFilters()" style="padding:.4rem .75rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.78rem;background:#fff;cursor:pointer;color:#6b7280;">✕ Clear</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:.4rem;">
+          <span id="recordsCountLabel" style="font-size:.78rem;color:#6b7280;"></span>
+          <div style="position:relative;display:inline-block;" id="downloadDropWrap">
+            <button onclick="toggleDownloadDrop()" style="display:flex;align-items:center;gap:.35rem;padding:.4rem .85rem;background:var(--maroon);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;">
+              ⬇ Download <span style="font-size:.65rem;opacity:.8;">▼</span>
+            </button>
+            <div id="downloadDrop" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:190px;z-index:9999;overflow:hidden;">
+              <div style="padding:.4rem .75rem;background:#f9fafb;border-bottom:1px solid #e5e7eb;font-size:.68rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.4pt;">Export as CSV</div>
+              <button onclick="downloadCSV('filtered')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:#111827;">📄 Filtered / Current View</button>
+              <button onclick="downloadCSV('all')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:#111827;border-top:1px solid #f3f4f6;">📦 All Records (unfiltered)</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="records-modal-body">
-      <div id="recordsModalContent">
-        <div class="rm-empty"><div class="rm-empty-icon">⏳</div><p>Loading records…</p></div>
+      <div class="records-scroll-wrap">
+        <div id="recordsModalContent">
+          <div class="rm-empty"><div class="rm-empty-icon">⏳</div><p>Loading records…</p></div>
+        </div>
       </div>
     </div>
     <div class="records-modal-footer">
@@ -1231,10 +1303,22 @@ let _currentRecordsType = '';
 
 function openRecordsModal(type, title) {
   _currentRecordsType = type;
+  _filteredRecordsData = [];
   document.getElementById('recordsModalTitle').textContent = title;
   document.getElementById('recordsSearchInput').value = '';
+  document.getElementById('recordsFilterMonth').value = '';
+  document.getElementById('recordsFilterYear').value = '';
+  document.getElementById('recordsFilterLevel').value = '';
+  document.getElementById('recordsFilterFinancial').value = '';
   document.getElementById('recordsCountLabel').textContent = '';
   document.getElementById('recordsFooterInfo').textContent = '';
+
+  // Show/hide level & financial filters based on type
+  const hasLevel    = ['participation','attendance'].includes(type);
+  const hasFinancial= ['participation','attendance'].includes(type);
+  document.getElementById('recordsFilterLevel').style.display    = hasLevel     ? '' : 'none';
+  document.getElementById('recordsFilterFinancial').style.display= hasFinancial ? '' : 'none';
+
   document.getElementById('recordsModalContent').innerHTML =
     '<div class="rm-empty"><div class="rm-empty-icon">⏳</div><p>Loading records…</p></div>';
   document.getElementById('recordsModal').classList.add('active');
@@ -1247,6 +1331,8 @@ function openRecordsModal(type, title) {
     .then(r => r.json())
     .then(data => {
       _allRecordsData = data.records || data || [];
+      _filteredRecordsData = [..._allRecordsData];
+      populateYearFilter(_allRecordsData, type);
       renderRecordsTable(_allRecordsData, type);
       const total = _allRecordsData.length;
       document.getElementById('recordsCountLabel').textContent = `${total} record${total !== 1 ? 's' : ''}`;
@@ -1263,6 +1349,7 @@ function closeRecordsModal() {
   document.getElementById('recordsModal').classList.remove('active');
   document.body.style.overflow = '';
   _allRecordsData = [];
+  _filteredRecordsData = [];
   _currentRecordsType = '';
 }
 
@@ -1275,25 +1362,190 @@ document.getElementById('recordsModal')?.addEventListener('click', e => {
   if (e.target.id === 'recordsModal') closeRecordsModal();
 });
 
-function filterRecordsTable(query) {
-  if (!query.trim()) {
-    renderRecordsTable(_allRecordsData, _currentRecordsType);
-    const total = _allRecordsData.length;
-    document.getElementById('recordsCountLabel').textContent = `${total} record${total !== 1 ? 's' : ''}`;
-    document.getElementById('recordsFooterInfo').textContent = `Showing all ${total} record${total !== 1 ? 's' : ''}`;
-    return;
-  }
-  const q = query.toLowerCase();
-  const filtered = _allRecordsData.filter(row =>
-    Object.values(row).some(v => {
-      if (Array.isArray(v)) return v.some(x => String(x).toLowerCase().includes(q));
-      return String(v ?? '').toLowerCase().includes(q);
-    })
-  );
-  renderRecordsTable(filtered, _currentRecordsType);
+// ── Date-key lookup per type (which field holds the date for month/year filtering)
+const recordsDateKey = {
+  participation: 'intervention_date',
+  attendance:    'activity_date',
+  publication:   'created_at',
+  reimbursement: 'activity_date',
+  travel:        'travel_dates',
+};
+
+// ── Level-key lookup (some types use different field names)
+const recordsLevelKey = {
+  participation: 'level',
+  attendance:    'level',
+  publication:   'pub_scope',
+  reimbursement: null,
+  travel:        null,
+};
+
+// ── Financial-key lookup
+const recordsFinancialKey = {
+  participation: 'financial_requested',
+  attendance:    'financial_requested',
+  publication:   null,
+  reimbursement: null,
+  travel:        null,
+};
+
+let _filteredRecordsData = [];
+
+function populateYearFilter(data, type) {
+  const dateKey = recordsDateKey[type];
+  const years = new Set();
+  data.forEach(row => {
+    const raw = row[dateKey] || row['created_at'] || '';
+    const m = String(raw).match(/\d{4}/);
+    if (m) years.add(m[0]);
+  });
+  const sel = document.getElementById('recordsFilterYear');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">All Years</option>';
+  [...years].sort((a,b) => b - a).forEach(y => {
+    sel.innerHTML += `<option value="${y}" ${current===y?'selected':''}>${y}</option>`;
+  });
+}
+
+function applyRecordsFilters() {
+  const q        = (document.getElementById('recordsSearchInput')?.value || '').toLowerCase().trim();
+  const month    = document.getElementById('recordsFilterMonth')?.value || '';
+  const year     = document.getElementById('recordsFilterYear')?.value || '';
+  const level    = document.getElementById('recordsFilterLevel')?.value || '';
+  const financial= document.getElementById('recordsFilterFinancial')?.value;
+  const type     = _currentRecordsType;
+  const dateKey  = recordsDateKey[type];
+  const levelKey = recordsLevelKey[type];
+  const finKey   = recordsFinancialKey[type];
+
+  let filtered = _allRecordsData.filter(row => {
+    // Text search
+    if (q) {
+      const match = Object.values(row).some(v => {
+        if (Array.isArray(v)) return v.some(x => String(x).toLowerCase().includes(q));
+        return String(v ?? '').toLowerCase().includes(q);
+      });
+      if (!match) return false;
+    }
+
+    // Month filter
+    if (month) {
+      const raw = String(row[dateKey] || row['created_at'] || '');
+      const d = new Date(raw.match(/\d{4}-\d{2}-\d{2}/) ? raw : raw.replace(/(\w+ \d+,?\s*\d{4})/,'$1'));
+      if (isNaN(d) || (d.getMonth() + 1) !== parseInt(month)) return false;
+    }
+
+    // Year filter
+    if (year) {
+      const raw = String(row[dateKey] || row['created_at'] || '');
+      const m = raw.match(/\d{4}/);
+      if (!m || m[0] !== year) return false;
+    }
+
+    // Level filter
+    if (level && levelKey) {
+      if (String(row[levelKey] || '').toLowerCase() !== level.toLowerCase()) return false;
+    }
+
+    // Financial filter
+    if (financial !== '' && financial !== undefined && finKey) {
+      const val = row[finKey];
+      const wanted = financial === '1';
+      if (Boolean(val) !== wanted) return false;
+    }
+
+    return true;
+  });
+
+  _filteredRecordsData = filtered;
+  renderRecordsTable(filtered, type);
   const total = filtered.length;
-  document.getElementById('recordsCountLabel').textContent = `${total} match${total !== 1 ? 'es' : ''}`;
-  document.getElementById('recordsFooterInfo').textContent = `Showing ${total} of ${_allRecordsData.length} records`;
+  document.getElementById('recordsCountLabel').textContent =
+    filtered.length === _allRecordsData.length
+      ? `${total} record${total !== 1 ? 's' : ''}`
+      : `${total} of ${_allRecordsData.length} record${_allRecordsData.length !== 1 ? 's' : ''}`;
+  document.getElementById('recordsFooterInfo').textContent =
+    filtered.length === _allRecordsData.length
+      ? `Showing all ${total} record${total !== 1 ? 's' : ''}`
+      : `Filtered: ${total} of ${_allRecordsData.length} records`;
+}
+
+function clearRecordsFilters() {
+  document.getElementById('recordsSearchInput').value = '';
+  document.getElementById('recordsFilterMonth').value = '';
+  document.getElementById('recordsFilterYear').value = '';
+  document.getElementById('recordsFilterLevel').value = '';
+  document.getElementById('recordsFilterFinancial').value = '';
+  applyRecordsFilters();
+}
+
+/* ── Download CSV ── */
+function toggleDownloadDrop() {
+  const d = document.getElementById('downloadDrop');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', e => {
+  if (!document.getElementById('downloadDropWrap')?.contains(e.target)) {
+    const d = document.getElementById('downloadDrop');
+    if (d) d.style.display = 'none';
+  }
+});
+
+function downloadCSV(mode) {
+  document.getElementById('downloadDrop').style.display = 'none';
+  const type = _currentRecordsType;
+  const cfg  = recordsConfig[type];
+  if (!cfg) return;
+
+  const rows = mode === 'all' ? _allRecordsData : (_filteredRecordsData.length ? _filteredRecordsData : _allRecordsData);
+
+  // Build headers — skip _index, _total, expenseCell (flatten separately)
+  const cols = cfg.columns.filter(c => c.key !== '_index' && !c.totalCalc);
+
+  const csvRows = [];
+
+  // Header row
+  csvRows.push(cols.map(c => csvEsc(c.label)).join(','));
+
+  rows.forEach(row => {
+    const cells = cols.map(col => {
+      if (col.expenseCell) {
+        const items = row[col.key] || [];
+        const txt = items.map(i => `${i.description||''} x${i.quantity||''} @ ${i.unit_cost||''} = ${i.amount||''}`).join(' | ');
+        return csvEsc(txt);
+      }
+      if (col.array) {
+        const arr = Array.isArray(row[col.key]) ? row[col.key] : [];
+        return csvEsc(arr.join(', '));
+      }
+      if (col.bool) return row[col.key] ? 'Yes' : 'No';
+      if (col.currency) {
+        const n = parseFloat(row[col.key] || 0);
+        return n > 0 ? n.toFixed(2) : '';
+      }
+      return csvEsc(String(row[col.key] ?? ''));
+    });
+    csvRows.push(cells.join(','));
+  });
+
+  // Add total row for reimbursement
+  if (type === 'reimbursement') {
+    // already in expense cell
+  }
+
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const ts   = new Date().toISOString().slice(0,10);
+  a.href     = url;
+  a.download = `${type}-records-${mode === 'all' ? 'all' : 'filtered'}-${ts}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function csvEsc(val) {
+  const s = String(val ?? '').replace(/"/g, '""');
+  return /[,"\n\r]/.test(s) ? `"${s}"` : s;
 }
 
 function renderRecordsTable(rows, type) {
@@ -1306,8 +1558,13 @@ function renderRecordsTable(rows, type) {
     return;
   }
 
-  let html = '<div style="overflow-x:auto;">';
-  html += '<table style="width:100%;border-collapse:collapse;font-size:.78rem;white-space:nowrap;">';
+  // Columns that should be compact/nowrap vs ones that can wrap
+  const wrapKeys = new Set(['title','venue','organizer','purpose','competency',
+    'college_office','paper_title','journal_title','co_authors','places_visited',
+    'employee_names','positions','reason','remarks','chargeable_against']);
+
+  let html = '<div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:.78rem;">';
 
   // THEAD
   html += '<thead><tr>';
@@ -1326,8 +1583,11 @@ function renderRecordsTable(rows, type) {
     html += `<tr style="background:${bg};">`;
 
     cfg.columns.forEach(col => {
-      html += `<td style="padding:.45rem .75rem;border-bottom:1px solid #f3f4f6;
-        border-right:1px solid #f3f4f6;vertical-align:top;max-width:200px;">`;
+      const canWrap = wrapKeys.has(col.key) || col.array || col.expenseCell || col.pre;
+      const cellStyle = canWrap
+        ? 'padding:.45rem .75rem;border-bottom:1px solid #f3f4f6;border-right:1px solid #f3f4f6;vertical-align:top;min-width:140px;max-width:260px;white-space:normal;word-break:break-word;'
+        : 'padding:.45rem .75rem;border-bottom:1px solid #f3f4f6;border-right:1px solid #f3f4f6;vertical-align:top;white-space:nowrap;';
+      html += `<td style="${cellStyle}">`;
 
       if (col.key === '_index') {
         html += `<span style="color:#9ca3af;">${idx + 1}</span>`;
@@ -1394,15 +1654,11 @@ function renderRecordsTable(rows, type) {
 
       } else if (col.pre) {
         const v = row[col.key] || '';
-        html += v
-          ? `<div style="white-space:pre-line;white-space:normal;">${esc(v)}</div>`
-          : '<span style="color:#9ca3af;">—</span>';
+        html += v ? `<div>${esc(v)}</div>` : '<span style="color:#9ca3af;">—</span>';
 
       } else {
         const v = row[col.key] ?? '';
-        html += v !== ''
-          ? `<div style="white-space:normal;word-break:break-word;">${esc(String(v))}</div>`
-          : '<span style="color:#9ca3af;">—</span>';
+        html += v !== '' ? `<div>${esc(String(v))}</div>` : '<span style="color:#9ca3af;">—</span>';
       }
 
       html += '</td>';
@@ -1502,4 +1758,4 @@ function loadingHtml() {
   return '<p style="padding:2rem;color:var(--gray-500);text-align:center;">Loading...</p>';
 }
 </script>
-@endpush  
+@endpush

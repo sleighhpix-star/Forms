@@ -11,7 +11,128 @@
     'meals'          => 'Meals/ Snacks',
     'transportation' => 'Transportation',
   ];
+
+  // ── Standard signatory defaults ──────────────────────────────────────────
+  $signatories = [
+    [
+      'role'     => 'Requested by',
+      'name_field'     => 'sig_requested_name',
+      'position_field' => 'sig_requested_position',
+      'default_name'   => 'Dr. Bryan John A. Magoling',
+      'default_pos'    => 'Director, Research Management Services',
+    ],
+    [
+      'role'     => 'Reviewed by',
+      'name_field'     => 'sig_reviewed_name',
+      'position_field' => 'sig_reviewed_position',
+      'default_name'   => 'Engr. Albertson D. Amante',
+      'default_pos'    => 'VP for Research, Development and Extension Services',
+    ],
+    [
+      'role'     => 'Recommending Approval',
+      'name_field'     => 'sig_recommending_name',
+      'position_field' => 'sig_recommending_position',
+      'default_name'   => 'Atty. Noel Alberto S. Omandap',
+      'default_pos'    => 'VP for Administration and Finance',
+    ],
+    [
+      'role'     => 'Approved by',
+      'name_field'     => 'sig_approved_name',
+      'position_field' => 'sig_approved_position',
+      'default_name'   => 'Dr. Tirso A. Ronquillo',
+      'default_pos'    => 'University President',
+    ],
+  ];
 @endphp
+
+<style>
+/* ── Editable signatory block ── */
+.sig-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: .5rem;
+}
+.sig-box {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: .75rem 1rem;
+  background: #fafafa;
+  transition: border-color .15s, background .15s;
+}
+.sig-box:focus-within {
+  border-color: var(--maroon);
+  background: #fff;
+}
+.sig-role {
+  font-size: .68rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: .5pt;
+  margin-bottom: .45rem;
+}
+.sig-field-wrap {
+  position: relative;
+}
+.sig-name-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1.5px dashed #d1d5db;
+  background: transparent;
+  font-size: .85rem;
+  font-weight: 700;
+  color: #111827;
+  padding: .15rem 1.4rem .15rem 0;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.sig-name-input:focus {
+  border-bottom-color: var(--maroon);
+  border-bottom-style: solid;
+}
+.sig-pos-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px dashed #e5e7eb;
+  background: transparent;
+  font-size: .72rem;
+  color: #6b7280;
+  padding: .15rem 1.4rem .15rem 0;
+  outline: none;
+  font-family: inherit;
+  margin-top: .3rem;
+  transition: border-color .15s;
+}
+.sig-pos-input:focus {
+  border-bottom-color: var(--maroon);
+  border-bottom-style: solid;
+}
+.sig-edit-icon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .65rem;
+  color: #d1d5db;
+  pointer-events: none;
+  transition: color .15s;
+}
+.sig-box:focus-within .sig-edit-icon { color: var(--maroon); }
+.sig-reset-btn {
+  margin-top: .5rem;
+  font-size: .65rem;
+  color: #9ca3af;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.sig-reset-btn:hover { color: var(--maroon); }
+</style>
 
 <div class="page" style="max-width:880px">
   <form action="{{ route('ld.store') }}" method="POST" id="ld-form">
@@ -281,32 +402,50 @@
 
       {{-- ══ SIGNATORIES ══ --}}
       <div class="card-section">
-        <div class="section-label">Signatories</div>
+        <div class="section-label">
+          Signatories
+          <span style="font-size:.68rem;font-weight:400;color:#9ca3af;margin-left:.5rem;">
+            — pre-filled with standard names, click any field to edit
+          </span>
+        </div>
 
         <div class="sig-grid">
+          @foreach($signatories as $sig)
           <div class="sig-box">
-            <div class="sig-role">Requested by</div>
-            <div class="sig-name">Dr. Bryan John A. Magoling</div>
-            <div class="sig-position">Director, Research Management Services</div>
-          </div>
+            <div class="sig-role">{{ $sig['role'] }}</div>
 
-          <div class="sig-box">
-            <div class="sig-role">Reviewed by</div>
-            <div class="sig-name">Engr. Albertson D. Amante</div>
-            <div class="sig-position">VP for Research, Development and Extension Services</div>
-          </div>
+            <div class="sig-field-wrap">
+              <input
+                type="text"
+                class="sig-name-input"
+                name="{{ $sig['name_field'] }}"
+                value="{{ old($sig['name_field'], $sig['default_name']) }}"
+                placeholder="{{ $sig['default_name'] }}"
+                data-default="{{ $sig['default_name'] }}"
+              >
+              <span class="sig-edit-icon">✎</span>
+            </div>
 
-          <div class="sig-box">
-            <div class="sig-role">Recommending Approval</div>
-            <div class="sig-name">Atty. Noel Alberto S. Omandap</div>
-            <div class="sig-position">VP for Administration and Finance</div>
-          </div>
+            <div class="sig-field-wrap">
+              <input
+                type="text"
+                class="sig-pos-input"
+                name="{{ $sig['position_field'] }}"
+                value="{{ old($sig['position_field'], $sig['default_pos']) }}"
+                placeholder="{{ $sig['default_pos'] }}"
+                data-default="{{ $sig['default_pos'] }}"
+              >
+              <span class="sig-edit-icon" style="font-size:.55rem;">✎</span>
+            </div>
 
-          <div class="sig-box">
-            <div class="sig-role">Approved by</div>
-            <div class="sig-name">Dr. Tirso A. Ronquillo</div>
-            <div class="sig-position">University President</div>
+            <button
+              type="button"
+              class="sig-reset-btn"
+              onclick="resetSignatory(this)"
+              title="Reset to default"
+            >↺ Reset to default</button>
           </div>
+          @endforeach
         </div>
 
         <p class="text-muted text-xs mt-2" style="line-height:1.7">
@@ -321,10 +460,47 @@
       {{-- Actions --}}
       <div class="form-actions">
         <button type="button" onclick="closeCreateModal()" class="btn btn-ghost">Cancel</button>
-        <button type="reset" class="btn btn-outline">Clear</button>
+        <button type="reset" class="btn btn-outline" onclick="resetAllSignatories()">Clear</button>
         <button type="submit" class="btn btn-primary">💾 Save Request</button>
       </div>
 
     </div>{{-- /card --}}
   </form>
 </div>
+
+<script>
+function toggleFinance(show) {
+  document.getElementById('fin_section').style.display = show ? '' : 'none';
+}
+
+// Checkbox "Others" toggles
+document.getElementById('type_others_chk')?.addEventListener('change', function() {
+  const txt = document.getElementById('type_others_txt');
+  txt.disabled = !this.checked;
+  if (!this.checked) txt.value = '';
+});
+document.getElementById('nature_others_chk')?.addEventListener('change', function() {
+  const txt = document.getElementById('nature_others_txt');
+  txt.disabled = !this.checked;
+  if (!this.checked) txt.value = '';
+});
+document.getElementById('cov_others_chk')?.addEventListener('change', function() {
+  const txt = document.getElementById('cov_others_txt');
+  txt.disabled = !this.checked;
+  if (!this.checked) txt.value = '';
+});
+
+/* ── Signatory helpers ── */
+function resetSignatory(btn) {
+  const box = btn.closest('.sig-box');
+  box.querySelectorAll('[data-default]').forEach(inp => {
+    inp.value = inp.dataset.default;
+  });
+}
+
+function resetAllSignatories() {
+  document.querySelectorAll('#ld-form [data-default]').forEach(inp => {
+    inp.value = inp.dataset.default;
+  });
+}
+</script>

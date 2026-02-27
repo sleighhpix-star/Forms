@@ -88,9 +88,17 @@ class LdRequestController extends Controller
             'has_cash_advance'    => 'required|boolean',
             'financial_requested' => 'required|boolean',
             'amount_requested'    => 'nullable|numeric|min:0',
-            'coverage'            => 'nullable|array',
-            'coverage.*'          => 'string',
-            'coverage_others'     => 'nullable|string|max:255',
+            'coverage'                  => 'nullable|array',
+            'coverage.*'                => 'string',
+            'coverage_others'           => 'nullable|string|max:255',
+            'sig_requested_name'        => 'nullable|string|max:255',
+            'sig_requested_position'    => 'nullable|string|max:255',
+            'sig_reviewed_name'         => 'nullable|string|max:255',
+            'sig_reviewed_position'     => 'nullable|string|max:255',
+            'sig_recommending_name'     => 'nullable|string|max:255',
+            'sig_recommending_position' => 'nullable|string|max:255',
+            'sig_approved_name'         => 'nullable|string|max:255',
+            'sig_approved_position'     => 'nullable|string|max:255',
         ]);
 
         LdRequest::create($validated);
@@ -158,9 +166,17 @@ class LdRequestController extends Controller
             'has_cash_advance'    => 'required|boolean',
             'financial_requested' => 'required|boolean',
             'amount_requested'    => 'nullable|numeric|min:0',
-            'coverage'            => 'nullable|array',
-            'coverage.*'          => 'string',
-            'coverage_others'     => 'nullable|string|max:255',
+            'coverage'                  => 'nullable|array',
+            'coverage.*'                => 'string',
+            'coverage_others'           => 'nullable|string|max:255',
+            'sig_requested_name'        => 'nullable|string|max:255',
+            'sig_requested_position'    => 'nullable|string|max:255',
+            'sig_reviewed_name'         => 'nullable|string|max:255',
+            'sig_reviewed_position'     => 'nullable|string|max:255',
+            'sig_recommending_name'     => 'nullable|string|max:255',
+            'sig_recommending_position' => 'nullable|string|max:255',
+            'sig_approved_name'         => 'nullable|string|max:255',
+            'sig_approved_position'     => 'nullable|string|max:255',
         ]);
 
         $ld->update($validated);
@@ -207,10 +223,11 @@ class LdRequestController extends Controller
     /**
      * JSON: all attendance records
      * Route: GET /ld-requests/records/attendance
+     * NOTE: Uses LdRequest — same table, no separate model yet.
      */
     public function recordsAttendance(Request $request)
     {
-        $records = \App\Models\AttendanceRequest::orderByDesc('created_at')->get();
+        $records = LdRequest::orderByDesc('created_at')->get();
 
         return response()->json(['records' => $records]);
     }
@@ -218,10 +235,11 @@ class LdRequestController extends Controller
     /**
      * JSON: all publication incentive records
      * Route: GET /ld-requests/records/publication
+     * NOTE: Uses LdRequest — same table, no separate model yet.
      */
     public function recordsPublication(Request $request)
     {
-        $records = \App\Models\PublicationRequest::orderByDesc('created_at')->get();
+        $records = LdRequest::orderByDesc('created_at')->get();
 
         return response()->json(['records' => $records]);
     }
@@ -229,10 +247,11 @@ class LdRequestController extends Controller
     /**
      * JSON: all reimbursement records
      * Route: GET /ld-requests/records/reimbursement
+     * NOTE: Uses LdRequest — same table, no separate model yet.
      */
     public function recordsReimbursement(Request $request)
     {
-        $records = \App\Models\ReimbursementRequest::orderByDesc('created_at')->get();
+        $records = LdRequest::orderByDesc('created_at')->get();
 
         return response()->json(['records' => $records]);
     }
@@ -240,10 +259,11 @@ class LdRequestController extends Controller
     /**
      * JSON: all travel authority records
      * Route: GET /ld-requests/records/travel
+     * NOTE: Uses LdRequest — same table, no separate model yet.
      */
     public function recordsTravel(Request $request)
     {
-        $records = \App\Models\TravelRequest::orderByDesc('created_at')->get();
+        $records = LdRequest::orderByDesc('created_at')->get();
 
         return response()->json(['records' => $records]);
     }
