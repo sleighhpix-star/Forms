@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\LdRequest;
+use App\Models\LdAttendance;
+use App\Models\LdPublication;
+use App\Models\LdReimbursement;
+use App\Models\LdTravel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -12,35 +16,85 @@ class LdRequestController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'type', 'level']);
-
-        $query = LdRequest::query();
-
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where(function ($q) use ($search) {
-                $q->whereRaw('participant_name ILIKE ?', ["%{$search}%"])
-                  ->orWhereRaw('title ILIKE ?', ["%{$search}%"])
-                  ->orWhereRaw('campus ILIKE ?', ["%{$search}%"])
-                  ->orWhereRaw('college_office ILIKE ?', ["%{$search}%"]);
-            });
-        }
-
-        if (!empty($filters['type'])) {
-            $query->whereJsonContains('types', $filters['type']);
-        }
-
-        if (!empty($filters['level'])) {
-            $query->where('level', $filters['level']);
-        }
-
-        $records = $query->latest()->paginate(20)->withQueryString();
-        $total   = LdRequest::count();
-
         $types  = collect(['Seminar', 'Convention', 'Conference', 'Training', 'Symposium', 'Workshop', 'Immersion']);
         $levels = collect(['Local', 'Regional', 'National', 'International']);
 
-        return view('ld.index', compact('records', 'total', 'filters', 'types', 'levels'));
+        // ── Tab 1: Participation ─────────────────────────────────────────────
+        $filters = $request->only(['search', 'type', 'level']);
+        $query   = LdRequest::query();
+        if (!empty($filters['search'])) {
+            $s = $filters['search'];
+            $query->where(fn($q) => $q
+                ->whereRaw('participant_name ILIKE ?', ["%{$s}%"])
+                ->orWhereRaw('title ILIKE ?',          ["%{$s}%"])
+                ->orWhereRaw('campus ILIKE ?',          ["%{$s}%"])
+                ->orWhereRaw('college_office ILIKE ?',  ["%{$s}%"])
+            );
+        }
+        if (!empty($filters['type']))  $query->whereJsonContains('types', $filters['type']);
+        if (!empty($filters['level'])) $query->where('level', $filters['level']);
+        $records = $query->latest()->paginate(20)->withQueryString();
+
+        // ── Tab 2: Attendance ────────────────────────────────────────────────
+        $attQuery = LdAttendance::query();
+        if ($s = $request->input('att_search')) {
+            $attQuery->where(fn($q) => $q
+                ->whereRaw('attendee_name ILIKE ?', ["%{$s}%"])
+                ->orWhereRaw('campus ILIKE ?',       ["%{$s}%"])
+                ->orWhereRaw('purpose ILIKE ?',      ["%{$s}%"])
+            );
+        }
+        if ($l = $request->input('att_level')) $attQuery->where('level', $l);
+        $attendanceRecords = $attQuery->latest()->paginate(20, ['*'], 'att_page')->withQueryString();
+
+        // ── Tab 3: Publication ───────────────────────────────────────────────
+        $pubQuery = LdPublication::query();
+        if ($s = $request->input('pub_search')) {
+            $pubQuery->where(fn($q) => $q
+                ->whereRaw('faculty_name ILIKE ?',  ["%{$s}%"])
+                ->orWhereRaw('paper_title ILIKE ?', ["%{$s}%"])
+                ->orWhereRaw('journal_title ILIKE ?', ["%{$s}%"])
+            );
+        }
+        if ($sc = $request->input('pub_scope'))  $pubQuery->where('pub_scope', $sc);
+        if ($n  = $request->input('pub_nature')) $pubQuery->where('nature', $n);
+        $publicationRecords = $pubQuery->latest()->paginate(20, ['*'], 'pub_page')->withQueryString();
+
+        // ── Tab 4: Reimbursement ─────────────────────────────────────────────
+        $reiQuery = LdReimbursement::query();
+        if ($s = $request->input('rei_search')) {
+            $reiQuery->whereRaw('department ILIKE ?', ["%{$s}%"]);
+        }
+        $reimbursementRecords = $reiQuery->latest()->paginate(20, ['*'], 'rei_page')->withQueryString();
+
+        // ── Tab 5: Travel ────────────────────────────────────────────────────
+        $trvQuery = LdTravel::query();
+        if ($s = $request->input('trv_search')) {
+            $trvQuery->where(fn($q) => $q
+                ->whereRaw('employee_names ILIKE ?', ["%{$s}%"])
+                ->orWhereRaw('places_visited ILIKE ?', ["%{$s}%"])
+                ->orWhereRaw('purpose ILIKE ?',        ["%{$s}%"])
+            );
+        }
+        $travelRecords = $trvQuery->latest()->paginate(20, ['*'], 'trv_page')->withQueryString();
+
+        // ── Tab counts (unfiltered) ──────────────────────────────────────────
+        $counts = [
+            'participation' => LdRequest::count(),
+            'attendance'    => LdAttendance::count(),
+            'publication'   => LdPublication::count(),
+            'reimbursement' => LdReimbursement::count(),
+            'travel'        => LdTravel::count(),
+        ];
+
+        return view('ld.index', compact(
+            'records', 'filters', 'types', 'levels',
+            'attendanceRecords',
+            'publicationRecords',
+            'reimbursementRecords',
+            'travelRecords',
+            'counts'
+        ));
     }
 
     public function create()
@@ -227,9 +281,7 @@ class LdRequestController extends Controller
      */
     public function recordsAttendance(Request $request)
     {
-        $records = LdRequest::orderByDesc('created_at')->get();
-
-        return response()->json(['records' => $records]);
+        return response()->json(['records' => LdAttendance::orderByDesc('created_at')->get()]);
     }
 
     /**
@@ -239,9 +291,7 @@ class LdRequestController extends Controller
      */
     public function recordsPublication(Request $request)
     {
-        $records = LdRequest::orderByDesc('created_at')->get();
-
-        return response()->json(['records' => $records]);
+        return response()->json(['records' => LdPublication::orderByDesc('created_at')->get()]);
     }
 
     /**
@@ -251,9 +301,7 @@ class LdRequestController extends Controller
      */
     public function recordsReimbursement(Request $request)
     {
-        $records = LdRequest::orderByDesc('created_at')->get();
-
-        return response()->json(['records' => $records]);
+        return response()->json(['records' => LdReimbursement::orderByDesc('created_at')->get()]);
     }
 
     /**
@@ -263,9 +311,7 @@ class LdRequestController extends Controller
      */
     public function recordsTravel(Request $request)
     {
-        $records = LdRequest::orderByDesc('created_at')->get();
-
-        return response()->json(['records' => $records]);
+        return response()->json(['records' => LdTravel::orderByDesc('created_at')->get()]);
     }
 
     // ─────────────────────────────────────────────────────────────────────────

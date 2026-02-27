@@ -41,7 +41,7 @@
 
     <div class="card">
 
-      {{-- ══ ATTENDEE INFORMATION ══ --}}
+      {{-- ATTENDEE INFORMATION --}}
       <div class="card-section">
         <div class="section-label">Attendee Information</div>
         <div class="field-grid cols-2">
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      {{-- ══ ACTIVITY DETAILS ══ --}}
+      {{-- ACTIVITY DETAILS --}}
       <div class="card-section">
         <div class="section-label">Activity Details</div>
         <div class="field-grid">
@@ -104,7 +104,8 @@
                 </label>
               @endforeach
               <label class="check-item">
-                <input type="checkbox" id="att_type_others_chk" {{ old('activity_type_others', $record?->activity_type_others) ? 'checked' : '' }}>
+                <input type="checkbox" id="att_type_others_chk"
+                       {{ old('activity_type_others', $record?->activity_type_others) ? 'checked' : '' }}>
                 <span>Others:</span>
               </label>
               <input type="text" class="others-input" name="activity_type_others" id="att_type_others_txt"
@@ -126,7 +127,8 @@
                 </label>
               @endforeach
               <label class="check-item">
-                <input type="checkbox" id="att_nature_others_chk" {{ old('nature_others', $record?->nature_others) ? 'checked' : '' }}>
+                <input type="checkbox" id="att_nature_others_chk"
+                       {{ old('nature_others', $record?->nature_others) ? 'checked' : '' }}>
                 <span>Others:</span>
               </label>
               <input type="text" class="others-input" name="nature_others" id="att_nature_others_txt"
@@ -161,7 +163,7 @@
               <label>Date <span class="req">*</span></label>
               <input type="text" name="activity_date"
                      value="{{ old('activity_date', $record?->activity_date) }}"
-                     placeholder="e.g. March 5–7, 2026" required>
+                     placeholder="e.g. March 5-7, 2026" required>
             </div>
             <div class="field">
               <label>Actual No. of Hours</label>
@@ -185,7 +187,7 @@
         </div>
       </div>
 
-      {{-- ══ FINANCIAL ══ --}}
+      {{-- FINANCIAL --}}
       <div class="card-section">
         <div class="section-label">Financial Assistance</div>
 
@@ -209,7 +211,7 @@
           <div class="fin-box">
             <div class="field-grid cols-2" style="margin-bottom:.85rem">
               <div class="field">
-                <label>Total Amount Requested (₱)</label>
+                <label>Total Amount Requested (Philippine Peso)</label>
                 <input type="number" name="amount_requested" min="0" step="0.01"
                        value="{{ old('amount_requested', $record?->amount_requested) }}" placeholder="0.00">
               </div>
@@ -225,7 +227,8 @@
                   </label>
                 @endforeach
                 <label class="check-item">
-                  <input type="checkbox" id="att_cov_others_chk" {{ old('coverage_others', $record?->coverage_others) ? 'checked' : '' }}>
+                  <input type="checkbox" id="att_cov_others_chk"
+                         {{ old('coverage_others', $record?->coverage_others) ? 'checked' : '' }}>
                   <span>Others:</span>
                 </label>
                 <input type="text" class="others-input" name="coverage_others" id="att_cov_others_txt"
@@ -237,13 +240,13 @@
         </div>
       </div>
 
-      {{-- ══ SIGNATORIES ══ --}}
+      {{-- SIGNATORIES --}}
       @php
         $signatories = [
-          ['role'=>'Requested by',         'name_field'=>'sig_requested_name',        'position_field'=>'sig_requested_position',        'default_name'=>'Dr. Bryan John A. Magoling',       'default_pos'=>'Director, Research Management Services'],
-          ['role'=>'Reviewed by',          'name_field'=>'sig_reviewed_name',         'position_field'=>'sig_reviewed_position',         'default_name'=>'Engr. Albertson D. Amante',        'default_pos'=>'VP for Research, Development and Extension Services'],
-          ['role'=>'Recommending Approval','name_field'=>'sig_recommending_name',     'position_field'=>'sig_recommending_position',     'default_name'=>'Atty. Noel Alberto S. Omandap',    'default_pos'=>'VP for Administration and Finance'],
-          ['role'=>'Approved by',          'name_field'=>'sig_approved_name',         'position_field'=>'sig_approved_position',         'default_name'=>'Dr. Tirso A. Ronquillo',           'default_pos'=>'University President'],
+          ['role'=>'Requested by',         'name_field'=>'sig_requested_name',    'position_field'=>'sig_requested_position',    'default_name'=>'Dr. Bryan John A. Magoling',    'default_pos'=>'Director, Research Management Services'],
+          ['role'=>'Reviewed by',          'name_field'=>'sig_reviewed_name',     'position_field'=>'sig_reviewed_position',     'default_name'=>'Engr. Albertson D. Amante',     'default_pos'=>'VP for Research, Development and Extension Services'],
+          ['role'=>'Recommending Approval','name_field'=>'sig_recommending_name', 'position_field'=>'sig_recommending_position', 'default_name'=>'Atty. Noel Alberto S. Omandap', 'default_pos'=>'VP for Administration and Finance'],
+          ['role'=>'Approved by',          'name_field'=>'sig_approved_name',     'position_field'=>'sig_approved_position',     'default_name'=>'Dr. Tirso A. Ronquillo',        'default_pos'=>'University President'],
         ];
       @endphp
       <div class="card-section">
@@ -264,7 +267,7 @@
                      data-default="{{ $sig['default_pos'] }}">
               <span class="sig-edit-icon" style="font-size:.55rem;">✎</span>
             </div>
-            <button type="button" class="sig-reset-btn" onclick="resetSignatory(this)">↺ Reset to default</button>
+            <button type="button" class="sig-reset-btn" onclick="resetSignatory(this)">Reset to default</button>
           </div>
           @endforeach
         </div>
@@ -274,7 +277,7 @@
       <div class="form-actions">
         <button type="button" onclick="closeModal('genericFormModal')" class="btn btn-ghost">Cancel</button>
         <button type="reset" class="btn btn-outline" onclick="document.querySelectorAll('#attendance-form [data-default]').forEach(i=>i.value=i.dataset.default)">Clear</button>
-        <button type="submit" class="btn btn-primary">💾 {{ $isEdit ? 'Update' : 'Save' }} Request</button>
+        <button type="submit" class="btn btn-primary">{{ $isEdit ? 'Update' : 'Save' }} Request</button>
       </div>
 
     </div>
@@ -282,19 +285,34 @@
 </div>
 
 <script>
-document.getElementById('att_type_others_chk')?.addEventListener('change', function() {
-  const t = document.getElementById('att_type_others_txt');
-  t.disabled = !this.checked; if (!this.checked) t.value = '';
-});
-document.getElementById('att_nature_others_chk')?.addEventListener('change', function() {
-  const t = document.getElementById('att_nature_others_txt');
-  t.disabled = !this.checked; if (!this.checked) t.value = '';
-});
-document.getElementById('att_cov_others_chk')?.addEventListener('change', function() {
-  const t = document.getElementById('att_cov_others_txt');
-  t.disabled = !this.checked; if (!this.checked) t.value = '';
-});
-function resetSignatory(btn) {
-  btn.closest('.sig-box').querySelectorAll('[data-default]').forEach(i => i.value = i.dataset.default);
+function toggleOthers(chk, txtId) {
+  const t = document.getElementById(txtId);
+  t.disabled = !chk.checked;
+  if (!chk.checked) t.value = '';
+  else t.focus();
 }
+
+function resetSignatory(btn) {
+  btn.closest('.sig-box').querySelectorAll('[data-default]').forEach(function(i) {
+    i.value = i.dataset.default;
+  });
+}
+
+// IIFE — runs immediately after modal HTML is injected, no DOMContentLoaded needed
+(function () {
+  [
+    ['att_type_others_chk',   'att_type_others_txt'],
+    ['att_nature_others_chk', 'att_nature_others_txt'],
+    ['att_cov_others_chk',    'att_cov_others_txt'],
+  ].forEach(function([chkId, txtId]) {
+    const chk = document.getElementById(chkId);
+    const txt = document.getElementById(txtId);
+    if (chk && txt) {
+      txt.disabled = !chk.checked;
+      chk.addEventListener('change', function () {
+        toggleOthers(chk, txtId);
+      });
+    }
+  });
+})();
 </script>
