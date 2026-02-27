@@ -236,62 +236,62 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
     <td colspan="12">{{ $record->competency ?? '' }}</td>
   </tr>
 
-  {{-- R10 Date / Hours --}}
+  {{-- R10 Date / Hours — Date value widened (colspan 5), Hours label/value narrowed (4+5) --}}
   <tr style="height:0.67cm">
     <td colspan="2" class="s">Date:</td>
-    <td colspan="3">{{ $record->intervention_date ?? '' }}</td>
-    <td colspan="5" class="s">Actual No. of Hours:</td>
-    <td colspan="6">{{ $record->hours ?? '' }}</td>
+    <td colspan="5">{{ $record->intervention_date ?? '' }}</td>
+    <td colspan="4" class="s">Actual No. of Hours:</td>
+    <td colspan="5">{{ $record->hours ?? '' }}</td>
   </tr>
 
-  {{-- R11 Venue / Organizer --}}
+  {{-- R11 Venue / Organizer — Venue value widened (colspan 5), Organizer label/value narrowed (4+5) --}}
   <tr style="height:0.69cm">
     <td colspan="2" class="s">Venue:</td>
-    <td colspan="3">{{ $record->venue ?? '' }}</td>
-    <td colspan="5" class="s">Sponsor Agency/ Organizer:</td>
-    <td colspan="6">{{ $record->organizer ?? '' }}</td>
+    <td colspan="5">{{ $record->venue ?? '' }}</td>
+    <td colspan="4" class="s">Sponsor Agency/ Organizer:</td>
+    <td colspan="5">{{ $record->organizer ?? '' }}</td>
   </tr>
 
   {{-- R12 endorsed_by_org --}}
   <tr style="height:0.66cm">
-    <td colspan="10" class="s">Endorsed by a recognized or registered professional organization?</td>
-    <td colspan="4" class="c" style="border-right:none;">{!! $chk($record->endorsed_by_org ?? false) !!} Yes</td>
+    <td colspan="11" class="s">Endorsed by a recognized or registered professional organization?</td>
+    <td colspan="3" class="c" style="border-right:none;">{!! $chk($record->endorsed_by_org ?? false) !!} Yes</td>
     <td colspan="2" class="c" style="border-left:none;">{!! $chk(!($record->endorsed_by_org ?? false)) !!} No</td>
   </tr>
 
   {{-- R13 related_to_field --}}
   <tr style="height:0.66cm">
-    <td colspan="10" class="s">Related to the participant&rsquo;s current field/work load?</td>
-    <td colspan="4" class="c" style="border-right:none;">{!! $chk($record->related_to_field ?? false) !!} Yes</td>
+    <td colspan="11" class="s">Related to the participant&rsquo;s current field/work load?</td>
+    <td colspan="3" class="c" style="border-right:none;">{!! $chk($record->related_to_field ?? false) !!} Yes</td>
     <td colspan="2" class="c" style="border-left:none;">{!! $chk(!($record->related_to_field ?? false)) !!} No</td>
   </tr>
 
   {{-- R14 has_pending_ldap --}}
   <tr style="height:1.10cm">
-    <td colspan="10" class="s smallText" style="vertical-align:middle;">Has pending implementation of Learning and Development Application Plan?<br><em>(If yes, please attach status of implementation by using BatStateU-FO-HRD-30)</em></td>
-    <td colspan="4" class="c" style="border-right:none;">{!! $chk($record->has_pending_ldap ?? false) !!} Yes</td>
+    <td colspan="11" class="s smallText" style="vertical-align:middle;">Has pending implementation of Learning and Development Application Plan?<br><em>(If yes, please attach status of implementation by using BatStateU-FO-HRD-30)</em></td>
+    <td colspan="3" class="c" style="border-right:none;">{!! $chk($record->has_pending_ldap ?? false) !!} Yes</td>
     <td colspan="2" class="c" style="border-left:none;">{!! $chk(!($record->has_pending_ldap ?? false)) !!} No</td>
   </tr>
 
   {{-- R15 has_cash_advance --}}
   <tr style="height:0.66cm">
-    <td colspan="10" class="s">Has any unliquidated cash advance?</td>
-    <td colspan="4" class="c" style="border-right:none;">{!! $chk($record->has_cash_advance ?? false) !!} Yes</td>
+    <td colspan="11" class="s">Has any unliquidated cash advance?</td>
+    <td colspan="3" class="c" style="border-right:none;">{!! $chk($record->has_cash_advance ?? false) !!} Yes</td>
     <td colspan="2" class="c" style="border-left:none;">{!! $chk(!($record->has_cash_advance ?? false)) !!} No</td>
   </tr>
 
   {{-- R16 financial_requested --}}
   <tr style="height:0.66cm">
-    <td colspan="10" class="s">Is financial assistance requested from the University?</td>
-    <td colspan="4" class="c" style="border-right:none;">{!! $chk($record->financial_requested ?? false) !!} Yes</td>
+    <td colspan="11" class="s">Is financial assistance requested from the University?</td>
+    <td colspan="3" class="c" style="border-right:none;">{!! $chk($record->financial_requested ?? false) !!} Yes</td>
     <td colspan="2" class="c" style="border-left:none;">{!! $chk(!($record->financial_requested ?? false)) !!} No</td>
   </tr>
 
   {{-- R17 Amount --}}
   <tr style="height:0.66cm">
-    <td colspan="10" class="s">If yes, how much is the <span class="ul">total amount</span> being requested?</td>
+    <td colspan="11" class="s">If yes, how much is the <span class="ul">total amount</span> being requested?</td>
     <td colspan="2" class="c" style="border-right:none;">Php</td>
-    <td colspan="4" style="border-left:none;">
+    <td colspan="3" style="border-left:none;">
       @if(($record->financial_requested ?? false) && ($record->amount_requested ?? null) !== null && $record->amount_requested !== '')
         {{ number_format((float) $record->amount_requested, 2) }}
       @else
