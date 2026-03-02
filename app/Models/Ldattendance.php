@@ -13,6 +13,7 @@ class LdAttendance extends Model
     protected $table = 'ld_attendances';
 
     protected $fillable = [
+        'tracking_number',
         'attendee_name', 'campus', 'employment_status', 'college_office', 'position',
         'activity_types', 'activity_type_others',
         'natures', 'nature_others',

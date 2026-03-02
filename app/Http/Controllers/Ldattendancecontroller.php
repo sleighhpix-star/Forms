@@ -23,6 +23,10 @@ class LdAttendanceController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validateForm($request);
+        // generate tracking number if not provided
+        if (empty($validated['tracking_number'])) {
+            $validated['tracking_number'] = 'LT-'.date('Ymd').'-'.strtoupper(\Illuminate\Support\Str::random(6));
+        }
         LdAttendance::create($validated);
         return redirect()->route('ld.index', ['tab' => 'attendance'])
             ->with('success', 'Attendance request submitted successfully.');
@@ -31,6 +35,9 @@ class LdAttendanceController extends Controller
     public function update(Request $request, LdAttendance $attendance)
     {
         $validated = $this->validateForm($request);
+        if (empty($validated['tracking_number']) && empty($attendance->tracking_number)) {
+            $validated['tracking_number'] = 'LT-'.date('Ymd').'-'.strtoupper(\Illuminate\Support\Str::random(6));
+        }
         $attendance->update($validated);
         return redirect()->route('ld.index', ['tab' => 'attendance'])
             ->with('success', 'Attendance request updated successfully.');
@@ -108,6 +115,7 @@ class LdAttendanceController extends Controller
     private function validateForm(Request $request): array
     {
         return $request->validate([
+            'tracking_number'           => 'nullable|string|max:100',
             'attendee_name'              => 'required|string|max:255',
             'campus'                     => 'required|string|max:255',
             'employment_status'          => 'required|string|max:100',

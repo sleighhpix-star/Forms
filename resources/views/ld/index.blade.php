@@ -1,3 +1,4 @@
+{{-- resources/views/ld/index.blade.php --}}
 @extends('ld.layouts.app')
 
 @section('title', 'Request Records — BatStateU')
@@ -91,7 +92,7 @@
   border-top:none; border-radius:0 0 12px 12px;
 }
 
-/* ── Tab action bar (NEW — sits between tab strip and filter bar) ── */
+/* ── Tab action bar ── */
 .tab-action-bar {
   display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem;
   padding:.6rem 1.25rem;
@@ -111,8 +112,6 @@
   border-radius:8px; font-size:.82rem; width:220px; outline:none;
 }
 .tab-filters input[type=text]:focus { border-color:var(--maroon); }
-
-/* (global form picker removed — use per-tab buttons instead) */
 
 /* ── Actions column ── */
 .act-wrap { display:flex; gap:.3rem; flex-wrap:wrap; }
@@ -207,31 +206,53 @@
   display:flex; align-items:center; justify-content:space-between;
   font-size:.78rem; color:#6b7280;
 }
-.rm-empty {
-  padding:3rem; text-align:center; color:#9ca3af;
-}
+.rm-empty { padding:3rem; text-align:center; color:#9ca3af; }
 .rm-empty-icon { font-size:2.5rem; margin-bottom:.5rem; }
+
+/* ✅ Toast Success (upper-right) */
+.toast-success {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #16a34a;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+  z-index: 99999;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: toastIn 0.25s ease forwards;
+}
+.toast-icon { font-weight: 800; }
+@keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
+
+/* ✅ Field validation */
+.field-error{
+  margin-top:6px;
+  font-size:.75rem;
+  color:#b91c1c;
+  font-weight:600;
+}
+.is-invalid{
+  border-color:#b91c1c !important;
+  box-shadow:0 0 0 3px rgba(185,28,28,.12);
+}
 </style>
 @endpush
 
 @section('content')
 <div class="page page-wide">
 
+  {{-- ✅ Toast --}}
   @if(session('success'))
-    <div class="alert alert-success">✅ {{ session('success') }}</div>
-  @endif
-  @if(session('error'))
-    <div class="alert alert-danger">⚠️ {{ session('error') }}</div>
-  @endif
-  @if(session('mov_debug'))
-    <div class="alert alert-info">🧪 {{ session('mov_debug') }}</div>
-  @endif
-  @if($errors->any())
-    <div class="alert alert-danger">
-      <strong>Error:</strong>
-      <ul style="margin:.4rem 0 0 1.1rem;">
-        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-      </ul>
+    <div id="toast-success" class="toast-success" role="status" aria-live="polite">
+      <span class="toast-icon">✔</span>
+      <span>{{ session('success') }}</span>
     </div>
   @endif
 
@@ -263,20 +284,19 @@
   </div>
 
   {{-- ══════════════════════════════════════════════ --}}
-  {{-- TAB 1 — Request for Participation             --}}
+  {{-- TAB 1 — Participation --}}
   {{-- ══════════════════════════════════════════════ --}}
   <div class="tab-panel active" id="panel-participation">
     <div class="tab-content">
 
-      {{-- Tab action bar --}}
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" onclick="openCreateModal()" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-primary btn-sm" type="button" onclick="openCreateModal()" style="display:flex;align-items:center;gap:.35rem;">
             ✏️ New Participation Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" onclick="openRecordsModal('participation','📋 Participation Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('participation','📋 Participation Records')" style="display:flex;align-items:center;gap:.35rem;">
             📊 All Records
           </button>
         </div>
@@ -337,11 +357,11 @@
               </td>
               <td>
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" onclick="openViewModal({{ $r->id }})">View</button>
-                  <button class="btn btn-ghost btn-sm" onclick="openEditModal({{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" onclick="openPrintModal('{{ route('ld.print', $r->id) }}')">🖨</button>
-                  <button class="btn btn-primary btn-sm" data-mov-btn="{{ $r->id }}"
-                          onclick="openMovModal('{{ route('ld.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">📎</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openViewModal({{ $r->id }})">View</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openEditModal({{ $r->id }})">Edit</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.print', $r->id) }}')">Print</button>
+                  <button class="btn btn-primary btn-sm" type="button" data-mov-btn="{{ $r->id }}"
+                          onclick="openMovModal('{{ route('ld.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
                 </div>
                 @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
@@ -358,11 +378,6 @@
         <div class="empty-state"><div class="empty-icon">📋</div><p>No participation requests yet.</p></div>
       @endif
 
-      {{-- db bar --}}
-      <div class="db-bar">
-        <span class="db-bar-label">📊 Quick Add Row</span>
-        <button class="btn-db" onclick="toggleQA('qa-participation')">＋ Add Row</button>
-      </div>
       <div class="qa-grid" id="qa-participation">
         <form method="POST" action="{{ route('ld.store') }}" id="qaf-participation">
           @csrf
@@ -383,9 +398,14 @@
                 <option value="">—</option><option>Local</option><option>Regional</option><option>National</option><option>International</option>
               </select>
             </div>
-            <div class="qa-field"><label>Date</label><input type="date" name="intervention_date"></div>
+
+            {{-- ✅ FIXED: your HTML was broken here --}}
+            <div class="qa-field"><label>Date</label><input type="text" name="intervention_date" class="date-picker-range"></div>
             <div class="qa-field"><label>Financial Requested</label>
-              <select name="financial_requested"><option value="0">No</option><option value="1">Yes</option></select>
+              <select name="financial_requested">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
             </div>
           </div>
           <div class="qa-actions">
@@ -394,23 +414,24 @@
           </div>
         </form>
       </div>
+
     </div>
   </div>
 
   {{-- ══════════════════════════════════════════════ --}}
-  {{-- TAB 2 — Request for Attendance               --}}
+  {{-- TAB 2 — Attendance --}}
   {{-- ══════════════════════════════════════════════ --}}
   <div class="tab-panel" id="panel-attendance">
     <div class="tab-content">
 
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" onclick="openFormModal('attendance','📅 New Attendance Request')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('attendance','📅 New Attendance Request')" style="display:flex;align-items:center;gap:.35rem;">
             ✏️ New Attendance Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" onclick="openRecordsModal('attendance','📅 Attendance Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('attendance','📅 Attendance Records')" style="display:flex;align-items:center;gap:.35rem;">
             📊 All Records
           </button>
         </div>
@@ -467,11 +488,11 @@
               </td>
               <td>
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" onclick="openGenericView('attendance',{{ $r->id }},'📅 Attendance Details')">View</button>
-                  <button class="btn btn-ghost btn-sm" onclick="openFormModal('attendance-edit','✏️ Edit Attendance',{{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" onclick="openPrintModal('{{ route('ld.attendance.print',$r->id) }}')">🖨</button>
-                  <button class="btn btn-primary btn-sm"
-                          onclick="openMovModal('{{ route('ld.attendance.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.attendance.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">📎</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('attendance',{{ $r->id }},'📅 Attendance Details')">View</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('attendance-edit','✏️ Edit Attendance',{{ $r->id }})">Edit</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.attendance.print',$r->id) }}')">Print</button>
+                  <button class="btn btn-primary btn-sm" type="button"
+                          onclick="openMovModal('{{ route('ld.attendance.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.attendance.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
                 </div>
                 @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
@@ -488,10 +509,6 @@
         <div class="empty-state"><div class="empty-icon">📅</div><p>No attendance requests yet.</p></div>
       @endif
 
-      <div class="db-bar">
-        <span class="db-bar-label">📊 Quick Add Row</span>
-        <button class="btn-db" onclick="toggleQA('qa-attendance')">＋ Add Row</button>
-      </div>
       <div class="qa-grid" id="qa-attendance">
         <form method="POST" action="{{ route('ld.attendance.store') }}" id="qaf-attendance">
           @csrf
@@ -513,7 +530,7 @@
             <div class="qa-field"><label>Level</label>
               <select name="level"><option value="">—</option><option>Local</option><option>Regional</option><option>National</option><option>International</option></select>
             </div>
-            <div class="qa-field"><label>Date</label><input type="date" name="activity_date"></div>
+            <div class="qa-field"><label>Date</label><input type="text" name="activity_date" class="date-picker-range"></div>
             <div class="qa-field"><label>Venue</label><input type="text" name="venue"></div>
             <div class="qa-field"><label>Organizer</label><input type="text" name="organizer"></div>
             <div class="qa-field"><label>Financial Requested</label>
@@ -526,23 +543,24 @@
           </div>
         </form>
       </div>
+
     </div>
   </div>
 
   {{-- ══════════════════════════════════════════════ --}}
-  {{-- TAB 3 — Research Publication Incentive        --}}
+  {{-- TAB 3 — Publication Incentive --}}
   {{-- ══════════════════════════════════════════════ --}}
   <div class="tab-panel" id="panel-publication">
     <div class="tab-content">
 
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" onclick="openFormModal('publication','📰 New Publication Incentive Request')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('publication','📰 New Publication Incentive Request')" style="display:flex;align-items:center;gap:.35rem;">
             ✏️ New Publication Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" onclick="openRecordsModal('publication','📰 Publication Incentive Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('publication','📰 Publication Incentive Records')" style="display:flex;align-items:center;gap:.35rem;">
             📊 All Records
           </button>
         </div>
@@ -600,11 +618,11 @@
               <td class="muted">@if($r->amount_requested)Php {{ number_format($r->amount_requested,2) }}@endif</td>
               <td>
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" onclick="openGenericView('publication',{{ $r->id }},'📰 Publication Details')">View</button>
-                  <button class="btn btn-ghost btn-sm" onclick="openFormModal('publication-edit','✏️ Edit Publication',{{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" onclick="openPrintModal('{{ route('ld.publication.print',$r->id) }}')">🖨</button>
-                  <button class="btn btn-primary btn-sm"
-                          onclick="openMovModal('{{ route('ld.publication.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.publication.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">📎</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('publication',{{ $r->id }},'📰 Publication Details')">View</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('publication-edit','✏️ Edit Publication',{{ $r->id }})">Edit</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.publication.print',$r->id) }}')">Print</button>
+                  <button class="btn btn-primary btn-sm" type="button"
+                          onclick="openMovModal('{{ route('ld.publication.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.publication.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
                 </div>
                 @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
@@ -621,10 +639,6 @@
         <div class="empty-state"><div class="empty-icon">📰</div><p>No publication incentive requests yet.</p></div>
       @endif
 
-      <div class="db-bar">
-        <span class="db-bar-label">📊 Quick Add Row</span>
-        <button class="btn-db" onclick="toggleQA('qa-publication')">＋ Add Row</button>
-      </div>
       <div class="qa-grid" id="qa-publication">
         <form method="POST" action="{{ route('ld.publication.store') }}" id="qaf-publication">
           @csrf
@@ -663,23 +677,24 @@
           </div>
         </form>
       </div>
+
     </div>
   </div>
 
   {{-- ══════════════════════════════════════════════ --}}
-  {{-- TAB 4 — Reimbursement of Expenses            --}}
+  {{-- TAB 4 — Reimbursement --}}
   {{-- ══════════════════════════════════════════════ --}}
   <div class="tab-panel" id="panel-reimbursement">
     <div class="tab-content">
 
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" onclick="openFormModal('reimbursement','💰 New Reimbursement Request')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('reimbursement','💰 New Reimbursement Request')" style="display:flex;align-items:center;gap:.35rem;">
             ✏️ New Reimbursement Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" onclick="openRecordsModal('reimbursement','💰 Reimbursement Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('reimbursement','💰 Reimbursement Records')" style="display:flex;align-items:center;gap:.35rem;">
             📊 All Records
           </button>
         </div>
@@ -720,11 +735,11 @@
               <td><strong>@if($total > 0)Php {{ number_format($total,2) }}@endif</strong></td>
               <td>
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" onclick="openGenericView('reimbursement',{{ $r->id }},'💰 Reimbursement Details')">View</button>
-                  <button class="btn btn-ghost btn-sm" onclick="openFormModal('reimbursement-edit','✏️ Edit Reimbursement',{{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" onclick="openPrintModal('{{ route('ld.reimbursement.print',$r->id) }}')">🖨</button>
-                  <button class="btn btn-primary btn-sm"
-                          onclick="openMovModal('{{ route('ld.reimbursement.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.reimbursement.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">📎</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('reimbursement',{{ $r->id }},'💰 Reimbursement Details')">View</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('reimbursement-edit','✏️ Edit Reimbursement',{{ $r->id }})">Edit</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.reimbursement.print',$r->id) }}')">Print</button>
+                  <button class="btn btn-primary btn-sm" type="button"
+                          onclick="openMovModal('{{ route('ld.reimbursement.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.reimbursement.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
                 </div>
                 @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
@@ -741,10 +756,6 @@
         <div class="empty-state"><div class="empty-icon">💰</div><p>No reimbursement requests yet.</p></div>
       @endif
 
-      <div class="db-bar">
-        <span class="db-bar-label">📊 Quick Add Row</span>
-        <button class="btn-db" onclick="toggleQA('qa-reimbursement')">＋ Add Row</button>
-      </div>
       <div class="qa-grid" id="qa-reimbursement">
         <form method="POST" action="{{ route('ld.reimbursement.store') }}" id="qaf-reimbursement">
           @csrf
@@ -762,7 +773,7 @@
               </select>
             </div>
             <div class="qa-field"><label>Venue</label><input type="text" name="venue"></div>
-            <div class="qa-field"><label>Date</label><input type="date" name="activity_date"></div>
+            <div class="qa-field"><label>Date</label><input type="text" name="activity_date" class="date-picker-range"></div>
             <div class="qa-field"><label>Reason for Reimbursement</label><textarea name="reason"></textarea></div>
           </div>
           <div class="qa-actions">
@@ -771,23 +782,24 @@
           </div>
         </form>
       </div>
+
     </div>
   </div>
 
   {{-- ══════════════════════════════════════════════ --}}
-  {{-- TAB 5 — Authority to Travel                  --}}
+  {{-- TAB 5 — Travel --}}
   {{-- ══════════════════════════════════════════════ --}}
   <div class="tab-panel" id="panel-travel">
     <div class="tab-content">
 
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" onclick="openFormModal('travel','✈️ New Authority to Travel')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('travel','✈️ New Authority to Travel')" style="display:flex;align-items:center;gap:.35rem;">
             ✏️ New Travel Authority
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" onclick="openRecordsModal('travel','✈️ Travel Authority Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('travel','✈️ Travel Authority Records')" style="display:flex;align-items:center;gap:.35rem;">
             📊 All Records
           </button>
         </div>
@@ -829,11 +841,11 @@
               <td class="muted">{{ $r->chargeable_against }}</td>
               <td>
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" onclick="openGenericView('travel',{{ $r->id }},'✈️ Travel Authority Details')">View</button>
-                  <button class="btn btn-ghost btn-sm" onclick="openFormModal('travel-edit','✏️ Edit Travel Authority',{{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" onclick="openPrintModal('{{ route('ld.travel.print',$r->id) }}')">🖨</button>
-                  <button class="btn btn-primary btn-sm"
-                          onclick="openMovModal('{{ route('ld.travel.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.travel.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">📎</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('travel',{{ $r->id }},'✈️ Travel Authority Details')">View</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('travel-edit','✏️ Edit Travel Authority',{{ $r->id }})">Edit</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.travel.print',$r->id) }}')">Print</button>
+                  <button class="btn btn-primary btn-sm" type="button"
+                          onclick="openMovModal('{{ route('ld.travel.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.travel.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
                 </div>
                 @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
@@ -850,10 +862,6 @@
         <div class="empty-state"><div class="empty-icon">✈️</div><p>No travel authority requests yet.</p></div>
       @endif
 
-      <div class="db-bar">
-        <span class="db-bar-label">📊 Quick Add Row</span>
-        <button class="btn-db" onclick="toggleQA('qa-travel')">＋ Add Row</button>
-      </div>
       <div class="qa-grid" id="qa-travel">
         <form method="POST" action="{{ route('ld.travel.store') }}" id="qaf-travel">
           @csrf
@@ -872,192 +880,221 @@
           </div>
         </form>
       </div>
+
     </div>
   </div>
 
-</div>{{-- /page --}}
+  {{-- ════════════════ MODALS ════════════════ --}}
 
-
-{{-- ════════════════ MODALS ════════════════ --}}
-
-{{-- Print Modal --}}
-<div class="print-modal-overlay" id="printModal">
-  <div class="print-modal">
-    <div class="print-modal-header">
-      <span>🖨 Print Preview</span>
-      <button class="print-modal-close" onclick="closePrintModal()">✕ Close</button>
+  {{-- Print Modal --}}
+  <div class="print-modal-overlay" id="printModal">
+    <div class="print-modal">
+      <div class="print-modal-header">
+        <span>Print Preview</span>
+        <button class="print-modal-close" type="button" onclick="closePrintModal()">✕ Close</button>
+      </div>
+      <iframe id="printModalFrame" src=""></iframe>
     </div>
-    <iframe id="printModalFrame" src=""></iframe>
   </div>
-</div>
 
-{{-- Participation: View --}}
-<div class="modal-overlay" id="viewModal">
-  <div class="modal-box">
-    <div class="modal-header"><span>📋 Request Details</span><button class="modal-close" onclick="closeModal('viewModal')">✕ Close</button></div>
-    <div id="view-modal-body" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
-  </div>
-</div>
-
-{{-- Participation: Create --}}
-<div class="modal-overlay" id="createModal">
-  <div class="modal-box">
-    <div class="modal-header"><span>✏️ New Participation Request</span><button class="modal-close" onclick="closeModal('createModal')">✕ Close</button></div>
-    <div id="create-modal-body">@include('ld.create-form')</div>
-  </div>
-</div>
-
-{{-- Participation: Edit --}}
-<div class="modal-overlay" id="editModal">
-  <div class="modal-box">
-    <div class="modal-header"><span>✏️ Edit Request</span><button class="modal-close" onclick="closeModal('editModal')">✕ Close</button></div>
-    <div id="edit-modal-body" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
-  </div>
-</div>
-
-{{-- Generic Form Modal (create & edit for all other 4 forms) --}}
-<div class="modal-overlay" id="genericFormModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span id="genericFormTitle">New Request</span>
-      <button class="modal-close" onclick="closeModal('genericFormModal')">✕ Close</button>
+  {{-- Participation: View --}}
+  <div class="modal-overlay" id="viewModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <span>📋 Request Details</span>
+        <button class="modal-close" type="button" onclick="closeModal('viewModal')">✕ Close</button>
+      </div>
+      <div id="view-modal-body" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
     </div>
-    <div id="genericFormBody" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
   </div>
-</div>
 
-{{-- Generic View Modal --}}
-<div class="modal-overlay" id="genericViewModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span id="genericViewTitle">Details</span>
-      <button class="modal-close" onclick="closeModal('genericViewModal')">✕ Close</button>
-    </div>
-    <div id="genericViewBody" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
-  </div>
-</div>
-
-{{-- ════ Records Popup Modal ════ --}}
-<div class="records-modal-overlay" id="recordsModal">
-  <div class="records-modal-box">
-    <div class="records-modal-header">
-      <span id="recordsModalTitle">Records</span>
-      <div style="display:flex;align-items:center;gap:.5rem;">
-        <button id="recordsAddBtn" class="btn btn-gold btn-sm" onclick="recordsAddNew()" style="font-size:.78rem;padding:.3rem .8rem;">
-          ＋ Add Information
-        </button>
-        <button class="modal-close" onclick="closeRecordsModal()">✕ Close</button>
+  {{-- Participation: Create --}}
+  <div class="modal-overlay" id="createModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <span>✏️ New Participation Request</span>
+        <button class="modal-close" type="button" onclick="closeModal('createModal')">✕ Close</button>
+      </div>
+      <div id="create-modal-body">
+        @include('ld.create-form')
       </div>
     </div>
-    <div class="records-modal-search">
-      {{-- Row 1: search + download --}}
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;width:100%;">
-        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
-          <input type="text" id="recordsSearchInput" placeholder="🔍 Search all fields..." oninput="applyRecordsFilters()" style="width:220px;">
-          <select id="recordsFilterMonth" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
-            <option value="">All Months</option>
-            <option value="1">January</option><option value="2">February</option><option value="3">March</option>
-            <option value="4">April</option><option value="5">May</option><option value="6">June</option>
-            <option value="7">July</option><option value="8">August</option><option value="9">September</option>
-            <option value="10">October</option><option value="11">November</option><option value="12">December</option>
-          </select>
-          <select id="recordsFilterYear" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
-            <option value="">All Years</option>
-          </select>
-          <select id="recordsFilterLevel" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
-            <option value="">All Levels</option>
-            <option>Local</option><option>Regional</option><option>National</option><option>International</option>
-          </select>
-          <select id="recordsFilterFinancial" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
-            <option value="">Financial — All</option>
-            <option value="1">Financial — Yes</option>
-            <option value="0">Financial — No</option>
-          </select>
-          <button onclick="clearRecordsFilters()" style="padding:.4rem .75rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.78rem;background:#fff;cursor:pointer;color:#6b7280;">✕ Clear</button>
+  </div>
+
+  {{-- Participation: Edit --}}
+  <div class="modal-overlay" id="editModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <span>✏️ Edit Request</span>
+        <button class="modal-close" type="button" onclick="closeModal('editModal')">✕ Close</button>
+      </div>
+      <div id="edit-modal-body" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
+    </div>
+  </div>
+
+  {{-- Generic Form Modal (create & edit for attendance/publication/reimbursement/travel) --}}
+  <div class="modal-overlay" id="genericFormModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <span id="genericFormTitle">New Request</span>
+        <button class="modal-close" type="button" onclick="closeModal('genericFormModal')">✕ Close</button>
+      </div>
+      <div id="genericFormBody" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
+    </div>
+  </div>
+
+  {{-- Generic View Modal --}}
+  <div class="modal-overlay" id="genericViewModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <span id="genericViewTitle">Details</span>
+        <button class="modal-close" type="button" onclick="closeModal('genericViewModal')">✕ Close</button>
+      </div>
+      <div id="genericViewBody" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
+    </div>
+  </div>
+
+  {{-- ════ Records Popup Modal ════ --}}
+  <div class="records-modal-overlay" id="recordsModal" aria-hidden="true">
+    <div class="records-modal-box" role="dialog" aria-modal="true">
+      <div class="records-modal-header">
+        <span id="recordsModalTitle">Records</span>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <button id="recordsAddBtn" class="btn btn-gold btn-sm" type="button" onclick="recordsAddNew()" style="font-size:.78rem;padding:.3rem .8rem;">
+            ＋ Add Information
+          </button>
+          <button class="modal-close" type="button" onclick="closeRecordsModal()">✕ Close</button>
         </div>
-        <div style="display:flex;align-items:center;gap:.4rem;">
-          <span id="recordsCountLabel" style="font-size:.78rem;color:#6b7280;"></span>
-          <div style="position:relative;display:inline-block;" id="downloadDropWrap">
-            <button onclick="toggleDownloadDrop()" style="display:flex;align-items:center;gap:.35rem;padding:.4rem .85rem;background:var(--maroon);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;">
-              ⬇ Download <span style="font-size:.65rem;opacity:.8;">▼</span>
-            </button>
-            <div id="downloadDrop" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:190px;z-index:9999;overflow:hidden;">
-              <div style="padding:.4rem .75rem;background:#f9fafb;border-bottom:1px solid #e5e7eb;font-size:.68rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.4pt;">Export as CSV</div>
-              <button onclick="downloadCSV('filtered')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:#111827;">📄 Filtered / Current View</button>
-              <button onclick="downloadCSV('all')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:#111827;border-top:1px solid #f3f4f6;">📦 All Records (unfiltered)</button>
+      </div>
+
+      <div class="records-modal-search">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;width:100%;">
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <input type="text" id="recordsSearchInput" placeholder="🔍 Search all fields..." oninput="applyRecordsFilters()" style="width:220px;">
+            <select id="recordsFilterMonth" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+              <option value="">All Months</option>
+              <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+              <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+              <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+              <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+            </select>
+            <select id="recordsFilterYear" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+              <option value="">All Years</option>
+            </select>
+            <select id="recordsFilterLevel" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+              <option value="">All Levels</option>
+              <option>Local</option><option>Regional</option><option>National</option><option>International</option>
+            </select>
+            <select id="recordsFilterFinancial" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+              <option value="">Financial — All</option>
+              <option value="1">Financial — Yes</option>
+              <option value="0">Financial — No</option>
+            </select>
+            <button type="button" onclick="clearRecordsFilters()" style="padding:.4rem .75rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.78rem;background:#fff;cursor:pointer;color:#6b7280;">✕ Clear</button>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:.4rem;">
+            <span id="recordsCountLabel" style="font-size:.78rem;color:#6b7280;"></span>
+            <div style="position:relative;display:inline-block;" id="downloadDropWrap">
+              <button type="button" onclick="toggleDownloadDrop()" style="display:flex;align-items:center;gap:.35rem;padding:.4rem .85rem;background:var(--maroon);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;">
+                ⬇ Download <span style="font-size:.65rem;opacity:.8;">▼</span>
+              </button>
+              <div id="downloadDrop" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:190px;z-index:9999;overflow:hidden;">
+                <div style="padding:.4rem .75rem;background:#f9fafb;border-bottom:1px solid #e5e7eb;font-size:.68rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.4pt;">Export as CSV</div>
+                <button type="button" onclick="downloadCSV('filtered')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:#111827;">📄 Filtered / Current View</button>
+                <button type="button" onclick="downloadCSV('all')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:#111827;border-top:1px solid #f3f4f6;">📦 All Records (unfiltered)</button>
+              </div>
             </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="records-modal-body">
+        <div class="records-scroll-wrap">
+          <div id="recordsModalContent">
+            <div class="rm-empty"><div class="rm-empty-icon">⏳</div><p>Loading records…</p></div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="records-modal-body">
-      <div class="records-scroll-wrap">
-        <div id="recordsModalContent">
-          <div class="rm-empty"><div class="rm-empty-icon">⏳</div><p>Loading records…</p></div>
-        </div>
+
+      <div class="records-modal-footer">
+        <span id="recordsFooterInfo" style="font-size:.78rem;color:#9ca3af;"></span>
+        <button class="btn btn-ghost btn-sm" type="button" onclick="closeRecordsModal()">Close</button>
       </div>
     </div>
-    <div class="records-modal-footer">
-      <span id="recordsFooterInfo" style="font-size:.78rem;color:#9ca3af;"></span>
-      <button class="btn btn-ghost btn-sm" onclick="closeRecordsModal()">Close</button>
-    </div>
   </div>
-</div>
 
-{{-- MOV Upload Modal --}}
-<div class="modal-overlay" id="movModal">
-  <div class="modal-box" style="max-width:520px;">
-    <div class="modal-header"><span>📎 Upload MOV</span><button class="modal-close" onclick="closeModal('movModal')">✕ Close</button></div>
-    <div style="padding:1.25rem 1.5rem;">
-      <form id="movUploadForm" method="POST" action="" enctype="multipart/form-data">
-        @csrf
-        <input type="hidden" name="mov_record_id" id="mov_record_id" value="{{ old('mov_record_id') }}">
-        <div style="margin-bottom:.75rem;">
-          <label style="display:block;font-weight:600;margin-bottom:.35rem;">Select file</label>
-          <input type="file" name="mov_file" required
-                 style="width:100%;padding:.55rem .7rem;border:1.5px solid var(--gray-200);border-radius:10px;">
-        </div>
-        <div id="movExisting" style="display:none;padding:.75rem;border:1px solid var(--gray-100);border-radius:10px;margin-bottom:.9rem;">
-          <div class="muted text-sm" style="margin-bottom:.35rem;">Current MOV:</div>
-          <button type="button" id="movPreviewBtn" class="btn btn-outline btn-sm" style="margin-bottom:.4rem;">👁 View File</button>
-          <div id="movName" class="muted text-xs"></div>
-        </div>
-        <div class="d-flex justify-between align-center" style="gap:.75rem;">
-          <button type="button" class="btn btn-ghost" onclick="closeModal('movModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Upload</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-{{-- MOV Preview Modal --}}
-<div class="print-modal-overlay" id="movPreviewModal">
-  <div class="print-modal" style="max-width:1100px;width:95vw;height:92vh;">
-    <div class="print-modal-header">
-      <span id="movPreviewTitle">📎 MOV Preview</span>
-      <div style="display:flex;gap:.5rem;align-items:center;">
-        <a id="movDownloadBtn" href="#" target="_blank" class="print-modal-close" style="text-decoration:none;">⬇ Download</a>
-        <button class="print-modal-close" onclick="closeMovPreview()">✕ Close</button>
+  {{-- MOV Upload Modal --}}
+  <div class="modal-overlay" id="movModal" aria-hidden="true">
+    <div class="modal-box" style="max-width:520px;" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <span>📎 Upload MOV</span>
+        <button class="modal-close" type="button" onclick="closeModal('movModal')">✕ Close</button>
+      </div>
+      <div style="padding:1.25rem 1.5rem;">
+        <form id="movUploadForm" method="POST" action="" enctype="multipart/form-data">
+          @csrf
+          <input type="hidden" name="mov_record_id" id="mov_record_id" value="{{ old('mov_record_id') }}">
+          <div style="margin-bottom:.75rem;">
+            <label style="display:block;font-weight:600;margin-bottom:.35rem;">Select file</label>
+            <input type="file" name="mov_file" required
+                   style="width:100%;padding:.55rem .7rem;border:1.5px solid var(--gray-200);border-radius:10px;">
+          </div>
+          <div id="movExisting" style="display:none;padding:.75rem;border:1px solid var(--gray-100);border-radius:10px;margin-bottom:.9rem;">
+            <div class="muted text-sm" style="margin-bottom:.35rem;">Current MOV:</div>
+            <button type="button" id="movPreviewBtn" class="btn btn-outline btn-sm" style="margin-bottom:.4rem;">👁 View File</button>
+            <div id="movName" class="muted text-xs"></div>
+          </div>
+          <div class="d-flex justify-between align-center" style="gap:.75rem;">
+            <button type="button" class="btn btn-ghost" onclick="closeModal('movModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </div>
+        </form>
       </div>
     </div>
-    <div id="movImageContainer" style="display:none;flex:1;overflow:auto;background:#f5f5f5;align-items:center;justify-content:center;">
-      <img id="movPreviewImage" style="max-width:100%;max-height:100%;object-fit:contain;display:block;margin:auto;">
-    </div>
-    <iframe id="movPreviewFrame" style="flex:1;width:100%;border:none;background:#f5f5f5;display:none;"></iframe>
-    <div id="movUnsupported" style="display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;gap:1rem;background:#f5f5f5;">
-      <div style="font-size:3rem;">📄</div>
-      <p style="color:#374151;font-weight:600;" id="movUnsupportedName"></p>
-      <p style="color:#6b7280;font-size:.875rem;">This file type cannot be previewed in the browser.</p>
-      <a id="movUnsupportedDownload" href="#" target="_blank" class="btn btn-primary">⬇ Download File</a>
+  </div>
+
+  {{-- MOV Preview Modal --}}
+  <div class="print-modal-overlay" id="movPreviewModal" aria-hidden="true">
+    <div class="print-modal" style="max-width:1100px;width:95vw;height:92vh;" role="dialog" aria-modal="true">
+      <div class="print-modal-header">
+        <span id="movPreviewTitle">📎 MOV Preview</span>
+        <div style="display:flex;gap:.5rem;align-items:center;">
+          <a id="movDownloadBtn" href="#" target="_blank" class="print-modal-close" style="text-decoration:none;">⬇ Download</a>
+          <button class="print-modal-close" type="button" onclick="closeMovPreview()">✕ Close</button>
+        </div>
+      </div>
+      <div id="movImageContainer" style="display:none;flex:1;overflow:auto;background:#f5f5f5;align-items:center;justify-content:center;">
+        <img id="movPreviewImage" style="max-width:100%;max-height:100%;object-fit:contain;display:block;margin:auto;">
+      </div>
+      <iframe id="movPreviewFrame" style="flex:1;width:100%;border:none;background:#f5f5f5;display:none;"></iframe>
+      <div id="movUnsupported" style="display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;gap:1rem;background:#f5f5f5;">
+        <div style="font-size:3rem;">📄</div>
+        <p style="color:#374151;font-weight:600;" id="movUnsupportedName"></p>
+        <p style="color:#6b7280;font-size:.875rem;">This file type cannot be previewed in the browser.</p>
+        <a id="movUnsupportedDownload" href="#" target="_blank" class="btn btn-primary">⬇ Download File</a>
+      </div>
     </div>
   </div>
-</div>
 
+</div>
 @endsection
 
 @push('scripts')
 <script>
+/* ✅ Toast auto-hide */
+document.addEventListener('DOMContentLoaded', function () {
+  const toast = document.getElementById('toast-success');
+  if (!toast) return;
+  setTimeout(() => {
+    toast.style.transition = "all 0.35s ease";
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(-10px)";
+    setTimeout(() => toast.remove(), 400);
+  }, 2500);
+});
+
 /* ── Tab switching ── */
 function switchTab(name) {
   document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
@@ -1066,19 +1103,6 @@ function switchTab(name) {
   document.getElementById('panel-' + name)?.classList.add('active');
   history.replaceState(null, '', '{{ route("ld.index") }}?tab=' + name);
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-  const params = new URLSearchParams(location.search);
-  switchTab(params.get('tab') || 'participation');
-
-  // Re-open MOV modal if validation failed
-  const failedId = @json(old('mov_record_id'));
-  if (failedId) {
-    document.querySelector(`[data-mov-btn="${failedId}"]`)?.click();
-  }
-});
-
-/* (global form picker removed) */
 
 /* ── Modal helpers ── */
 function openModal(id) {
@@ -1089,9 +1113,75 @@ function closeModal(id) {
   document.getElementById(id)?.classList.remove('active');
   document.body.style.overflow = '';
 }
-['viewModal','createModal','editModal','genericFormModal','genericViewModal','movModal'].forEach(id => {
+
+/* ✅ FORM SHOULD NOT CLOSE:
+   - DO NOT close form modals by clicking overlay (createModal + genericFormModal + movModal)
+   - View modals can still close via overlay click.
+*/
+['viewModal','editModal','genericViewModal'].forEach(id => {
   document.getElementById(id)?.addEventListener('click', e => { if (e.target.id === id) closeModal(id); });
 });
+document.getElementById('printModal')?.addEventListener('click', e => { if (e.target.id === 'printModal') closePrintModal(); });
+document.getElementById('movPreviewModal')?.addEventListener('click', e => { if (e.target.id === 'movPreviewModal') closeMovPreview(); });
+
+/* ✅ Flatpickr:
+   - You said "still n1" / only 1 date: most common cause is flatpickr being initialized twice.
+   - This version DESTROYS previous instances before re-init (works for ajax-loaded modals too).
+*/
+function writeRangeValue(selectedDates, instance) {
+  if (!selectedDates || selectedDates.length === 0) return;
+
+  if (selectedDates.length === 1) {
+    instance.input.value = instance.formatDate(selectedDates[0], "F j, Y");
+    return;
+  }
+
+  const start = selectedDates[0];
+  const end   = selectedDates[1];
+
+  const sameYear  = start.getFullYear() === end.getFullYear();
+  const sameMonth = sameYear && start.getMonth() === end.getMonth();
+
+  if (sameMonth) {
+    const month = instance.formatDate(start, "F");
+    instance.input.value = `${month} ${start.getDate()}–${end.getDate()}, ${end.getFullYear()}`;
+  } else if (sameYear) {
+    const a = instance.formatDate(start, "F j");
+    const b = instance.formatDate(end, "F j, Y");
+    instance.input.value = `${a} – ${b}`;
+  } else {
+    const a = instance.formatDate(start, "F j, Y");
+    const b = instance.formatDate(end, "F j, Y");
+    instance.input.value = `${a} – ${b}`;
+  }
+}
+
+function initDatePickers(root = document) {
+  if (!window.flatpickr || !root?.querySelectorAll) return;
+
+  // destroy any existing instances inside root
+  root.querySelectorAll('.date-picker, .date-picker-multi, .date-picker-range').forEach(el => {
+    if (el._flatpickr) el._flatpickr.destroy();
+  });
+
+  root.querySelectorAll('.date-picker').forEach(el => {
+    flatpickr(el, { dateFormat: 'F j, Y', allowInput: true });
+  });
+
+  root.querySelectorAll('.date-picker-multi').forEach(el => {
+    flatpickr(el, { mode: 'multiple', dateFormat: 'F j, Y', allowInput: true });
+  });
+
+  root.querySelectorAll('.date-picker-range').forEach(el => {
+    flatpickr(el, {
+      mode: 'range',
+      dateFormat: 'F j, Y',
+      allowInput: true,
+      onChange: (selectedDates, dateStr, instance) => writeRangeValue(selectedDates, instance),
+      onClose:  (selectedDates, dateStr, instance) => writeRangeValue(selectedDates, instance),
+    });
+  });
+}
 
 /* ── Participation: View / Create / Edit ── */
 function openViewModal(id) {
@@ -1101,11 +1191,38 @@ function openViewModal(id) {
     .then(r => r.text()).then(html => { document.getElementById('view-modal-body').innerHTML = html; });
 }
 function openCreateModal() { openModal('createModal'); }
+
+function bindOthersToggle(chkId, txtId) {
+  const chk = document.getElementById(chkId);
+  const txt = document.getElementById(txtId);
+  if (!chk || !txt) return;
+
+  const sync = () => {
+    if (chk.checked) { txt.disabled = false; txt.focus(); }
+    else { txt.value = ''; txt.disabled = true; }
+  };
+
+  chk.addEventListener('change', sync);
+  sync();
+}
+function initEditModalToggles() {
+  bindOthersToggle('e_type_others_chk', 'e_type_others_txt');
+  bindOthersToggle('e_nature_others_chk', 'e_nature_others_txt');
+  bindOthersToggle('e_cov_others_chk', 'e_cov_others_txt');
+}
 function openEditModal(id) {
   openModal('editModal');
-  document.getElementById('edit-modal-body').innerHTML = loadingHtml();
-  fetch(`/ld-requests/${id}/edit-modal`, { headers:{ 'X-Requested-With':'XMLHttpRequest' } })
-    .then(r => r.text()).then(html => { document.getElementById('edit-modal-body').innerHTML = html; });
+  const body = document.getElementById('edit-modal-body');
+  body.innerHTML = loadingHtml();
+
+  fetch(`/ld-requests/${id}/edit-modal`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(r => r.text())
+    .then(html => {
+      body.innerHTML = html;
+      initEditModalToggles();
+      initDatePickers(body);
+    })
+    .catch(() => { body.innerHTML = `<div style="padding:1rem">Failed to load edit form.</div>`; });
 }
 
 /* ── Generic Form Modal ── */
@@ -1119,14 +1236,20 @@ const formRoutes = {
   'reimbursement-edit': id => `/ld-requests/reimbursement/${id}/edit-modal`,
   'travel-edit':        id => `/ld-requests/travel/${id}/edit-modal`,
 };
+
 function openFormModal(type, title, id = null) {
   document.getElementById('genericFormTitle').textContent = title;
   document.getElementById('genericFormBody').innerHTML = loadingHtml();
   openModal('genericFormModal');
+
   const route = typeof formRoutes[type] === 'function' ? formRoutes[type](id) : formRoutes[type];
   fetch(route, { headers:{ 'X-Requested-With':'XMLHttpRequest' } })
     .then(r => r.text())
-    .then(html => { document.getElementById('genericFormBody').innerHTML = html; })
+    .then(html => {
+      const container = document.getElementById('genericFormBody');
+      container.innerHTML = html;
+      initDatePickers(container);
+    })
     .catch(() => {
       document.getElementById('genericFormBody').innerHTML =
         '<div style="padding:2.5rem;text-align:center;color:#6b7280;">' +
@@ -1155,14 +1278,14 @@ function openGenericView(type, id, title) {
 /* ── Print modal ── */
 function openPrintModal(url) {
   document.getElementById('printModalFrame').src = url;
-  openModal('printModal');
+  document.getElementById('printModal')?.classList.add('active');
+  document.body.style.overflow = 'hidden';
 }
 function closePrintModal() {
   document.getElementById('printModal')?.classList.remove('active');
   document.getElementById('printModalFrame').src = '';
   document.body.style.overflow = '';
 }
-document.getElementById('printModal')?.addEventListener('click', e => { if (e.target.id === 'printModal') closePrintModal(); });
 
 /* ═══════════════════════════════════════════════════
    RECORDS POPUP MODAL
@@ -1173,31 +1296,31 @@ const recordsConfig = {
     apiUrl: '/ld-requests/records/participation',
     addFn:  () => { closeRecordsModal(); openCreateModal(); },
     columns: [
-      { label: '#',                            key: '_index' },
-      { label: 'Participant Name',             key: 'participant_name' },
-      { label: 'Position',                     key: 'position' },
-      { label: 'Campus',                       key: 'campus' },
-      { label: 'College / Office',             key: 'college_office' },
-      { label: 'Employment Status',            key: 'employment_status' },
-      { label: 'Title of Intervention',        key: 'title' },
-      { label: 'Type',                         key: 'types',             array: true },
-      { label: 'Other Type',                   key: 'type_others' },
-      { label: 'Level',                        key: 'level',             badge: 'gold' },
-      { label: 'Nature',                       key: 'natures',           array: true },
-      { label: 'Other Nature',                 key: 'nature_others' },
-      { label: 'Competency',                   key: 'competency' },
-      { label: 'Date',                         key: 'intervention_date' },
-      { label: 'Hours',                        key: 'hours' },
-      { label: 'Venue',                        key: 'venue' },
-      { label: 'Organizer',                    key: 'organizer' },
-      { label: 'Endorsed by Org?',             key: 'endorsed_by_org',   bool: true },
-      { label: 'Related to Field?',            key: 'related_to_field',  bool: true },
-      { label: 'Has Pending LDAP?',            key: 'has_pending_ldap',  bool: true },
-      { label: 'Cash Advance?',                key: 'has_cash_advance',  bool: true },
-      { label: 'Financial Requested?',         key: 'financial_requested', bool: true },
-      { label: 'Amount Requested',             key: 'amount_requested',  currency: true },
-      { label: 'Coverage',                     key: 'coverage',          array: true },
-      { label: 'Other Coverage',               key: 'coverage_others' },
+      { label: '#', key: '_index' },
+      { label: 'Participant Name', key: 'participant_name' },
+      { label: 'Position', key: 'position' },
+      { label: 'Campus', key: 'campus' },
+      { label: 'College / Office', key: 'college_office' },
+      { label: 'Employment Status', key: 'employment_status' },
+      { label: 'Title of Intervention', key: 'title' },
+      { label: 'Type', key: 'types', array: true },
+      { label: 'Other Type', key: 'type_others' },
+      { label: 'Level', key: 'level', badge: 'gold' },
+      { label: 'Nature', key: 'natures', array: true },
+      { label: 'Other Nature', key: 'nature_others' },
+      { label: 'Competency', key: 'competency' },
+      { label: 'Date', key: 'intervention_date' },
+      { label: 'Hours', key: 'hours' },
+      { label: 'Venue', key: 'venue' },
+      { label: 'Organizer', key: 'organizer' },
+      { label: 'Endorsed by Org?', key: 'endorsed_by_org', bool: true },
+      { label: 'Related to Field?', key: 'related_to_field', bool: true },
+      { label: 'Has Pending LDAP?', key: 'has_pending_ldap', bool: true },
+      { label: 'Cash Advance?', key: 'has_cash_advance', bool: true },
+      { label: 'Financial Requested?', key: 'financial_requested', bool: true },
+      { label: 'Amount Requested', key: 'amount_requested', currency: true },
+      { label: 'Coverage', key: 'coverage', array: true },
+      { label: 'Other Coverage', key: 'coverage_others' },
     ]
   },
 
@@ -1205,26 +1328,26 @@ const recordsConfig = {
     apiUrl: '/ld-requests/records/attendance',
     addFn:  () => { closeRecordsModal(); openFormModal('attendance','📅 New Attendance Request'); },
     columns: [
-      { label: '#',                            key: '_index' },
-      { label: 'Attendee Name',                key: 'attendee_name' },
-      { label: 'Position',                     key: 'position' },
-      { label: 'Campus',                       key: 'campus' },
-      { label: 'College / Office',             key: 'college_office' },
-      { label: 'Employment Status',            key: 'employment_status' },
-      { label: 'Activity Type',                key: 'activity_types',    array: true },
-      { label: 'Other Activity',               key: 'activity_type_others' },
-      { label: 'Nature',                       key: 'natures',           array: true },
-      { label: 'Other Nature',                 key: 'nature_others' },
-      { label: 'Purpose',                      key: 'purpose' },
-      { label: 'Level',                        key: 'level',             badge: 'gold' },
-      { label: 'Date',                         key: 'activity_date' },
-      { label: 'Hours',                        key: 'hours' },
-      { label: 'Venue',                        key: 'venue' },
-      { label: 'Organizer',                    key: 'organizer' },
-      { label: 'Financial Requested?',         key: 'financial_requested', bool: true },
-      { label: 'Amount Requested',             key: 'amount_requested',  currency: true },
-      { label: 'Coverage',                     key: 'coverage',          array: true },
-      { label: 'Other Coverage',               key: 'coverage_others' },
+      { label: '#', key: '_index' },
+      { label: 'Attendee Name', key: 'attendee_name' },
+      { label: 'Position', key: 'position' },
+      { label: 'Campus', key: 'campus' },
+      { label: 'College / Office', key: 'college_office' },
+      { label: 'Employment Status', key: 'employment_status' },
+      { label: 'Activity Type', key: 'activity_types', array: true },
+      { label: 'Other Activity', key: 'activity_type_others' },
+      { label: 'Nature', key: 'natures', array: true },
+      { label: 'Other Nature', key: 'nature_others' },
+      { label: 'Purpose', key: 'purpose' },
+      { label: 'Level', key: 'level', badge: 'gold' },
+      { label: 'Date', key: 'activity_date' },
+      { label: 'Hours', key: 'hours' },
+      { label: 'Venue', key: 'venue' },
+      { label: 'Organizer', key: 'organizer' },
+      { label: 'Financial Requested?', key: 'financial_requested', bool: true },
+      { label: 'Amount Requested', key: 'amount_requested', currency: true },
+      { label: 'Coverage', key: 'coverage', array: true },
+      { label: 'Other Coverage', key: 'coverage_others' },
     ]
   },
 
@@ -1232,36 +1355,36 @@ const recordsConfig = {
     apiUrl: '/ld-requests/records/publication',
     addFn:  () => { closeRecordsModal(); openFormModal('publication','📰 New Publication Incentive Request'); },
     columns: [
-      { label: '#',                            key: '_index' },
-      { label: 'Faculty / Employee',           key: 'faculty_name' },
-      { label: 'Position',                     key: 'position' },
-      { label: 'Campus',                       key: 'campus' },
-      { label: 'College / Office',             key: 'college_office' },
-      { label: 'Employment Status',            key: 'employment_status' },
-      { label: 'Title of Paper',               key: 'paper_title' },
-      { label: 'Co-author/s',                  key: 'co_authors' },
-      { label: 'Journal Title',                key: 'journal_title' },
-      { label: 'Vol. / Issue / No.',           key: 'vol_issue' },
-      { label: 'ISSN / ISBN',                  key: 'issn_isbn' },
-      { label: 'Publisher',                    key: 'publisher' },
-      { label: 'Editors',                      key: 'editors' },
-      { label: 'Website',                      key: 'website' },
-      { label: 'Email',                        key: 'email_address' },
-      { label: 'Scope',                        key: 'pub_scope',         badge: 'gold' },
-      { label: 'Format',                       key: 'pub_format' },
-      { label: 'Nature',                       key: 'nature' },
-      { label: 'Amount Requested',             key: 'amount_requested',  currency: true },
-      { label: 'Prev. Claimed?',               key: 'has_previous_claim', bool: true },
-      { label: 'Prev. Claim Amount',           key: 'previous_claim_amount', currency: true },
-      { label: 'Prev. Paper Title',            key: 'prev_paper_title' },
-      { label: 'Prev. Co-authors',             key: 'prev_co_authors' },
-      { label: 'Prev. Journal',                key: 'prev_journal_title' },
-      { label: 'Prev. Vol./Issue',             key: 'prev_vol_issue' },
-      { label: 'Prev. ISSN/ISBN',              key: 'prev_issn_isbn' },
-      { label: 'Prev. DOI',                    key: 'prev_doi' },
-      { label: 'Prev. Publisher',              key: 'prev_publisher' },
-      { label: 'Prev. Editors',                key: 'prev_editors' },
-      { label: 'Prev. Scope',                  key: 'prev_pub_scope',    badge: 'gold' },
+      { label: '#', key: '_index' },
+      { label: 'Faculty / Employee', key: 'faculty_name' },
+      { label: 'Position', key: 'position' },
+      { label: 'Campus', key: 'campus' },
+      { label: 'College / Office', key: 'college_office' },
+      { label: 'Employment Status', key: 'employment_status' },
+      { label: 'Title of Paper', key: 'paper_title' },
+      { label: 'Co-author/s', key: 'co_authors' },
+      { label: 'Journal Title', key: 'journal_title' },
+      { label: 'Vol. / Issue / No.', key: 'vol_issue' },
+      { label: 'ISSN / ISBN', key: 'issn_isbn' },
+      { label: 'Publisher', key: 'publisher' },
+      { label: 'Editors', key: 'editors' },
+      { label: 'Website', key: 'website' },
+      { label: 'Email', key: 'email_address' },
+      { label: 'Scope', key: 'pub_scope', badge: 'gold' },
+      { label: 'Format', key: 'pub_format' },
+      { label: 'Nature', key: 'nature' },
+      { label: 'Amount Requested', key: 'amount_requested', currency: true },
+      { label: 'Prev. Claimed?', key: 'has_previous_claim', bool: true },
+      { label: 'Prev. Claim Amount', key: 'previous_claim_amount', currency: true },
+      { label: 'Prev. Paper Title', key: 'prev_paper_title' },
+      { label: 'Prev. Co-authors', key: 'prev_co_authors' },
+      { label: 'Prev. Journal', key: 'prev_journal_title' },
+      { label: 'Prev. Vol./Issue', key: 'prev_vol_issue' },
+      { label: 'Prev. ISSN/ISBN', key: 'prev_issn_isbn' },
+      { label: 'Prev. DOI', key: 'prev_doi' },
+      { label: 'Prev. Publisher', key: 'prev_publisher' },
+      { label: 'Prev. Editors', key: 'prev_editors' },
+      { label: 'Prev. Scope', key: 'prev_pub_scope', badge: 'gold' },
     ]
   },
 
@@ -1269,16 +1392,16 @@ const recordsConfig = {
     apiUrl: '/ld-requests/records/reimbursement',
     addFn:  () => { closeRecordsModal(); openFormModal('reimbursement','💰 New Reimbursement Request'); },
     columns: [
-      { label: '#',                            key: '_index' },
-      { label: 'Department / Office',          key: 'department' },
-      { label: 'Activity Type',                key: 'activity_types',    array: true },
-      { label: 'Other Activity',               key: 'activity_type_others' },
-      { label: 'Venue',                        key: 'venue' },
-      { label: 'Date',                         key: 'activity_date' },
-      { label: 'Reason',                       key: 'reason' },
-      { label: 'Remarks',                      key: 'remarks' },
-      { label: 'Expense Items',                key: 'expense_items',     expenseCell: true },
-      { label: 'Total Amount',                 key: '_total',            totalCalc: true },
+      { label: '#', key: '_index' },
+      { label: 'Department / Office', key: 'department' },
+      { label: 'Activity Type', key: 'activity_types', array: true },
+      { label: 'Other Activity', key: 'activity_type_others' },
+      { label: 'Venue', key: 'venue' },
+      { label: 'Date', key: 'activity_date' },
+      { label: 'Reason', key: 'reason' },
+      { label: 'Remarks', key: 'remarks' },
+      { label: 'Expense Items', key: 'expense_items', expenseCell: true },
+      { label: 'Total Amount', key: '_total', totalCalc: true },
     ]
   },
 
@@ -1286,24 +1409,26 @@ const recordsConfig = {
     apiUrl: '/ld-requests/records/travel',
     addFn:  () => { closeRecordsModal(); openFormModal('travel','✈️ New Authority to Travel'); },
     columns: [
-      { label: '#',                            key: '_index' },
-      { label: 'Employee Name/s',              key: 'employee_names',    pre: true },
-      { label: 'Position/s',                   key: 'positions',         pre: true },
-      { label: 'Date/s of Travel',             key: 'travel_dates' },
-      { label: 'Time',                         key: 'travel_time' },
-      { label: 'Place/s to be Visited',        key: 'places_visited' },
-      { label: 'Purpose of Travel',            key: 'purpose' },
-      { label: 'Chargeable Against',           key: 'chargeable_against' },
+      { label: '#', key: '_index' },
+      { label: 'Employee Name/s', key: 'employee_names', pre: true },
+      { label: 'Position/s', key: 'positions', pre: true },
+      { label: 'Date/s of Travel', key: 'travel_dates' },
+      { label: 'Time', key: 'travel_time' },
+      { label: 'Place/s to be Visited', key: 'places_visited' },
+      { label: 'Purpose of Travel', key: 'purpose' },
+      { label: 'Chargeable Against', key: 'chargeable_against' },
     ]
   },
 };
 
 let _allRecordsData = [];
+let _filteredRecordsData = [];
 let _currentRecordsType = '';
 
 function openRecordsModal(type, title) {
   _currentRecordsType = type;
   _filteredRecordsData = [];
+
   document.getElementById('recordsModalTitle').textContent = title;
   document.getElementById('recordsSearchInput').value = '';
   document.getElementById('recordsFilterMonth').value = '';
@@ -1313,14 +1438,14 @@ function openRecordsModal(type, title) {
   document.getElementById('recordsCountLabel').textContent = '';
   document.getElementById('recordsFooterInfo').textContent = '';
 
-  // Show/hide level & financial filters based on type
-  const hasLevel    = ['participation','attendance'].includes(type);
-  const hasFinancial= ['participation','attendance'].includes(type);
-  document.getElementById('recordsFilterLevel').style.display    = hasLevel     ? '' : 'none';
-  document.getElementById('recordsFilterFinancial').style.display= hasFinancial ? '' : 'none';
+  const hasLevel     = ['participation','attendance'].includes(type);
+  const hasFinancial = ['participation','attendance'].includes(type);
+  document.getElementById('recordsFilterLevel').style.display     = hasLevel ? '' : 'none';
+  document.getElementById('recordsFilterFinancial').style.display = hasFinancial ? '' : 'none';
 
   document.getElementById('recordsModalContent').innerHTML =
     '<div class="rm-empty"><div class="rm-empty-icon">⏳</div><p>Loading records…</p></div>';
+
   document.getElementById('recordsModal').classList.add('active');
   document.body.style.overflow = 'hidden';
 
@@ -1334,6 +1459,7 @@ function openRecordsModal(type, title) {
       _filteredRecordsData = [..._allRecordsData];
       populateYearFilter(_allRecordsData, type);
       renderRecordsTable(_allRecordsData, type);
+
       const total = _allRecordsData.length;
       document.getElementById('recordsCountLabel').textContent = `${total} record${total !== 1 ? 's' : ''}`;
       document.getElementById('recordsFooterInfo').textContent = `Showing all ${total} record${total !== 1 ? 's' : ''}`;
@@ -1358,11 +1484,12 @@ function recordsAddNew() {
   if (cfg && cfg.addFn) cfg.addFn();
 }
 
+/* close records by overlay click */
 document.getElementById('recordsModal')?.addEventListener('click', e => {
   if (e.target.id === 'recordsModal') closeRecordsModal();
 });
 
-// ── Date-key lookup per type (which field holds the date for month/year filtering)
+/* date key per type */
 const recordsDateKey = {
   participation: 'intervention_date',
   attendance:    'activity_date',
@@ -1370,8 +1497,6 @@ const recordsDateKey = {
   reimbursement: 'activity_date',
   travel:        'travel_dates',
 };
-
-// ── Level-key lookup (some types use different field names)
 const recordsLevelKey = {
   participation: 'level',
   attendance:    'level',
@@ -1379,8 +1504,6 @@ const recordsLevelKey = {
   reimbursement: null,
   travel:        null,
 };
-
-// ── Financial-key lookup
 const recordsFinancialKey = {
   participation: 'financial_requested',
   attendance:    'financial_requested',
@@ -1388,8 +1511,6 @@ const recordsFinancialKey = {
   reimbursement: null,
   travel:        null,
 };
-
-let _filteredRecordsData = [];
 
 function populateYearFilter(data, type) {
   const dateKey = recordsDateKey[type];
@@ -1399,6 +1520,7 @@ function populateYearFilter(data, type) {
     const m = String(raw).match(/\d{4}/);
     if (m) years.add(m[0]);
   });
+
   const sel = document.getElementById('recordsFilterYear');
   const current = sel.value;
   sel.innerHTML = '<option value="">All Years</option>';
@@ -1408,18 +1530,18 @@ function populateYearFilter(data, type) {
 }
 
 function applyRecordsFilters() {
-  const q        = (document.getElementById('recordsSearchInput')?.value || '').toLowerCase().trim();
-  const month    = document.getElementById('recordsFilterMonth')?.value || '';
-  const year     = document.getElementById('recordsFilterYear')?.value || '';
-  const level    = document.getElementById('recordsFilterLevel')?.value || '';
-  const financial= document.getElementById('recordsFilterFinancial')?.value;
-  const type     = _currentRecordsType;
+  const q         = (document.getElementById('recordsSearchInput')?.value || '').toLowerCase().trim();
+  const month     = document.getElementById('recordsFilterMonth')?.value || '';
+  const year      = document.getElementById('recordsFilterYear')?.value || '';
+  const level     = document.getElementById('recordsFilterLevel')?.value || '';
+  const financial = document.getElementById('recordsFilterFinancial')?.value;
+  const type      = _currentRecordsType;
+
   const dateKey  = recordsDateKey[type];
   const levelKey = recordsLevelKey[type];
   const finKey   = recordsFinancialKey[type];
 
   let filtered = _allRecordsData.filter(row => {
-    // Text search
     if (q) {
       const match = Object.values(row).some(v => {
         if (Array.isArray(v)) return v.some(x => String(x).toLowerCase().includes(q));
@@ -1428,26 +1550,22 @@ function applyRecordsFilters() {
       if (!match) return false;
     }
 
-    // Month filter
     if (month) {
       const raw = String(row[dateKey] || row['created_at'] || '');
       const d = new Date(raw.match(/\d{4}-\d{2}-\d{2}/) ? raw : raw.replace(/(\w+ \d+,?\s*\d{4})/,'$1'));
       if (isNaN(d) || (d.getMonth() + 1) !== parseInt(month)) return false;
     }
 
-    // Year filter
     if (year) {
       const raw = String(row[dateKey] || row['created_at'] || '');
       const m = raw.match(/\d{4}/);
       if (!m || m[0] !== year) return false;
     }
 
-    // Level filter
     if (level && levelKey) {
       if (String(row[levelKey] || '').toLowerCase() !== level.toLowerCase()) return false;
     }
 
-    // Financial filter
     if (financial !== '' && financial !== undefined && finKey) {
       const val = row[finKey];
       const wanted = financial === '1';
@@ -1459,11 +1577,13 @@ function applyRecordsFilters() {
 
   _filteredRecordsData = filtered;
   renderRecordsTable(filtered, type);
+
   const total = filtered.length;
   document.getElementById('recordsCountLabel').textContent =
     filtered.length === _allRecordsData.length
       ? `${total} record${total !== 1 ? 's' : ''}`
       : `${total} of ${_allRecordsData.length} record${_allRecordsData.length !== 1 ? 's' : ''}`;
+
   document.getElementById('recordsFooterInfo').textContent =
     filtered.length === _allRecordsData.length
       ? `Showing all ${total} record${total !== 1 ? 's' : ''}`
@@ -1497,14 +1617,13 @@ function downloadCSV(mode) {
   const cfg  = recordsConfig[type];
   if (!cfg) return;
 
-  const rows = mode === 'all' ? _allRecordsData : (_filteredRecordsData.length ? _filteredRecordsData : _allRecordsData);
+  const rows = mode === 'all'
+    ? _allRecordsData
+    : (_filteredRecordsData.length ? _filteredRecordsData : _allRecordsData);
 
-  // Build headers — skip _index, _total, expenseCell (flatten separately)
   const cols = cfg.columns.filter(c => c.key !== '_index' && !c.totalCalc);
 
   const csvRows = [];
-
-  // Header row
   csvRows.push(cols.map(c => csvEsc(c.label)).join(','));
 
   rows.forEach(row => {
@@ -1527,11 +1646,6 @@ function downloadCSV(mode) {
     });
     csvRows.push(cells.join(','));
   });
-
-  // Add total row for reimbursement
-  if (type === 'reimbursement') {
-    // already in expense cell
-  }
 
   const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
@@ -1558,15 +1672,15 @@ function renderRecordsTable(rows, type) {
     return;
   }
 
-  // Columns that should be compact/nowrap vs ones that can wrap
-  const wrapKeys = new Set(['title','venue','organizer','purpose','competency',
+  const wrapKeys = new Set([
+    'title','venue','organizer','purpose','competency',
     'college_office','paper_title','journal_title','co_authors','places_visited',
-    'employee_names','positions','reason','remarks','chargeable_against']);
+    'employee_names','positions','reason','remarks','chargeable_against'
+  ]);
 
   let html = '<div>';
   html += '<table style="width:100%;border-collapse:collapse;font-size:.78rem;">';
 
-  // THEAD
   html += '<thead><tr>';
   cfg.columns.forEach(col => {
     html += `<th style="padding:.5rem .75rem;background:#f3f4f6;border-bottom:2px solid #e5e7eb;
@@ -1576,7 +1690,6 @@ function renderRecordsTable(rows, type) {
   });
   html += '</tr></thead>';
 
-  // TBODY
   html += '<tbody>';
   rows.forEach((row, idx) => {
     const bg = idx % 2 === 0 ? '#fff' : '#fafafa';
@@ -1672,30 +1785,35 @@ function renderRecordsTable(rows, type) {
 }
 
 function esc(str) {
-  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-/* ── Quick add toggle ── */
-function toggleQA(id) {
-  const el = document.getElementById(id);
-  el?.classList.toggle('open');
+  return String(str ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
 }
 
 /* ── MOV modal ── */
 let _movFileUrl = null, _movFileName = null;
+
 function openMovModal(uploadUrl, fileUrl, fileName, recordId) {
   document.getElementById('movUploadForm').action = uploadUrl;
   document.getElementById('mov_record_id').value  = recordId;
+
   const ex = document.getElementById('movExisting');
   const nm = document.getElementById('movName');
   const pb = document.getElementById('movPreviewBtn');
+
   if (fileUrl) {
-    ex.style.display = 'block'; nm.textContent = fileName || '';
+    ex.style.display = 'block';
+    nm.textContent = fileName || '';
     _movFileUrl = fileUrl; _movFileName = fileName || '';
     pb.onclick = () => openMovPreview(_movFileUrl, _movFileName);
   } else {
-    ex.style.display = 'none'; _movFileUrl = null; _movFileName = null; pb.onclick = null;
+    ex.style.display = 'none';
+    _movFileUrl = null; _movFileName = null;
+    pb.onclick = null;
   }
+
   openModal('movModal');
 }
 
@@ -1732,8 +1850,11 @@ function openMovPreview(url, fileName) {
     document.getElementById('movUnsupportedName').textContent = name;
     document.getElementById('movUnsupportedDownload').href = url;
   }
-  openModal('movPreviewModal');
+
+  document.getElementById('movPreviewModal')?.classList.add('active');
+  document.body.style.overflow = 'hidden';
 }
+
 function closeMovPreview() {
   const m = document.getElementById('movPreviewModal');
   m?.classList.remove('active');
@@ -1744,18 +1865,70 @@ function closeMovPreview() {
   document.getElementById('movUnsupported').style.display = 'none';
   document.body.style.overflow = '';
 }
-document.getElementById('movPreviewModal')?.addEventListener('click', e => { if (e.target.id === 'movPreviewModal') closeMovPreview(); });
 
 /* ── Global Escape ── */
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Escape') return;
-  ['viewModal','createModal','editModal','genericFormModal','genericViewModal','movModal'].forEach(closeModal);
-  closePrintModal(); closeMovPreview(); closeRecordsModal();
+  closeModal('viewModal');
+  closeModal('editModal');
+  closeModal('genericViewModal');
+
+  // form modals close ONLY via X button, but ESC is fine to close them:
+  closeModal('createModal');
+  closeModal('genericFormModal');
+  closeModal('movModal');
+
+  closePrintModal();
+  closeMovPreview();
+  closeRecordsModal();
 });
 
 /* ── Loading helper ── */
 function loadingHtml() {
   return '<p style="padding:2rem;color:var(--gray-500);text-align:center;">Loading...</p>';
 }
+
+/* ✅ On page load:
+   - restore tab from URL
+   - reopen MOV modal if old mov_record_id exists
+   - if validation errors exist, keep modal open (heuristic)
+*/
+document.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(location.search);
+  switchTab(params.get('tab') || 'participation');
+
+  // init flatpickr on quick-add date fields if flatpickr is on the page
+  initDatePickers(document);
+
+  // Re-open MOV modal if validation failed
+  const failedId = @json(old('mov_record_id'));
+  if (failedId) {
+    document.querySelector(`[data-mov-btn="${failedId}"]`)?.click();
+  }
+
+  // Keep a form modal open if validation failed (no controller changes required)
+  const hasErrors = {{ $errors->any() ? 'true' : 'false' }};
+  const oldInput = @json(old());
+
+  if (hasErrors) {
+    // If participation form likely
+    const looksLikeParticipation =
+      oldInput.participant_name || oldInput.title || oldInput.intervention_date || oldInput.level;
+
+    // If travel form likely
+    const looksLikeTravel =
+      oldInput.travel_dates || oldInput.places_visited || oldInput.chargeable_against || oldInput.employee_names || oldInput.emp_names;
+
+    if (looksLikeParticipation) {
+      switchTab('participation');
+      openCreateModal();
+    } else if (looksLikeTravel) {
+      switchTab('travel');
+      // Re-open Travel form in generic modal
+      openFormModal('travel', '✈️ New Authority to Travel');
+    }
+    // For other forms: you can add more heuristics later (attendance/publication/reimbursement)
+  }
+});
 </script>
 @endpush

@@ -10,6 +10,7 @@ use App\Models\LdTravel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class LdRequestController extends Controller
@@ -118,6 +119,7 @@ class LdRequestController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'tracking_number'      => 'nullable|string|max:100',
             'participant_name'    => 'required|string|max:255',
             'campus'              => 'required|string|max:255',
             'employment_status'   => 'required|string|max:100',
@@ -155,7 +157,12 @@ class LdRequestController extends Controller
             'sig_approved_position'     => 'nullable|string|max:255',
         ]);
 
-        LdRequest::create($validated);
+        $ld = LdRequest::create($validated);
+
+        // Ensure tracking number exists (create if empty)
+        if (empty($ld->tracking_number)) {
+            $ld->forceFill(['tracking_number' => 'LD-'.date('Ymd').'-'.Str::upper(Str::random(6))])->save();
+        }
 
         return redirect()->route('ld.index')->with('success', 'Request submitted successfully.');
     }
@@ -193,50 +200,60 @@ class LdRequestController extends Controller
         ]);
     }
 
-    public function update(Request $request, LdRequest $ld)
-    {
-        $validated = $request->validate([
-            'participant_name'    => 'required|string|max:255',
-            'campus'              => 'required|string|max:255',
-            'employment_status'   => 'required|string|max:100',
-            'college_office'      => 'required|string|max:255',
-            'position'            => 'required|string|max:255',
-            'title'               => 'required|string|max:500',
-            'types'               => 'required|array|min:1',
-            'types.*'             => 'string',
-            'type_others'         => 'nullable|string|max:255',
-            'level'               => 'required|string',
-            'natures'             => 'required|array|min:1',
-            'natures.*'           => 'string',
-            'nature_others'       => 'nullable|string|max:255',
-            'competency'          => 'nullable|string',
-            'intervention_date'   => 'required|string|max:100',
-            'hours'               => 'nullable|integer|min:1',
-            'venue'               => 'required|string|max:255',
-            'organizer'           => 'required|string|max:255',
-            'endorsed_by_org'     => 'required|boolean',
-            'related_to_field'    => 'required|boolean',
-            'has_pending_ldap'    => 'required|boolean',
-            'has_cash_advance'    => 'required|boolean',
-            'financial_requested' => 'required|boolean',
-            'amount_requested'    => 'nullable|numeric|min:0',
-            'coverage'                  => 'nullable|array',
-            'coverage.*'                => 'string',
-            'coverage_others'           => 'nullable|string|max:255',
-            'sig_requested_name'        => 'nullable|string|max:255',
-            'sig_requested_position'    => 'nullable|string|max:255',
-            'sig_reviewed_name'         => 'nullable|string|max:255',
-            'sig_reviewed_position'     => 'nullable|string|max:255',
-            'sig_recommending_name'     => 'nullable|string|max:255',
-            'sig_recommending_position' => 'nullable|string|max:255',
-            'sig_approved_name'         => 'nullable|string|max:255',
-            'sig_approved_position'     => 'nullable|string|max:255',
-        ]);
+ public function update(Request $request, LdRequest $ld)
+{
+    $validated = $request->validate([
+            'tracking_number'      => 'nullable|string|max:100',
+        'participant_name'    => 'required|string|max:255',
+        'campus'              => 'required|string|max:255',
+        'employment_status'   => 'required|string|max:100',
+        'college_office'      => 'required|string|max:255',
+        'position'            => 'required|string|max:255',
+        'title'               => 'required|string|max:500',
+        'types'               => 'required|array|min:1',
+        'types.*'             => 'string',
+        'type_others'         => 'nullable|string|max:255',
+        'level'               => 'required|string',
+        'natures'             => 'required|array|min:1',
+        'natures.*'           => 'string',
+        'nature_others'       => 'nullable|string|max:255',
+        'competency'          => 'nullable|string',
+        'intervention_date'   => 'required|string|max:255',
+        'hours'               => 'nullable|integer|min:1',
+        'venue'               => 'required|string|max:255',
+        'organizer'           => 'required|string|max:255',
+        'endorsed_by_org'     => 'required|boolean',
+        'related_to_field'    => 'required|boolean',
+        'has_pending_ldap'    => 'required|boolean',
+        'has_cash_advance'    => 'required|boolean',
+        'financial_requested' => 'required|boolean',
+        'amount_requested'    => 'nullable|numeric|min:0',
+        'coverage'                  => 'nullable|array',
+        'coverage.*'                => 'string',
+        'coverage_others'           => 'nullable|string|max:255',
+        'sig_requested_name'        => 'nullable|string|max:255',
+        'sig_requested_position'    => 'nullable|string|max:255',
+        'sig_reviewed_name'         => 'nullable|string|max:255',
+        'sig_reviewed_position'     => 'nullable|string|max:255',
+        'sig_recommending_name'     => 'nullable|string|max:255',
+        'sig_recommending_position' => 'nullable|string|max:255',
+        'sig_approved_name'         => 'nullable|string|max:255',
+        'sig_approved_position'     => 'nullable|string|max:255',
+    ]);
 
-        $ld->update($validated);
+    // Fill first (don't save yet)
+    $ld->fill($validated);
 
-        return redirect()->route('ld.show', $ld)->with('success', 'Request updated successfully.');
+    // If user submitted but nothing changed
+    if (!$ld->isDirty()) {
+        return back()->with('success', 'No changes detected.');
     }
+
+    // Save only when changed
+    $ld->save();
+
+    return back()->with('success', 'Request updated successfully.');
+}
 
     public function destroy(LdRequest $ld)
     {

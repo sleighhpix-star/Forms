@@ -146,6 +146,8 @@
 
         <div class="field-grid cols-2">
 
+
+
           <div class="field span-2 {{ $errors->has('participant_name') ? 'has-error' : '' }}">
             <label for="participant_name">Name of Participant <span class="req">*</span></label>
             <input type="text" id="participant_name" name="participant_name"
@@ -280,14 +282,14 @@
             <textarea id="competency" name="competency"
                       placeholder="Describe the competencies to be developed or enhanced...">{{ old('competency') }}</textarea>
           </div>
-
+  
           {{-- Date / Hours / Venue / Organizer --}}
           <div class="field-grid cols-2">
             <div class="field {{ $errors->has('intervention_date') ? 'has-error' : '' }}">
               <label for="intervention_date">Date <span class="req">*</span></label>
-              <input type="text" id="intervention_date" name="intervention_date"
-                     value="{{ old('intervention_date') }}"
-                     placeholder="e.g. March 5–7, 2026">
+              <input type="text" id="intervention_date" name="intervention_date" class="date-picker-range"
+                value="{{ old('intervention_date') }}"
+                placeholder="e.g. March 5–7, 2026">
               @error('intervention_date') <span class="field-error">{{ $message }}</span> @enderror
             </div>
 
@@ -398,6 +400,15 @@
           </div>
 
         </div>
+      </div>
+
+      {{-- Tracking number (optional) --}}
+      <div class="field span-2 {{ $errors->has('tracking_number') ? 'has-error' : '' }}">
+        <label for="tracking_number">Tracking Number <span class="hint">(optional)</span></label>
+        <input type="text" id="tracking_number" name="tracking_number"
+               value="{{ old('tracking_number', $record?->tracking_number ?? '') }}"
+               placeholder="Leave empty to auto-generate">
+        @error('tracking_number') <span class="field-error">{{ $message }}</span> @enderror
       </div>
 
       {{-- ══ SIGNATORIES ══ --}}

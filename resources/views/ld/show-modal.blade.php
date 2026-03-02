@@ -181,9 +181,9 @@
 
   {{-- Modal Actions --}}
   <div class="form-actions">
-    <button type="button" onclick="closeViewModal()" class="btn btn-ghost">Close</button>
-    <button type="button" onclick="openViewEditModal()" class="btn btn-outline">✏️ Edit</button>
-    <button type="button" onclick="openViewPrintModal('{{ route('ld.print', $record) }}')" class="btn btn-gold">🖨 Print</button>
+     <button type="button" onclick="closeModal('viewModal')" class="btn btn-ghost">Close</button>
+     <button type="button" onclick="openEditModal({{ $record->id }})" class="btn btn-outline">✏️ Edit</button>
+     <button type="button" onclick="openPrintModal('{{ route('ld.print', $record) }}')" class="btn btn-gold">🖨 Print</button>
   </div>
 
 </div>

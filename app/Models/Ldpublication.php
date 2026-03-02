@@ -13,6 +13,7 @@ class LdPublication extends Model
     protected $table = 'ld_publications';
 
     protected $fillable = [
+        'tracking_number',
         'faculty_name', 'campus', 'employment_status', 'college_office', 'position',
         'paper_title', 'co_authors',
         'journal_title', 'vol_issue', 'issn_isbn', 'publisher', 'editors',

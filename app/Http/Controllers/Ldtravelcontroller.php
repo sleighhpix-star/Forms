@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\LdTravel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class LdTravelController extends Controller
 {
     public function store(Request $request)
     {
         $validated = $this->validateForm($request);
+        if (empty($validated['tracking_number'])) {
+            $validated['tracking_number'] = 'LTv-'.date('Ymd').'-'.Str::upper(Str::random(6));
+        }
         LdTravel::create($validated);
         return redirect()->route('ld.index', ['tab' => 'travel'])
             ->with('success', 'Authority to travel submitted successfully.');
@@ -19,6 +23,9 @@ class LdTravelController extends Controller
     public function update(Request $request, LdTravel $travel)
     {
         $validated = $this->validateForm($request);
+        if (empty($validated['tracking_number']) && empty($travel->tracking_number)) {
+            $validated['tracking_number'] = 'LTv-'.date('Ymd').'-'.Str::upper(Str::random(6));
+        }
         $travel->update($validated);
         return redirect()->route('ld.index', ['tab' => 'travel'])
             ->with('success', 'Authority to travel updated successfully.');
@@ -96,6 +103,7 @@ class LdTravelController extends Controller
     private function validateForm(Request $request): array
     {
         return $request->validate([
+            'tracking_number'           => 'nullable|string|max:100',
             'employee_names'             => 'required|string',
             'positions'                  => 'nullable|string',
             'travel_dates'               => 'required|string|max:100',

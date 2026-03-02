@@ -34,7 +34,7 @@
 .sig-reset-btn:hover { color:var(--maroon); }
 </style>
 
-<div class="page" style="max-width:880px">
+<div class="page" style="max-width:100%;">
   <form action="{{ $action }}" method="POST" id="attendance-form">
     @csrf
     @if($isEdit) @method('PUT') @endif
@@ -45,6 +45,14 @@
       <div class="card-section">
         <div class="section-label">Attendee Information</div>
         <div class="field-grid cols-2">
+
+          <div class="field span-2 {{ $errors->has('tracking_number') ? 'has-error' : '' }}">
+            <label for="tracking_number">Tracking Number <span class="hint">(optional)</span></label>
+            <input type="text" id="tracking_number" name="tracking_number"
+                   value="{{ old('tracking_number', $record?->tracking_number) }}"
+                   placeholder="Leave empty to auto-generate">
+            @error('tracking_number') <span class="field-error">{{ $message }}</span> @enderror
+          </div>
 
           <div class="field span-2">
             <label>Name of Attendee <span class="req">*</span></label>

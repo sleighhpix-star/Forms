@@ -13,6 +13,7 @@ class LdTravel extends Model
     protected $table = 'ld_travels';
 
     protected $fillable = [
+        'tracking_number',
         'employee_names', 'positions',
         'travel_dates', 'travel_time',
         'places_visited', 'purpose',

@@ -59,6 +59,8 @@
       <div class="card-section">
         <div class="section-label">Request Details</div>
         <div class="field-grid cols-2">
+        
+
 
           <div class="field span-2">
             <label>Department / Office <span class="req">*</span></label>
@@ -95,7 +97,7 @@
 
           <div class="field">
             <label>Date of Activity</label>
-            <input type="text" name="activity_date"
+                 <input type="text" name="activity_date" class="date-picker"
                    value="{{ old('activity_date', $record?->activity_date) }}" placeholder="e.g. March 5, 2026">
           </div>
 
@@ -151,6 +153,15 @@
         </div>
 
         <button type="button" class="btn-add-row" onclick="addExpenseRow()">＋ Add Row</button>
+      </div>
+
+      {{-- Tracking number (optional) --}}
+      <div class="field span-2 {{ $errors->has('tracking_number') ? 'has-error' : '' }}">
+        <label for="tracking_number">Tracking Number <span class="hint">(optional)</span></label>
+        <input type="text" id="tracking_number" name="tracking_number"
+               value="{{ old('tracking_number', $record?->tracking_number) }}"
+               placeholder="Leave empty to auto-generate">
+        @error('tracking_number') <span class="field-error">{{ $message }}</span> @enderror
       </div>
 
       {{-- ══ SIGNATORIES ══ --}}

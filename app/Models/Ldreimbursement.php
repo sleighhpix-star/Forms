@@ -13,6 +13,7 @@ class LdReimbursement extends Model
     protected $table = 'ld_reimbursements';
 
     protected $fillable = [
+        'tracking_number',
         'department',
         'activity_types', 'activity_type_others',
         'venue', 'activity_date',

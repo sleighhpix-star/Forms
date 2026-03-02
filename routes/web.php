@@ -28,6 +28,7 @@ Route::prefix('ld-requests')->name('ld.')->group(function () {
     Route::get('/',               [LdRequestController::class, 'index'])->name('index');
     Route::get('/create',         [LdRequestController::class, 'create'])->name('create');
     Route::post('/',              [LdRequestController::class, 'store'])->name('store');
+    Route::get('/{ld}',   [LdRequestController::class, 'show'])->name('show');
     Route::get('/{ld}/show-modal',[LdRequestController::class, 'showModal'])->name('showModal');
     Route::get('/{ld}/edit-modal',[LdRequestController::class, 'editModal'])->name('editModal');
     Route::get('/{ld}/edit',      [LdRequestController::class, 'edit'])->name('edit');

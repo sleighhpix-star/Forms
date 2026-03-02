@@ -85,9 +85,12 @@
         <div class="section-label">Travel Details</div>
         <div class="field-grid cols-2">
 
+
+
+
           <div class="field">
             <label>Date/s of Travel <span class="req">*</span></label>
-            <input type="text" name="travel_dates"
+                 <input type="text" name="travel_dates" class="date-picker-range"
                    value="{{ old('travel_dates', $record?->travel_dates) }}"
                    placeholder="e.g. March 13–15, 2026" required>
           </div>
@@ -119,6 +122,15 @@
           </div>
 
         </div>
+      </div>
+
+      {{-- Tracking number (optional) --}}
+      <div class="field span-2 {{ $errors->has('tracking_number') ? 'has-error' : '' }}">
+        <label for="tracking_number">Tracking Number <span class="hint">(optional)</span></label>
+        <input type="text" id="tracking_number" name="tracking_number"
+               value="{{ old('tracking_number', $record?->tracking_number) }}"
+               placeholder="Leave empty to auto-generate">
+        @error('tracking_number') <span class="field-error">{{ $message }}</span> @enderror
       </div>
 
       {{-- ══ SIGNATORIES ══ --}}

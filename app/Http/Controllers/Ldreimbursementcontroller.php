@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LdReimbursement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class LdReimbursementController extends Controller
 {
@@ -12,6 +13,9 @@ class LdReimbursementController extends Controller
     {
         $validated = $this->validateForm($request);
         $validated['expense_items'] = $this->buildExpenseItems($request);
+        if (empty($validated['tracking_number'])) {
+            $validated['tracking_number'] = 'LR-'.date('Ymd').'-'.Str::upper(Str::random(6));
+        }
         LdReimbursement::create($validated);
         return redirect()->route('ld.index', ['tab' => 'reimbursement'])
             ->with('success', 'Reimbursement request submitted successfully.');
@@ -21,6 +25,9 @@ class LdReimbursementController extends Controller
     {
         $validated = $this->validateForm($request);
         $validated['expense_items'] = $this->buildExpenseItems($request);
+        if (empty($validated['tracking_number']) && empty($reimbursement->tracking_number)) {
+            $validated['tracking_number'] = 'LR-'.date('Ymd').'-'.Str::upper(Str::random(6));
+        }
         $reimbursement->update($validated);
         return redirect()->route('ld.index', ['tab' => 'reimbursement'])
             ->with('success', 'Reimbursement request updated successfully.');
@@ -98,6 +105,7 @@ class LdReimbursementController extends Controller
     private function validateForm(Request $request): array
     {
         return $request->validate([
+            'tracking_number'           => 'nullable|string|max:100',
             'department'                 => 'required|string|max:255',
             'activity_types'             => 'required|array|min:1',
             'activity_types.*'           => 'string',

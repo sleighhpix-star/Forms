@@ -307,6 +307,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--gr
   .card { box-shadow:none; border-radius:0; }
 }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 @stack('styles')
 </head>
 <body>
@@ -333,6 +334,20 @@ body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--gr
   @yield('content')
 </main>
 
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.flatpickr) {
+    // single date
+    flatpickr('.date-picker', { dateFormat: 'F j, Y', allowInput: true });
+    // multiple dates
+    flatpickr('.date-picker-multi', { mode: 'multiple', dateFormat: 'F j, Y', allowInput: true });
+    // range
+    flatpickr('.date-picker-range', { mode: 'range', dateFormat: 'F j, Y', allowInput: true });
+  }
+});
+</script>
 @stack('scripts')
 </body>
 </html>

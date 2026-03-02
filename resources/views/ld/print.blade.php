@@ -18,7 +18,7 @@ body { font-family: "Times New Roman", Times, serif; font-size: 11pt; color: #00
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size: 10pt;
   font-family: "Times New Roman", Times, serif; line-height: 1.2; }
-.s   { background: #d3d3d3; }
+.s   { background: #edeaea; }
 .smallText{ font-size: 10pt; line-height: 1.15; }
 .foot{ border: none; padding: 0; margin: 0; font-size: 9pt; font-style: italic; line-height: 1.25; }
 .noteItem{ margin-left: 2.0em; text-indent: -1.0em; margin-top: 2pt; }
@@ -47,6 +47,7 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
   .noteItem { margin-left: 2.0em !important; text-indent: -1.0em !important; }
   .ccLine, .trackLineWrap { font-size: 8pt !important; }
   .trackLineWrap { margin-top: 60pt !important; }
+  td.moneyVal { font-size: 10pt !important; }
   .trackLine { width: 130px !important; border-bottom: 1px solid #000 !important; }
 }
 </style>
@@ -289,16 +290,24 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
 
   {{-- R17 Amount --}}
   <tr style="height:0.66cm">
-    <td colspan="11" class="s">If yes, how much is the <span class="ul">total amount</span> being requested?</td>
-    <td colspan="2" class="c" style="border-right:none;">Php</td>
-    <td colspan="3" style="border-left:none;">
-      @if(($record->financial_requested ?? false) && ($record->amount_requested ?? null) !== null && $record->amount_requested !== '')
-        {{ number_format((float) $record->amount_requested, 2) }}
-      @else
-        _____________.00
-      @endif
-    </td>
-  </tr>
+  <td colspan="11" class="s">
+    If yes, how much is the <span class="ul">total amount</span> being requested?
+  </td>
+
+  {{-- make Php narrower --}}
+  <td colspan="1" class="c" style="border-right:none; white-space:nowrap;">Php</td>
+
+  {{-- make value wider + prevent overlap --}}
+  <td colspan="4" class="moneyVal"
+    style="border-left:none;text-align:center;white-space:nowrap;
+           padding-right:8pt;font-variant-numeric:tabular-nums;">
+    @if(($record->financial_requested ?? false) && ($record->amount_requested ?? null) !== null && $record->amount_requested !== '')
+      {{ number_format((float) $record->amount_requested, 2) }}
+    @else
+      _____________.00
+    @endif
+  </td>
+</tr>
 
   {{-- R18-R20 Coverage --}}
   <tr style="height:0.40cm">

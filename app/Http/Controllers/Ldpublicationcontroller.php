@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\LdPublication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class LdPublicationController extends Controller
 {
     public function store(Request $request)
     {
         $validated = $this->validateForm($request);
+        if (empty($validated['tracking_number'])) {
+            $validated['tracking_number'] = 'LP-'.date('Ymd').'-'.Str::upper(Str::random(6));
+        }
         LdPublication::create($validated);
         return redirect()->route('ld.index', ['tab' => 'publication'])
             ->with('success', 'Publication incentive request submitted successfully.');
@@ -19,6 +23,9 @@ class LdPublicationController extends Controller
     public function update(Request $request, LdPublication $publication)
     {
         $validated = $this->validateForm($request);
+        if (empty($validated['tracking_number']) && empty($publication->tracking_number)) {
+            $validated['tracking_number'] = 'LP-'.date('Ymd').'-'.Str::upper(Str::random(6));
+        }
         $publication->update($validated);
         return redirect()->route('ld.index', ['tab' => 'publication'])
             ->with('success', 'Publication incentive request updated successfully.');
@@ -96,6 +103,7 @@ class LdPublicationController extends Controller
     private function validateForm(Request $request): array
     {
         return $request->validate([
+            'tracking_number'           => 'nullable|string|max:100',
             'faculty_name'               => 'required|string|max:255',
             'campus'                     => 'required|string|max:255',
             'employment_status'          => 'required|string|max:100',

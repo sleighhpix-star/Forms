@@ -13,6 +13,7 @@ class LdRequest extends Model
     protected $table = 'ld_requests';
 
     protected $fillable = [
+        'tracking_number',
         'participant_name',
         'campus',
         'employment_status',
