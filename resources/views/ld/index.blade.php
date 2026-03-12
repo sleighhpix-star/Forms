@@ -5,242 +5,481 @@
 
 @push('styles')
 <style>
-/* ── Base modal overlay ── */
+/* ═══════════════════════════════════════════════════════════
+   INDEX PAGE — REDESIGNED STYLES
+   All class names identical to original. Visual upgrade only.
+═══════════════════════════════════════════════════════════ */
+
+/* ── Modal overlay ── */
 .modal-overlay {
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.55); z-index:9999;
-  align-items:flex-start; justify-content:center;
-  overflow-y:auto; padding:2rem 1rem;
+  display: none; position: fixed; inset: 0;
+  background: rgba(15, 10, 9, .55);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  align-items: flex-start; justify-content: center;
+  overflow-y: auto; padding: 2rem 1rem;
 }
-.modal-overlay.active { display:flex; }
+.modal-overlay.active { display: flex; }
 .modal-box {
-  background:#fff; border-radius:14px;
-  width:100%; max-width:860px;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-  margin:auto;
+  background: var(--surface);
+  border-radius: 18px;
+  width: 100%; max-width: 900px;
+  box-shadow: 0 24px 80px rgba(92,14,36,.18), 0 4px 16px rgba(0,0,0,.08);
+  margin: auto;
+  border: 1px solid rgba(124,21,51,.1);
+  animation: modalIn .22s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-20px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 .modal-header {
-  background:var(--maroon); padding:.75rem 1.25rem;
-  display:flex; align-items:center; justify-content:space-between;
-  border-radius:14px 14px 0 0;
+  background: linear-gradient(135deg, var(--crimson-deep) 0%, var(--crimson) 100%);
+  padding: .85rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-radius: 18px 18px 0 0;
+  position: relative;
 }
-.modal-header span { color:#fff; font-size:.9rem; font-weight:600; }
+.modal-header::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold-light) 40%, var(--gold) 50%, var(--gold-light) 60%, transparent 100%);
+  opacity: .6;
+}
+.modal-header span { color: #fff; font-size: .9rem; font-weight: 700; letter-spacing: .01em; }
 .modal-close {
-  background:rgba(255,255,255,.2); border:none; color:#fff;
-  border-radius:6px; padding:.3rem .75rem; cursor:pointer;
-  font-size:.85rem; font-weight:600;
+  background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.18);
+  color: #fff; border-radius: 8px; padding: .28rem .75rem;
+  cursor: pointer; font-size: .8rem; font-weight: 700;
+  transition: background .15s;
 }
-.modal-close:hover { background:rgba(255,255,255,.35); }
-.modal-body { min-height:180px; display:flex; align-items:center; justify-content:center; }
+.modal-close:hover { background: rgba(255,255,255,.26); }
+.modal-body { min-height: 200px; display: flex; align-items: center; justify-content: center; }
 
-/* ── Print / iframe modal ── */
+/* ── Print modal ── */
 .print-modal-overlay {
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.55); z-index:10000;
-  align-items:center; justify-content:center;
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,10,9,.6); backdrop-filter: blur(6px);
+  z-index: 10000; align-items: center; justify-content: center;
 }
-.print-modal-overlay.active { display:flex; }
+.print-modal-overlay.active { display: flex; }
 .print-modal {
-  background:#fff; border-radius:14px;
-  width:92vw; max-width:820px; height:90vh;
-  display:flex; flex-direction:column; overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  background: var(--surface); border-radius: 18px;
+  width: 92vw; max-width: 820px; height: 90vh;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 24px 80px rgba(92,14,36,.18);
+  border: 1px solid rgba(124,21,51,.1);
+  animation: modalIn .22s cubic-bezier(.34,1.2,.64,1);
 }
 .print-modal-header {
-  background:var(--maroon); padding:.75rem 1.25rem;
-  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+  background: linear-gradient(135deg, var(--crimson-deep), var(--crimson));
+  padding: .85rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  position: relative;
 }
-.print-modal-header span { color:#fff; font-size:.9rem; font-weight:600; }
+.print-modal-header::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--gold-light), var(--gold), var(--gold-light), transparent);
+  opacity: .6;
+}
+.print-modal-header span { color: #fff; font-size: .9rem; font-weight: 700; }
 .print-modal-close {
-  background:rgba(255,255,255,.2); border:none; color:#fff;
-  border-radius:6px; padding:.3rem .75rem; cursor:pointer; font-size:.85rem; font-weight:600;
+  background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.18);
+  color: #fff; border-radius: 8px; padding: .28rem .75rem;
+  cursor: pointer; font-size: .8rem; font-weight: 700; transition: background .15s;
 }
-.print-modal-close:hover { background:rgba(255,255,255,.35); }
-.print-modal iframe { flex:1; border:none; width:100%; background:#f5f5f5; }
+.print-modal-close:hover { background: rgba(255,255,255,.26); }
+.print-modal iframe { flex: 1; border: none; width: 100%; background: #f5f5f5; }
 
-/* ── Tabs ── */
+/* ════════════════════════════════════════
+   TABS
+════════════════════════════════════════ */
 .form-tabs {
-  display:flex; overflow-x:auto; flex-wrap:nowrap; gap:.4rem;
-  padding:.75rem 1rem; background:#f3f4f6;
-  border-radius:12px 12px 0 0;
-  border:1px solid #e5e7eb; border-bottom:none;
+  display: flex; overflow-x: auto; flex-wrap: nowrap; gap: .25rem;
+  padding: .6rem .75rem;
+  background: var(--surface);
+  border-radius: 16px 16px 0 0;
+  border: 1px solid rgba(124,21,51,.08);
+  border-bottom: none;
+  box-shadow: 0 -1px 0 rgba(124,21,51,.04);
 }
 .form-tab {
-  padding:.48rem 1.1rem; border:none; cursor:pointer;
-  font-size:.8rem; font-weight:700; white-space:nowrap;
-  border-radius:8px; display:flex; align-items:center; gap:.4rem;
-  transition:all .18s; background:#e5e7eb; color:#4b5563;
-  box-shadow:0 1px 2px rgba(0,0,0,.06);
-  letter-spacing:.01em;
+  padding: .48rem 1.1rem;
+  border: none; cursor: pointer;
+  font-size: .78rem; font-weight: 600; white-space: nowrap;
+  border-radius: 10px;
+  display: flex; align-items: center; gap: .4rem;
+  transition: all .18s ease;
+  background: transparent; color: var(--ink-faint);
+  letter-spacing: .015em; font-family: var(--font-body);
 }
-.form-tab:hover { background:#d1d5db; color:#1f2937; }
+.form-tab:hover {
+  background: var(--ivory-warm);
+  color: var(--crimson);
+}
 .form-tab.active {
-  background:var(--maroon); color:#fff;
-  box-shadow:0 3px 10px rgba(139,26,43,.35);
+  background: linear-gradient(135deg, var(--crimson-mid), var(--crimson-deep));
+  color: white;
+  box-shadow: 0 2px 10px rgba(124,21,51,.28), inset 0 1px 0 rgba(255,255,255,.08);
 }
 .tab-badge {
-  background:rgba(0,0,0,.12); color:inherit;
-  border-radius:20px; padding:.05rem .45rem;
-  font-size:.68rem; font-weight:800;
+  background: rgba(0,0,0,.1); color: inherit;
+  border-radius: 20px; padding: .05rem .48rem;
+  font-size: .64rem; font-weight: 800;
 }
-.form-tab.active .tab-badge { background:rgba(255,255,255,.25); color:#fff; }
+.form-tab.active .tab-badge { background: rgba(255,255,255,.18); color: #fff; }
 
-.tab-panel { display:none; }
-.tab-panel.active { display:block; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 .tab-content {
-  background:white; border:1px solid #e5e7eb;
-  border-top:none; border-radius:0 0 12px 12px;
+  background: var(--surface);
+  border: 1px solid rgba(124,21,51,.08);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 4px 24px rgba(124,21,51,.07), 0 1px 4px rgba(0,0,0,.04);
+  overflow: hidden;
 }
 
-/* ── Tab action bar ── */
+/* ════════════════════════════════════════
+   STATS STRIP
+════════════════════════════════════════ */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: .5rem;
+  padding: .65rem .9rem;
+  background: linear-gradient(to bottom, var(--ivory-warm), var(--ivory));
+  border-bottom: 1px solid var(--ivory-deep);
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid rgba(124,21,51,.07);
+  border-radius: 12px;
+  padding: .6rem .8rem;
+  position: relative; overflow: hidden;
+  text-align: center;
+  display: flex; flex-direction: column; justify-content: center;
+  transition: box-shadow .18s, transform .18s;
+  box-shadow: 0 1px 4px rgba(26,18,16,.05);
+}
+.stat-card:hover {
+  box-shadow: 0 4px 14px rgba(124,21,51,.1);
+  transform: translateY(-1px);
+}
+.stat-card.stat-hero { background: var(--surface); }
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  opacity: 0;
+  transition: opacity .2s;
+}
+.stat-card:hover::before { opacity: 1; }
+.stat-card-icon {
+  position: absolute; right: 6px; top: 4px;
+  font-size: 1.75rem; opacity: .05; line-height: 1; pointer-events: none;
+}
+.stat-label {
+  font-size: .55rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-ghost);
+  margin-bottom: .18rem;
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 1.35rem; font-weight: 700;
+  color: var(--crimson); line-height: 1;
+}
+.stat-sub { font-size: .58rem; color: var(--ink-faint); margin-top: .12rem; }
+.stat-bar-wrap { margin-top: .3rem; }
+.stat-bar-track { height: 3px; background: var(--ivory-deep); border-radius: 4px; overflow: hidden; }
+.stat-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+.stat-bar-label { font-size: .56rem; color: var(--ink-faint); margin-top: .15rem; }
+.stat-mini-list { display: flex; flex-direction: column; gap: .22rem; margin-top: .05rem; align-items: center; }
+.stat-mini-row { display: flex; align-items: center; gap: .3rem; font-size: .63rem; justify-content: center; width: 100%; }
+.stat-mini-label { color: var(--ink-soft); }
+.stat-mini-bar { width: 38px; height: 3px; background: var(--ivory-deep); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+.stat-mini-bar-fill { height: 100%; background: linear-gradient(90deg, var(--crimson), var(--crimson-soft)); border-radius: 3px; }
+.stat-mini-val { color: var(--crimson); font-weight: 700; min-width: 14px; text-align: right; }
+
+/* ════════════════════════════════════════
+   ACTION BAR
+════════════════════════════════════════ */
 .tab-action-bar {
-  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem;
-  padding:.6rem 1.25rem;
-  background:#fafafa;
-  border-bottom:1px solid #f0f0f0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: .5rem;
+  padding: .65rem 1.1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--ivory-deep);
 }
-.tab-action-bar-left { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
-.tab-action-bar-right { display:flex; align-items:center; gap:.5rem; }
+.tab-action-bar-left { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; }
+.tab-action-bar-right { display: flex; align-items: center; gap: .45rem; }
 
-/* ── Filter bar ── */
+/* ════════════════════════════════════════
+   FILTER BAR
+════════════════════════════════════════ */
 .tab-filters {
-  padding:.65rem 1.25rem; border-bottom:1px solid #f3f4f6;
-  display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;
+  padding: .6rem 1.1rem;
+  border-bottom: 1px solid var(--ivory-deep);
+  display: flex; flex-wrap: wrap; gap: .45rem; align-items: center;
+  background: var(--ivory-warm);
 }
 .tab-filters input[type=text] {
-  padding:.42rem .85rem; border:1.5px solid var(--gray-200);
-  border-radius:8px; font-size:.82rem; width:220px; outline:none;
+  padding: .42rem .9rem;
+  border: 1.5px solid var(--ivory-deep);
+  border-radius: 9px;
+  font-size: .82rem; width: 230px; outline: none;
+  font-family: var(--font-body);
+  background: white;
+  transition: border-color .18s, box-shadow .18s;
+  color: var(--ink);
 }
-.tab-filters input[type=text]:focus { border-color:var(--maroon); }
+.tab-filters input[type=text]:focus {
+  border-color: var(--crimson);
+  box-shadow: 0 0 0 3px var(--crimson-glow);
+}
+.tab-filters input[type=text]::placeholder { color: var(--ink-ghost); }
 
-/* ── Actions column ── */
-.act-wrap { display:flex; gap:.3rem; flex-wrap:wrap; }
+/* ════════════════════════════════════════
+   DATA TABLE
+════════════════════════════════════════ */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll::-webkit-scrollbar { height: 6px; }
+.table-scroll::-webkit-scrollbar-track { background: var(--ivory); }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--ink-ghost); border-radius: 6px; }
 
-/* ── Database / Quick-add grid ── */
+/* Override global data-table for this page */
+.tab-content .data-table { width: 100%; border-collapse: collapse; background: white; }
+
+.tab-content .data-table thead tr {
+  background: linear-gradient(to right, #f9f4ef, #f4ede2);
+}
+.tab-content .data-table thead th {
+  padding: .65rem 1rem;
+  text-align: left;
+  font-size: .62rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-ghost);
+  border-bottom: 2px solid var(--ivory-deep);
+  white-space: nowrap;
+}
+.tab-content .data-table thead th:first-child { padding-left: 1.25rem; }
+.tab-content .data-table thead th:last-child  { padding-right: 1.25rem; }
+
+.tab-content .data-table tbody tr {
+  border-bottom: 1px solid #f5f0e8;
+  transition: background .12s;
+}
+.tab-content .data-table tbody tr:last-child { border-bottom: none; }
+.tab-content .data-table tbody tr:hover { background: #fdf8f2; }
+
+.tab-content .data-table tbody td {
+  padding: .7rem 1rem;
+  font-size: .84rem;
+  vertical-align: middle;
+  color: var(--ink-mid);
+}
+.tab-content .data-table tbody td:first-child { padding-left: 1.25rem; }
+.tab-content .data-table tbody td:last-child  { padding-right: 1.25rem; }
+.tab-content .data-table tbody td.muted { color: var(--ink-faint); font-size: .8rem; }
+.tab-content .data-table tbody td strong { color: var(--ink); font-weight: 600; }
+
+/* ── Action column ── */
+.act-col { white-space: nowrap; width: 1%; }
+.act-wrap { display: flex; gap: .25rem; flex-wrap: nowrap; align-items: center; }
+
+/* Icon-style action buttons */
+.act-wrap .btn { 
+  padding: .3rem .65rem;
+  font-size: .74rem;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  transition: all .15s;
+}
+.act-wrap .btn:hover { transform: translateY(-1px); }
+
+/* ── Compact badge ── */
+.badge-xs { padding: .1rem .45rem; font-size: .62rem; letter-spacing: .03em; }
+.type-col, .level-col { width: 1%; white-space: nowrap; }
+
+/* ════════════════════════════════════════
+   EMPTY STATE
+════════════════════════════════════════ */
+.empty-state {
+  text-align: center; padding: 4rem 2rem;
+  background: white; color: var(--ink-faint);
+}
+.empty-state .empty-icon {
+  font-size: 2.5rem; opacity: .2; margin-bottom: 1rem; display: block;
+}
+.empty-state p { font-size: .9rem; margin-bottom: .5rem; }
+
+/* ════════════════════════════════════════
+   QUICK-ADD INLINE ROWS
+════════════════════════════════════════ */
 .db-bar {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:.55rem 1.25rem; background:#fafafa;
-  border-top:1px solid #f3f4f6;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .5rem 1.1rem;
+  background: var(--ivory-warm);
+  border-top: 1px solid var(--ivory-deep);
 }
-.db-bar-label { font-size:.75rem; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.5pt; }
+.db-bar-label {
+  font-size: .68rem; font-weight: 700; color: var(--ink-ghost);
+  text-transform: uppercase; letter-spacing: .4pt;
+}
 .btn-db {
-  display:flex; align-items:center; gap:.35rem;
-  background:#fff; border:1.5px solid #d1d5db; color:#374151;
-  border-radius:7px; padding:.3rem .75rem; cursor:pointer;
-  font-size:.78rem; font-weight:600; transition:all .15s;
+  display: flex; align-items: center; gap: .3rem;
+  background: white;
+  border: 1.5px solid var(--ivory-deep);
+  color: var(--ink-soft);
+  border-radius: 8px; padding: .28rem .7rem;
+  cursor: pointer; font-size: .76rem; font-weight: 600;
+  transition: all .15s; font-family: var(--font-body);
 }
-.btn-db:hover { border-color:var(--maroon); color:var(--maroon); background:#fdf2f2; }
-.qa-grid { display:none; border-top:2px dashed #e5e7eb; background:#fefefe; }
-.qa-grid.open { display:block; }
-.qa-grid-inner { display:grid; gap:.5rem; padding:.85rem 1.25rem; align-items:end; }
-.qa-field label { display:block; font-size:.72rem; font-weight:700; color:#6b7280; margin-bottom:.2rem; text-transform:uppercase; letter-spacing:.3pt; }
+.btn-db:hover { border-color: var(--crimson); color: var(--crimson); background: rgba(124,21,51,.03); }
+
+.qa-grid { display: none; border-top: 2px dashed var(--ivory-deep); background: #fdfaf5; }
+.qa-grid.open { display: block; }
+.qa-grid-inner { display: grid; gap: .5rem; padding: .9rem 1.1rem; align-items: end; }
+.qa-field label {
+  display: block; font-size: .68rem; font-weight: 700; color: var(--ink-soft);
+  margin-bottom: .2rem; text-transform: uppercase; letter-spacing: .3pt;
+  font-family: var(--font-body);
+}
 .qa-field input, .qa-field select, .qa-field textarea {
-  width:100%; padding:.38rem .65rem; border:1.5px solid #d1d5db; border-radius:7px;
-  font-size:.8rem; outline:none; font-family:inherit; background:white; transition:border-color .15s;
+  width: 100%; padding: .38rem .65rem;
+  border: 1.5px solid var(--ivory-deep);
+  border-radius: 8px; font-size: .8rem; outline: none;
+  font-family: var(--font-body); background: white;
+  transition: border-color .15s, box-shadow .15s;
+  color: var(--ink);
 }
-.qa-field input:focus, .qa-field select:focus, .qa-field textarea:focus { border-color:var(--maroon); }
-.qa-field textarea { resize:vertical; min-height:2.4rem; }
+.qa-field input:focus, .qa-field select:focus, .qa-field textarea:focus {
+  border-color: var(--crimson);
+  box-shadow: 0 0 0 3px var(--crimson-glow);
+}
+.qa-field textarea { resize: vertical; min-height: 2.4rem; }
 .qa-actions {
-  display:flex; gap:.5rem; padding:.6rem 1.25rem .85rem;
-  border-top:1px solid #f3f4f6; background:#fefefe; border-radius:0 0 12px 12px;
+  display: flex; gap: .5rem;
+  padding: .55rem 1.1rem .8rem;
+  border-top: 1px solid var(--ivory-deep);
+  background: var(--ivory-warm);
+  border-radius: 0 0 16px 16px;
 }
 .btn-qa-save {
-  background:var(--maroon); color:#fff; border:none;
-  border-radius:7px; padding:.38rem .9rem; font-size:.8rem; font-weight:700; cursor:pointer;
+  background: linear-gradient(135deg, var(--crimson-mid), var(--crimson));
+  color: #fff; border: none;
+  border-radius: 8px; padding: .36rem .9rem;
+  font-size: .8rem; font-weight: 700; cursor: pointer;
+  font-family: var(--font-body);
+  transition: opacity .15s;
 }
-.btn-qa-save:hover { background:#6e1522; }
+.btn-qa-save:hover { opacity: .88; }
 .btn-qa-cancel {
-  background:none; color:#6b7280; border:1.5px solid #d1d5db;
-  border-radius:7px; padding:.38rem .9rem; font-size:.8rem; font-weight:600; cursor:pointer;
+  background: none; color: var(--ink-soft);
+  border: 1.5px solid var(--ivory-deep);
+  border-radius: 8px; padding: .36rem .9rem;
+  font-size: .8rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font-body); transition: all .15s;
 }
-.btn-qa-cancel:hover { background:#f3f4f6; }
+.btn-qa-cancel:hover { background: var(--ivory-deep); }
 
-/* ── Records popup modal ── */
+/* ════════════════════════════════════════
+   RECORDS POPUP MODAL
+════════════════════════════════════════ */
 .records-modal-overlay {
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,.55); z-index:10500;
-  align-items:flex-start; justify-content:center;
-  overflow-y:auto; padding:2rem 1rem;
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,10,9,.55); backdrop-filter: blur(6px);
+  z-index: 10500; align-items: flex-start; justify-content: center;
+  overflow-y: auto; padding: 2rem 1rem;
 }
-.records-modal-overlay.active { display:flex; }
+.records-modal-overlay.active { display: flex; }
 .records-modal-box {
-  background:#fff; border-radius:14px;
-  width:100%; max-width:92vw;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-  margin:auto; overflow:hidden;
+  background: var(--surface); border-radius: 18px;
+  width: 100%; max-width: 94vw;
+  box-shadow: 0 24px 80px rgba(92,14,36,.18), 0 4px 16px rgba(0,0,0,.08);
+  margin: auto; overflow: hidden;
+  border: 1px solid rgba(124,21,51,.1);
+  animation: modalIn .22s cubic-bezier(.34,1.2,.64,1);
 }
 .records-modal-header {
-  background:var(--maroon); padding:.75rem 1.25rem;
-  display:flex; align-items:center; justify-content:space-between;
+  background: linear-gradient(135deg, var(--crimson-deep), var(--crimson));
+  padding: .85rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative;
 }
-.records-modal-header span { color:#fff; font-size:.95rem; font-weight:700; }
+.records-modal-header::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--gold-light), var(--gold), var(--gold-light), transparent);
+  opacity: .6;
+}
+.records-modal-header span { color: #fff; font-size: .95rem; font-weight: 700; }
 .records-modal-search {
-  padding:.75rem 1.25rem; background:#f9fafb; border-bottom:1px solid #e5e7eb;
-  display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;
+  padding: .75rem 1.25rem;
+  background: var(--ivory-warm);
+  border-bottom: 1px solid var(--ivory-deep);
+  display: flex; gap: .45rem; align-items: center; flex-wrap: wrap;
 }
 .records-modal-search input {
-  padding:.4rem .85rem; border:1.5px solid #d1d5db; border-radius:8px;
-  font-size:.82rem; outline:none; width:260px;
+  padding: .4rem .9rem;
+  border: 1.5px solid var(--ivory-deep);
+  border-radius: 9px; font-size: .81rem; outline: none;
+  width: 240px; font-family: var(--font-body); background: white;
+  transition: border-color .18s, box-shadow .18s;
 }
-.records-modal-search input:focus { border-color:var(--maroon); }
+.records-modal-search input:focus {
+  border-color: var(--crimson);
+  box-shadow: 0 0 0 3px var(--crimson-glow);
+}
 .records-modal-body {
-  max-height:calc(90vh - 180px);
-  overflow-y:auto;
-  overflow-x:hidden;
-  display:flex;
-  flex-direction:column;
+  max-height: calc(90vh - 180px); overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
 }
 .records-scroll-wrap {
-  overflow-x:auto;
-  overflow-y:visible;
-  flex:1;
+  overflow-x: auto; overflow-y: visible; flex: 1;
 }
-.records-scroll-wrap::-webkit-scrollbar { height:10px; }
-.records-scroll-wrap::-webkit-scrollbar-track { background:#f1f1f1; }
-.records-scroll-wrap::-webkit-scrollbar-thumb { background:#c7c7c7; border-radius:6px; }
-.records-scroll-wrap::-webkit-scrollbar-thumb:hover { background:#a0a0a0; }
-.records-scroll-wrap { scrollbar-width:thin; scrollbar-color:#c7c7c7 #f1f1f1; }
+.records-scroll-wrap::-webkit-scrollbar { height: 6px; }
+.records-scroll-wrap::-webkit-scrollbar-track { background: var(--ivory); }
+.records-scroll-wrap::-webkit-scrollbar-thumb { background: var(--ink-ghost); border-radius: 6px; }
+.records-scroll-wrap::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
 .records-modal-footer {
-  padding:.6rem 1.25rem; background:#f9fafb;
-  border-top:1px solid #e5e7eb;
-  display:flex; align-items:center; justify-content:space-between;
-  font-size:.78rem; color:#6b7280;
+  padding: .6rem 1.25rem;
+  background: var(--ivory-warm);
+  border-top: 1px solid var(--ivory-deep);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .78rem; color: var(--ink-faint);
 }
-.rm-empty { padding:3rem; text-align:center; color:#9ca3af; }
-.rm-empty-icon { font-size:2.5rem; margin-bottom:.5rem; }
+.rm-empty { padding: 3rem; text-align: center; color: var(--ink-ghost); }
+.rm-empty-icon { font-size: 2.5rem; margin-bottom: .5rem; }
 
-/* ✅ Toast Success (upper-right) */
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
 .toast-success {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #16a34a;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.15);
-  z-index: 99999;
-  opacity: 0;
-  transform: translateY(-10px);
-  animation: toastIn 0.25s ease forwards;
+  position: fixed; top: 24px; right: 24px;
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white; padding: 13px 20px; border-radius: 12px;
+  font-size: .875rem; font-weight: 500;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 30px rgba(5,150,105,.28), 0 2px 8px rgba(0,0,0,.1);
+  z-index: 99999; opacity: 0;
+  transform: translateY(-12px) scale(.97);
+  animation: toastIn .28s cubic-bezier(.34,1.4,.64,1) forwards;
+  font-family: var(--font-body);
 }
-.toast-icon { font-weight: 800; }
-@keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
+.toast-icon { font-weight: 800; font-size: 1rem; }
+@keyframes toastIn { to { opacity: 1; transform: translateY(0) scale(1); } }
 
-/* ✅ Field validation */
-.field-error{
-  margin-top:6px;
-  font-size:.75rem;
-  color:#b91c1c;
-  font-weight:600;
-}
-.is-invalid{
-  border-color:#b91c1c !important;
-  box-shadow:0 0 0 3px rgba(185,28,28,.12);
+/* ════════════════════════════════════════
+   FIELD VALIDATION
+════════════════════════════════════════ */
+.field-error { margin-top: 4px; font-size: .72rem; color: #dc2626; font-weight: 600; }
+.is-invalid { border-color: #dc2626 !important; box-shadow: 0 0 0 3px rgba(220,38,38,.1); }
+
+/* ════════════════════════════════════════
+   PAGINATION WRAPPER
+════════════════════════════════════════ */
+.tab-content > div[style*="padding:1rem"] {
+  background: var(--ivory-warm);
+  border-top: 1px solid var(--ivory-deep);
 }
 </style>
 @endpush
@@ -257,13 +496,9 @@
   @endif
 
   {{-- Page header --}}
-  <div class="mb-3">
-    <h2 style="font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--maroon)">
-      Request Records
-    </h2>
-    <p class="text-muted text-sm mt-1">Manage all L&amp;D and administrative request forms</p>
-  </div>
-
+  @php
+    $totalAll = ($counts['participation']??0)+($counts['attendance']??0)+($counts['publication']??0)+($counts['reimbursement']??0)+($counts['travel']??0);
+  @endphp
   {{-- ═══ TABS ═══ --}}
   <div class="form-tabs">
     <button class="form-tab active" id="tab-participation" onclick="switchTab('participation')">
@@ -289,14 +524,54 @@
   <div class="tab-panel active" id="panel-participation">
     <div class="tab-content">
 
+      @php
+        $p_total   = $counts['participation'] ?? 0;
+        $p_month   = \App\Models\LdRequest::whereMonth('created_at',now()->month)->whereYear('created_at',now()->year)->count();
+        $p_fin     = \App\Models\LdRequest::where('financial_requested',true)->count();
+        $p_levels  = \App\Models\LdRequest::selectRaw('level, count(*) as cnt')->groupBy('level')->pluck('cnt','level')->toArray();
+      @endphp
+      <div class="stats-strip">
+        <div class="stat-card stat-hero">
+          <div class="stat-card-icon">📋</div>
+          <div class="stat-label">Total</div>
+          <div class="stat-value">{{ $p_total }}</div>
+          <div class="stat-sub">participation requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">📅</div>
+          <div class="stat-label">This Month</div>
+          <div class="stat-value">{{ $p_month }}</div>
+          <div class="stat-sub">new submissions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">💰</div>
+          <div class="stat-label">With Financial</div>
+          <div class="stat-value">{{ $p_fin }}</div>
+          <div class="stat-sub">requested funding</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">By Level</div>
+          <div class="stat-mini-list">
+            @foreach(['Local','Regional','National','International'] as $lv)
+              @php $lc = $p_levels[$lv] ?? 0; $lp = $p_total > 0 ? ($lc/$p_total)*100 : 0; @endphp
+              <div class="stat-mini-row">
+                <span class="stat-mini-label">{{ $lv }}</span>
+                <div class="stat-mini-bar"><div class="stat-mini-bar-fill" style="width:{{ $lp }}%;"></div></div>
+                <span class="stat-mini-val">{{ $lc }}</span>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" type="button" onclick="openCreateModal()" style="display:flex;align-items:center;gap:.35rem;">
-            ✏️ New Participation Request
+          <button class="btn btn-primary btn-sm" type="button" onclick="openCreateModal()">
+            ✏️ New Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('participation','📋 Participation Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('participation','📋 Participation Records')">
             📊 All Records
           </button>
         </div>
@@ -326,28 +601,35 @@
       </div>
 
       @if(isset($records) && $records->count())
-        <table class="data-table">
+        <div class="table-scroll"><table class="data-table" style="table-layout:fixed;width:100%;">
+          <colgroup>
+            <col style="width:36px">   {{-- # --}}
+            <col style="width:70px">   {{-- Tracking # --}}
+            <col style="width:70px">   {{-- Participant --}}
+            <col style="width:100px">  {{-- Campus --}}
+            <col style="width:70px">   {{-- Title (tooltip) --}}
+            <col style="width:90px">   {{-- Type --}}
+            <col style="width:70px">   {{-- Level --}}
+            <col style="width:90px">   {{-- Date --}}
+            <col style="width:70px">   {{-- Financial --}}
+            <col style="width:130px">  {{-- Actions --}}
+          </colgroup>
           <thead><tr>
-            <th>#</th><th>Participant</th><th>Campus</th>
-            <th>Title of Intervention</th><th>Type</th><th>Level</th>
+            <th>#</th><th>Tracking #</th><th>Participant</th><th>Campus</th>
+            <th>Title</th><th>Type</th><th>Level</th>
             <th>Date</th><th>Financial</th><th>Actions</th>
           </tr></thead>
           <tbody>
             @foreach($records as $i => $r)
             <tr>
               <td class="muted">{{ $records->firstItem() + $i }}</td>
-              <td>
-                <strong>{{ $r->participant_name }}</strong>
-                <div class="muted text-sm">{{ $r->position }}</div>
-              </td>
-              <td class="muted">{{ $r->campus }}</td>
-              <td style="max-width:200px">
-                <span title="{{ $r->title }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->title }}</span>
-                <div class="muted text-xs">{{ $r->college_office }}</div>
-              </td>
-              <td>@foreach(($r->types??[]) as $t)<span class="badge badge-maroon">{{ $t }}</span>@endforeach</td>
-              <td><span class="badge badge-gold">{{ $r->level }}</span></td>
-              <td class="muted">{{ $r->intervention_date }}</td>
+              <td class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem;" title="{{ $r->tracking_number ?? '' }}">{{ $r->tracking_number ?? '—' }}</td>
+              <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->participant_name }} — {{ $r->position }}">{{ $r->participant_name }}</td>
+              <td class="muted" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->campus }}">{{ $r->campus }}</td>
+              <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->title }} ({{ $r->college_office }})">{{ $r->title }}</td>
+              <td class="type-col">@foreach(($r->types??[]) as $t)<span class="badge badge-maroon badge-xs">{{ $t }}</span>@endforeach</td>
+              <td class="level-col"><span class="badge badge-gold badge-xs">{{ $r->level }}</span></td>
+              <td class="muted" style="white-space:nowrap;">{{ $r->intervention_date }}</td>
               <td>
                 @if($r->financial_requested)
                   <span class="badge badge-green">Yes</span>
@@ -355,27 +637,27 @@
                   <span class="text-muted text-sm">No</span>
                 @endif
               </td>
-              <td>
+              <td class="act-col">
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" type="button" onclick="openViewModal({{ $r->id }})">View</button>
-                  <button class="btn btn-ghost btn-sm" type="button" onclick="openEditModal({{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.print', $r->id) }}')">Print</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openViewModal({{ $r->id }})" title="View">👁</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openEditModal({{ $r->id }})" title="Edit">✏️</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.print', $r->id) }}')" title="Print">🖨</button>
                   <button class="btn btn-primary btn-sm" type="button" data-mov-btn="{{ $r->id }}"
-                          onclick="openMovModal('{{ route('ld.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
+                          onclick="openMovModal('{{ route('ld.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})" title="Upload MOV">📎{{ $r->mov_path ? '✓' : '' }}</button>
                 </div>
-                @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
             </tr>
             @endforeach
           </tbody>
         </table>
+        </div>
         @if($records->hasPages())
-          <div style="padding:1rem 1.25rem;border-top:1px solid var(--gray-100)">
+          <div style="padding:1rem 1.35rem;border-top:1px solid var(--ivory-deep)">
             {{ $records->appends(['tab'=>'participation'])->links('ld.partials.pagination') }}
           </div>
         @endif
       @else
-        <div class="empty-state"><div class="empty-icon">📋</div><p>No participation requests yet.</p></div>
+        <div class="empty-state"><div class="empty-icon">📋</div><p>No participation requests yet.</p><div style="margin-top:1rem;"><button class="btn btn-primary btn-sm" onclick="openCreateModal()">✏️ Create First Request</button></div></div>
       @endif
 
       <div class="qa-grid" id="qa-participation">
@@ -398,8 +680,6 @@
                 <option value="">—</option><option>Local</option><option>Regional</option><option>National</option><option>International</option>
               </select>
             </div>
-
-            {{-- ✅ FIXED: your HTML was broken here --}}
             <div class="qa-field"><label>Date</label><input type="text" name="intervention_date" class="date-picker-range"></div>
             <div class="qa-field"><label>Financial Requested</label>
               <select name="financial_requested">
@@ -424,14 +704,54 @@
   <div class="tab-panel" id="panel-attendance">
     <div class="tab-content">
 
+      @php
+        $a_total   = $counts['attendance'] ?? 0;
+        $a_month   = \App\Models\Ldattendance::whereMonth('created_at',now()->month)->whereYear('created_at',now()->year)->count();
+        $a_fin     = \App\Models\Ldattendance::where('financial_requested',true)->count();
+        $a_levels  = \App\Models\Ldattendance::selectRaw('level, count(*) as cnt')->groupBy('level')->pluck('cnt','level')->toArray();
+      @endphp
+      <div class="stats-strip">
+        <div class="stat-card stat-hero">
+          <div class="stat-card-icon">📅</div>
+          <div class="stat-label">Total</div>
+          <div class="stat-value">{{ $a_total }}</div>
+          <div class="stat-sub">attendance requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">🗓️</div>
+          <div class="stat-label">This Month</div>
+          <div class="stat-value">{{ $a_month }}</div>
+          <div class="stat-sub">new submissions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">💰</div>
+          <div class="stat-label">With Financial</div>
+          <div class="stat-value">{{ $a_fin }}</div>
+          <div class="stat-sub">requested funding</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">By Level</div>
+          <div class="stat-mini-list">
+            @foreach(['Local','Regional','National','International'] as $lv)
+              @php $lc = $a_levels[$lv] ?? 0; $lp = $a_total > 0 ? ($lc/$a_total)*100 : 0; @endphp
+              <div class="stat-mini-row">
+                <span class="stat-mini-label">{{ $lv }}</span>
+                <div class="stat-mini-bar"><div class="stat-mini-bar-fill" style="width:{{ $lp }}%;"></div></div>
+                <span class="stat-mini-val">{{ $lc }}</span>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('attendance','📅 New Attendance Request')" style="display:flex;align-items:center;gap:.35rem;">
-            ✏️ New Attendance Request
+          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('attendance','📅 New Attendance Request')">
+            ✏️ New Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('attendance','📅 Attendance Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('attendance','📅 Attendance Records')">
             📊 All Records
           </button>
         </div>
@@ -455,9 +775,21 @@
       </div>
 
       @if(isset($attendanceRecords) && $attendanceRecords->count())
-        <table class="data-table">
+        <div class="table-scroll"><table class="data-table" style="table-layout:fixed;width:100%;">
+          <colgroup>
+            <col style="width:36px">   {{-- # --}}
+            <col style="width:70px">   {{-- Tracking # --}}
+            <col style="width:70px">   {{-- Attendee --}}
+            <col style="width:110px">  {{-- Campus --}}
+            <col style="width:90px">   {{-- Type --}}
+            <col>                      {{-- Purpose (flex) --}}
+            <col style="width:70px">   {{-- Level --}}
+            <col style="width:90px">   {{-- Date --}}
+            <col style="width:70px">   {{-- Financial --}}
+            <col style="width:130px">  {{-- Actions --}}
+          </colgroup>
           <thead><tr>
-            <th>#</th><th>Attendee</th><th>Campus / Office</th>
+            <th>#</th><th>Tracking #</th><th>Attendee</th><th>Campus / Office</th>
             <th>Type of Activity</th><th>Purpose</th>
             <th>Level</th><th>Date</th><th>Financial</th><th>Actions</th>
           </tr></thead>
@@ -465,20 +797,13 @@
             @foreach($attendanceRecords as $i => $r)
             <tr>
               <td class="muted">{{ $attendanceRecords->firstItem() + $i }}</td>
-              <td>
-                <strong>{{ $r->attendee_name }}</strong>
-                <div class="muted text-sm">{{ $r->position }}</div>
-              </td>
-              <td class="muted">
-                {{ $r->campus }}
-                <div class="muted text-xs">{{ $r->college_office }}</div>
-              </td>
-              <td>@foreach(($r->activity_types??[]) as $t)<span class="badge badge-maroon">{{ $t }}</span>@endforeach</td>
-              <td style="max-width:180px">
-                <span title="{{ $r->purpose }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->purpose }}</span>
-              </td>
-              <td><span class="badge badge-gold">{{ $r->level }}</span></td>
-              <td class="muted">{{ $r->activity_date }}</td>
+              <td class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem;" title="{{ $r->tracking_number ?? '' }}">{{ $r->tracking_number ?? '—' }}</td>
+              <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->attendee_name }} — {{ $r->position }}">{{ $r->attendee_name }}</td>
+              <td class="muted" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->campus }} — {{ $r->college_office }}">{{ $r->campus }}</td>
+              <td class="type-col">@foreach(($r->activity_types??[]) as $t)<span class="badge badge-maroon badge-xs">{{ $t }}</span>@endforeach</td>
+              <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->purpose }}">{{ $r->purpose }}</td>
+              <td class="level-col"><span class="badge badge-gold badge-xs">{{ $r->level }}</span></td>
+              <td class="muted" style="white-space:nowrap;">{{ $r->activity_date }}</td>
               <td>
                 @if($r->financial_requested)
                   <span class="badge badge-green">Yes</span>
@@ -486,27 +811,27 @@
                   <span class="text-muted text-sm">No</span>
                 @endif
               </td>
-              <td>
+              <td class="act-col">
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('attendance',{{ $r->id }},'📅 Attendance Details')">View</button>
-                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('attendance-edit','✏️ Edit Attendance',{{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.attendance.print',$r->id) }}')">Print</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('attendance',{{ $r->id }},'📅 Attendance Details')" title="View">👁</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('attendance-edit','✏️ Edit Attendance',{{ $r->id }})" title="Edit">✏️</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.attendance.print',$r->id) }}')" title="Print">🖨</button>
                   <button class="btn btn-primary btn-sm" type="button"
-                          onclick="openMovModal('{{ route('ld.attendance.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.attendance.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
+                          onclick="openMovModal('{{ route('ld.attendance.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.attendance.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})" title="Upload MOV">📎{{ $r->mov_path ? '✓' : '' }}</button>
                 </div>
-                @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
             </tr>
             @endforeach
           </tbody>
         </table>
+        </div>
         @if($attendanceRecords->hasPages())
-          <div style="padding:1rem 1.25rem;border-top:1px solid var(--gray-100)">
+          <div style="padding:1rem 1.35rem;border-top:1px solid var(--ivory-deep)">
             {{ $attendanceRecords->appends(['tab'=>'attendance'])->links('ld.partials.pagination') }}
           </div>
         @endif
       @else
-        <div class="empty-state"><div class="empty-icon">📅</div><p>No attendance requests yet.</p></div>
+        <div class="empty-state"><div class="empty-icon">📅</div><p>No attendance requests yet.</p><div style="margin-top:1rem;"><button class="btn btn-primary btn-sm" onclick="openFormModal('attendance','📅 New Attendance Request')">✏️ Create First Request</button></div></div>
       @endif
 
       <div class="qa-grid" id="qa-attendance">
@@ -553,14 +878,54 @@
   <div class="tab-panel" id="panel-publication">
     <div class="tab-content">
 
+      @php
+        $pb_total   = $counts['publication'] ?? 0;
+        $pb_month   = \App\Models\Ldpublication::whereMonth('created_at',now()->month)->whereYear('created_at',now()->year)->count();
+        $pb_avgAmt  = \App\Models\Ldpublication::avg('amount_requested') ?? 0;
+        $pb_scopes  = \App\Models\Ldpublication::selectRaw('pub_scope, count(*) as cnt')->groupBy('pub_scope')->pluck('cnt','pub_scope')->toArray();
+      @endphp
+      <div class="stats-strip">
+        <div class="stat-card stat-hero">
+          <div class="stat-card-icon">📰</div>
+          <div class="stat-label">Total</div>
+          <div class="stat-value">{{ $pb_total }}</div>
+          <div class="stat-sub">publication incentive requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">🗓️</div>
+          <div class="stat-label">This Month</div>
+          <div class="stat-value">{{ $pb_month }}</div>
+          <div class="stat-sub">new submissions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">₱</div>
+          <div class="stat-label">Avg. Amount</div>
+          <div class="stat-value" style="font-size:1.35rem;">₱{{ number_format($pb_avgAmt,0) }}</div>
+          <div class="stat-sub">avg. incentive requested</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">By Scope</div>
+          <div class="stat-mini-list">
+            @foreach(['Regional','National','International'] as $sc)
+              @php $sc_cnt = $pb_scopes[$sc] ?? 0; $sc_pct = $pb_total > 0 ? ($sc_cnt/$pb_total)*100 : 0; @endphp
+              <div class="stat-mini-row">
+                <span class="stat-mini-label">{{ $sc }}</span>
+                <div class="stat-mini-bar"><div class="stat-mini-bar-fill" style="width:{{ $sc_pct }}%;"></div></div>
+                <span class="stat-mini-val">{{ $sc_cnt }}</span>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('publication','📰 New Publication Incentive Request')" style="display:flex;align-items:center;gap:.35rem;">
-            ✏️ New Publication Request
+          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('publication','📰 New Publication Incentive Request')">
+            ✏️ New Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('publication','📰 Publication Incentive Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('publication','📰 Publication Incentive Records')">
             📊 All Records
           </button>
         </div>
@@ -590,9 +955,21 @@
       </div>
 
       @if(isset($publicationRecords) && $publicationRecords->count())
-        <table class="data-table">
+        <div class="table-scroll"><table class="data-table" style="table-layout:fixed;width:100%;">
+          <colgroup>
+            <col style="width:36px">   {{-- # --}}
+            <col style="width:70px">   {{-- Tracking # --}}
+            <col style="width:70px">   {{-- Faculty --}}
+            <col style="width:90px">   {{-- Campus --}}
+            <col>                      {{-- Title of Paper (flex) --}}
+            <col style="width:130px">  {{-- Journal --}}
+            <col style="width:80px">   {{-- Scope --}}
+            <col style="width:90px">   {{-- Nature --}}
+            <col style="width:90px">   {{-- Amount --}}
+            <col style="width:130px">  {{-- Actions --}}
+          </colgroup>
           <thead><tr>
-            <th>#</th><th>Faculty / Employee</th><th>Campus</th>
+            <th>#</th><th>Tracking #</th><th>Faculty / Employee</th><th>Campus</th>
             <th>Title of Paper</th><th>Journal</th>
             <th>Scope</th><th>Nature</th><th>Amount</th><th>Actions</th>
           </tr></thead>
@@ -600,43 +977,35 @@
             @foreach($publicationRecords as $i => $r)
             <tr>
               <td class="muted">{{ $publicationRecords->firstItem() + $i }}</td>
-              <td>
-                <strong>{{ $r->faculty_name }}</strong>
-                <div class="muted text-sm">{{ $r->position }}</div>
-              </td>
-              <td class="muted">{{ $r->campus }}</td>
-              <td style="max-width:180px">
-                <span title="{{ $r->paper_title }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->paper_title }}</span>
-                <div class="muted text-xs">{{ $r->co_authors }}</div>
-              </td>
-              <td class="muted" style="max-width:140px">
-                <span style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->journal_title }}</span>
-                <div class="muted text-xs">{{ $r->issn_isbn }}</div>
-              </td>
-              <td><span class="badge badge-gold">{{ $r->pub_scope }}</span></td>
-              <td class="muted text-sm">{{ $r->nature }}</td>
-              <td class="muted">@if($r->amount_requested)Php {{ number_format($r->amount_requested,2) }}@endif</td>
-              <td>
+              <td class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem;" title="{{ $r->tracking_number ?? '' }}">{{ $r->tracking_number ?? '—' }}</td>
+              <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->faculty_name }} — {{ $r->position }}">{{ $r->faculty_name }}</td>
+              <td class="muted" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->campus }}">{{ $r->campus }}</td>
+              <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->paper_title }}{{ $r->co_authors ? ' — '.$r->co_authors : '' }}">{{ $r->paper_title }}</td>
+              <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->journal_title }}{{ $r->issn_isbn ? ' ('.$r->issn_isbn.')' : '' }}">{{ $r->journal_title }}</td>
+              <td class="level-col"><span class="badge badge-gold badge-xs">{{ $r->pub_scope }}</span></td>
+              <td class="muted" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->nature }}">{{ $r->nature }}</td>
+              <td class="muted" style="white-space:nowrap;">@if($r->amount_requested)Php {{ number_format($r->amount_requested,2) }}@endif</td>
+              <td class="act-col">
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('publication',{{ $r->id }},'📰 Publication Details')">View</button>
-                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('publication-edit','✏️ Edit Publication',{{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.publication.print',$r->id) }}')">Print</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('publication',{{ $r->id }},'📰 Publication Details')" title="View">👁</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('publication-edit','✏️ Edit Publication',{{ $r->id }})" title="Edit">✏️</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.publication.print',$r->id) }}')" title="Print">🖨</button>
                   <button class="btn btn-primary btn-sm" type="button"
-                          onclick="openMovModal('{{ route('ld.publication.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.publication.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
+                          onclick="openMovModal('{{ route('ld.publication.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.publication.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})" title="Upload MOV">📎{{ $r->mov_path ? '✓' : '' }}</button>
                 </div>
-                @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
             </tr>
             @endforeach
           </tbody>
         </table>
+        </div>
         @if($publicationRecords->hasPages())
-          <div style="padding:1rem 1.25rem;border-top:1px solid var(--gray-100)">
+          <div style="padding:1rem 1.35rem;border-top:1px solid var(--ivory-deep)">
             {{ $publicationRecords->appends(['tab'=>'publication'])->links('ld.partials.pagination') }}
           </div>
         @endif
       @else
-        <div class="empty-state"><div class="empty-icon">📰</div><p>No publication incentive requests yet.</p></div>
+        <div class="empty-state"><div class="empty-icon">📰</div><p>No publication incentive requests yet.</p><div style="margin-top:1rem;"><button class="btn btn-primary btn-sm" onclick="openFormModal('publication','📰 New Publication Incentive Request')">✏️ Create First Request</button></div></div>
       @endif
 
       <div class="qa-grid" id="qa-publication">
@@ -687,14 +1056,48 @@
   <div class="tab-panel" id="panel-reimbursement">
     <div class="tab-content">
 
+      @php
+        $r_total   = $counts['reimbursement'] ?? 0;
+        $r_month   = \App\Models\Ldreimbursement::whereMonth('created_at',now()->month)->whereYear('created_at',now()->year)->count();
+        $r_allItems = \App\Models\Ldreimbursement::all();
+        $r_totalAmt = $r_allItems->sum(fn($x) => collect($x->expense_items??[])->sum(fn($i) => (float)($i['amount']??0)));
+        $r_avgAmt   = $r_total > 0 ? $r_totalAmt / $r_total : 0;
+      @endphp
+      <div class="stats-strip">
+        <div class="stat-card stat-hero">
+          <div class="stat-card-icon">💰</div>
+          <div class="stat-label">Total</div>
+          <div class="stat-value">{{ $r_total }}</div>
+          <div class="stat-sub">reimbursement requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">🗓️</div>
+          <div class="stat-label">This Month</div>
+          <div class="stat-value">{{ $r_month }}</div>
+          <div class="stat-sub">new submissions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">📊</div>
+          <div class="stat-label">Total Amount</div>
+          <div class="stat-value" style="font-size:1.25rem;">₱{{ number_format($r_totalAmt,0) }}</div>
+          <div class="stat-sub">across all requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">📐</div>
+          <div class="stat-label">Avg. per Request</div>
+          <div class="stat-value" style="font-size:1.25rem;">₱{{ number_format($r_avgAmt,0) }}</div>
+          <div class="stat-sub">average reimbursement</div>
+        </div>
+      </div>
+
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('reimbursement','💰 New Reimbursement Request')" style="display:flex;align-items:center;gap:.35rem;">
-            ✏️ New Reimbursement Request
+          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('reimbursement','💰 New Reimbursement Request')">
+            ✏️ New Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('reimbursement','💰 Reimbursement Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('reimbursement','💰 Reimbursement Records')">
             📊 All Records
           </button>
         </div>
@@ -712,9 +1115,20 @@
       </div>
 
       @if(isset($reimbursementRecords) && $reimbursementRecords->count())
-        <table class="data-table">
+        <div class="table-scroll"><table class="data-table" style="table-layout:fixed;width:100%;">
+          <colgroup>
+            <col style="width:36px">   {{-- # --}}
+            <col style="width:70px">   {{-- Tracking # --}}
+            <col style="width:150px">  {{-- Department --}}
+            <col>                      {{-- Particulars (flex) --}}
+            <col style="width:90px">   {{-- Activity Type --}}
+            <col style="width:120px">  {{-- Venue --}}
+            <col style="width:90px">   {{-- Date --}}
+            <col style="width:100px">  {{-- Total Amount --}}
+            <col style="width:130px">  {{-- Actions --}}
+          </colgroup>
           <thead><tr>
-            <th>#</th><th>Department / Office</th>
+            <th>#</th><th>Tracking #</th><th>Department / Office</th>
             <th>Particulars</th><th>Activity Type</th>
             <th>Venue</th><th>Date</th><th>Total Amount</th><th>Actions</th>
           </tr></thead>
@@ -723,37 +1137,36 @@
             @php $total = collect($r->expense_items ?? [])->sum(fn($x) => (float)($x['amount'] ?? 0)); @endphp
             <tr>
               <td class="muted">{{ $reimbursementRecords->firstItem() + $i }}</td>
-              <td><strong>{{ $r->department }}</strong></td>
-              <td style="max-width:180px">
-                <span style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                  {{ collect($r->expense_items??[])->pluck('description')->filter()->take(2)->implode(', ') }}
-                </span>
+              <td class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem;" title="{{ $r->tracking_number ?? '' }}">{{ $r->tracking_number ?? '—' }}</td>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->department }}"><strong>{{ $r->department }}</strong></td>
+              <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ collect($r->expense_items??[])->pluck('description')->filter()->implode(', ') }}">
+                {{ collect($r->expense_items??[])->pluck('description')->filter()->take(2)->implode(', ') }}
               </td>
-              <td>@foreach(($r->activity_types??[]) as $t)<span class="badge badge-maroon">{{ $t }}</span>@endforeach</td>
-              <td class="muted">{{ $r->venue }}</td>
-              <td class="muted">{{ $r->activity_date }}</td>
-              <td><strong>@if($total > 0)Php {{ number_format($total,2) }}@endif</strong></td>
-              <td>
+              <td class="type-col">@foreach(($r->activity_types??[]) as $t)<span class="badge badge-maroon badge-xs">{{ $t }}</span>@endforeach</td>
+              <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->venue }}">{{ $r->venue }}</td>
+              <td class="muted" style="white-space:nowrap;">{{ $r->activity_date }}</td>
+              <td style="white-space:nowrap;"><strong>@if($total > 0)Php {{ number_format($total,2) }}@endif</strong></td>
+              <td class="act-col">
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('reimbursement',{{ $r->id }},'💰 Reimbursement Details')">View</button>
-                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('reimbursement-edit','✏️ Edit Reimbursement',{{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.reimbursement.print',$r->id) }}')">Print</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('reimbursement',{{ $r->id }},'💰 Reimbursement Details')" title="View">👁</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('reimbursement-edit','✏️ Edit Reimbursement',{{ $r->id }})" title="Edit">✏️</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.reimbursement.print',$r->id) }}')" title="Print">🖨</button>
                   <button class="btn btn-primary btn-sm" type="button"
-                          onclick="openMovModal('{{ route('ld.reimbursement.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.reimbursement.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
+                          onclick="openMovModal('{{ route('ld.reimbursement.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.reimbursement.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})" title="Upload MOV">📎{{ $r->mov_path ? '✓' : '' }}</button>
                 </div>
-                @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
             </tr>
             @endforeach
           </tbody>
         </table>
+        </div>
         @if($reimbursementRecords->hasPages())
-          <div style="padding:1rem 1.25rem;border-top:1px solid var(--gray-100)">
+          <div style="padding:1rem 1.35rem;border-top:1px solid var(--ivory-deep)">
             {{ $reimbursementRecords->appends(['tab'=>'reimbursement'])->links('ld.partials.pagination') }}
           </div>
         @endif
       @else
-        <div class="empty-state"><div class="empty-icon">💰</div><p>No reimbursement requests yet.</p></div>
+        <div class="empty-state"><div class="empty-icon">💰</div><p>No reimbursement requests yet.</p><div style="margin-top:1rem;"><button class="btn btn-primary btn-sm" onclick="openFormModal('reimbursement','💰 New Reimbursement Request')">✏️ Create First Request</button></div></div>
       @endif
 
       <div class="qa-grid" id="qa-reimbursement">
@@ -792,14 +1205,49 @@
   <div class="tab-panel" id="panel-travel">
     <div class="tab-content">
 
+      @php
+        $t_total   = $counts['travel'] ?? 0;
+        $t_month   = \App\Models\Ldtravel::whereMonth('created_at',now()->month)->whereYear('created_at',now()->year)->count();
+        $t_chargeable = \App\Models\Ldtravel::selectRaw('chargeable_against, count(*) as cnt')->whereNotNull('chargeable_against')->groupBy('chargeable_against')->orderByDesc('cnt')->limit(3)->pluck('cnt','chargeable_against')->toArray();
+      @endphp
+      <div class="stats-strip">
+        <div class="stat-card stat-hero">
+          <div class="stat-card-icon">✈️</div>
+          <div class="stat-label">Total</div>
+          <div class="stat-value">{{ $t_total }}</div>
+          <div class="stat-sub">travel authority requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon">🗓️</div>
+          <div class="stat-label">This Month</div>
+          <div class="stat-value">{{ $t_month }}</div>
+          <div class="stat-sub">new submissions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Top Chargeable</div>
+          <div class="stat-mini-list">
+            @forelse($t_chargeable as $label => $cnt)
+              @php $tp = $t_total > 0 ? ($cnt/$t_total)*100 : 0; @endphp
+              <div class="stat-mini-row">
+                <span class="stat-mini-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;" title="{{ $label }}">{{ $label }}</span>
+                <div class="stat-mini-bar"><div class="stat-mini-bar-fill" style="width:{{ $tp }}%;"></div></div>
+                <span class="stat-mini-val">{{ $cnt }}</span>
+              </div>
+            @empty
+              <div style="font-size:.72rem;color:var(--ink-ghost);">No data yet</div>
+            @endforelse
+          </div>
+        </div>
+      </div>
+
       <div class="tab-action-bar">
         <div class="tab-action-bar-left">
-          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('travel','✈️ New Authority to Travel')" style="display:flex;align-items:center;gap:.35rem;">
-            ✏️ New Travel Authority
+          <button class="btn btn-primary btn-sm" type="button" onclick="openFormModal('travel','✈️ New Authority to Travel')">
+            ✏️ New Request
           </button>
         </div>
         <div class="tab-action-bar-right">
-          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('travel','✈️ Travel Authority Records')" style="display:flex;align-items:center;gap:.35rem;">
+          <button class="btn btn-outline btn-sm" type="button" onclick="openRecordsModal('travel','✈️ Travel Authority Records')">
             📊 All Records
           </button>
         </div>
@@ -817,9 +1265,20 @@
       </div>
 
       @if(isset($travelRecords) && $travelRecords->count())
-        <table class="data-table">
+        <div class="table-scroll"><table class="data-table" style="table-layout:fixed;width:100%;">
+          <colgroup>
+            <col style="width:36px">   {{-- # --}}
+            <col style="width:70px">   {{-- Tracking # --}}
+            <col style="width:140px">  {{-- Employee/s --}}
+            <col style="width:140px">  {{-- Places --}}
+            <col>                      {{-- Purpose (flex) --}}
+            <col style="width:100px">  {{-- Date of Travel --}}
+            <col style="width:90px">   {{-- Time --}}
+            <col style="width:110px">  {{-- Chargeable To --}}
+            <col style="width:130px">  {{-- Actions --}}
+          </colgroup>
           <thead><tr>
-            <th>#</th><th>Employee/s</th>
+            <th>#</th><th>Tracking #</th><th>Employee/s</th>
             <th>Place/s to be Visited</th><th>Purpose</th>
             <th>Date of Travel</th><th>Time</th><th>Chargeable To</th><th>Actions</th>
           </tr></thead>
@@ -827,39 +1286,34 @@
             @foreach($travelRecords as $i => $r)
             <tr>
               <td class="muted">{{ $travelRecords->firstItem() + $i }}</td>
-              <td style="max-width:160px">
-                <span title="{{ $r->employee_names }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->employee_names }}</span>
-              </td>
-              <td style="max-width:160px">
-                <span title="{{ $r->places_visited }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->places_visited }}</span>
-              </td>
-              <td style="max-width:180px">
-                <span title="{{ $r->purpose }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $r->purpose }}</span>
-              </td>
-              <td class="muted">{{ $r->travel_dates }}</td>
-              <td class="muted">{{ $r->travel_time }}</td>
-              <td class="muted">{{ $r->chargeable_against }}</td>
-              <td>
+              <td class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem;" title="{{ $r->tracking_number ?? '' }}">{{ $r->tracking_number ?? '—' }}</td>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->employee_names }}">{{ $r->employee_names }}</td>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->places_visited }}">{{ $r->places_visited }}</td>
+              <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->purpose }}">{{ $r->purpose }}</td>
+              <td class="muted" style="white-space:nowrap;">{{ $r->travel_dates }}</td>
+              <td class="muted" style="white-space:nowrap;">{{ $r->travel_time }}</td>
+              <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ $r->chargeable_against }}">{{ $r->chargeable_against }}</td>
+              <td class="act-col">
                 <div class="act-wrap">
-                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('travel',{{ $r->id }},'✈️ Travel Authority Details')">View</button>
-                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('travel-edit','✏️ Edit Travel Authority',{{ $r->id }})">Edit</button>
-                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.travel.print',$r->id) }}')">Print</button>
+                  <button class="btn btn-outline btn-sm" type="button" onclick="openGenericView('travel',{{ $r->id }},'✈️ Travel Authority Details')" title="View">👁</button>
+                  <button class="btn btn-ghost btn-sm" type="button" onclick="openFormModal('travel-edit','✏️ Edit Travel Authority',{{ $r->id }})" title="Edit">✏️</button>
+                  <button class="btn btn-gold btn-sm" type="button" onclick="openPrintModal('{{ route('ld.travel.print',$r->id) }}')" title="Print">🖨</button>
                   <button class="btn btn-primary btn-sm" type="button"
-                          onclick="openMovModal('{{ route('ld.travel.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.travel.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})">MOV</button>
+                          onclick="openMovModal('{{ route('ld.travel.mov.upload',$r->id) }}','{{ $r->mov_path?route('ld.travel.mov.view',$r->id):'' }}','{{ $r->mov_original_name??'' }}',{{ $r->id }})" title="Upload MOV">📎{{ $r->mov_path ? '✓' : '' }}</button>
                 </div>
-                @if($r->mov_path)<div class="mt-1"><span class="badge badge-green">MOV ✓</span></div>@endif
               </td>
             </tr>
             @endforeach
           </tbody>
         </table>
+        </div>
         @if($travelRecords->hasPages())
-          <div style="padding:1rem 1.25rem;border-top:1px solid var(--gray-100)">
+          <div style="padding:1rem 1.35rem;border-top:1px solid var(--ivory-deep)">
             {{ $travelRecords->appends(['tab'=>'travel'])->links('ld.partials.pagination') }}
           </div>
         @endif
       @else
-        <div class="empty-state"><div class="empty-icon">✈️</div><p>No travel authority requests yet.</p></div>
+        <div class="empty-state"><div class="empty-icon">✈️</div><p>No travel authority requests yet.</p><div style="margin-top:1rem;"><button class="btn btn-primary btn-sm" onclick="openFormModal('travel','✈️ New Authority to Travel')">✏️ Create First Request</button></div></div>
       @endif
 
       <div class="qa-grid" id="qa-travel">
@@ -868,7 +1322,7 @@
           <div class="qa-grid-inner" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr));">
             <div class="qa-field"><label>Employee Name/s*</label><textarea name="employee_names" required placeholder="One per line for multiple"></textarea></div>
             <div class="qa-field"><label>Position/s</label><textarea name="positions" placeholder="One per line"></textarea></div>
-            <div class="qa-field"><label>Date/s of Travel*</label><input type="text" name="travel_dates" required placeholder="e.g. March 13, 2026"></div>
+            <div class="qa-field"><label>Date/s of Travel*</label><input type="text" name="travel_dates" class="date-picker-range" required placeholder="e.g. March 13, 2026"></div>
             <div class="qa-field"><label>Time</label><input type="text" name="travel_time" placeholder="e.g. 8:00 AM – 5:00 PM"></div>
             <div class="qa-field"><label>Place/s to be Visited*</label><input type="text" name="places_visited" required></div>
             <div class="qa-field"><label>Purpose*</label><textarea name="purpose" required></textarea></div>
@@ -904,7 +1358,7 @@
         <span>📋 Request Details</span>
         <button class="modal-close" type="button" onclick="closeModal('viewModal')">✕ Close</button>
       </div>
-      <div id="view-modal-body" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
+      <div id="view-modal-body" class="modal-body"><p style="color:var(--ink-faint)">Loading...</p></div>
     </div>
   </div>
 
@@ -928,7 +1382,7 @@
         <span>✏️ Edit Request</span>
         <button class="modal-close" type="button" onclick="closeModal('editModal')">✕ Close</button>
       </div>
-      <div id="edit-modal-body" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
+      <div id="edit-modal-body" class="modal-body"><p style="color:var(--ink-faint)">Loading...</p></div>
     </div>
   </div>
 
@@ -939,7 +1393,7 @@
         <span id="genericFormTitle">New Request</span>
         <button class="modal-close" type="button" onclick="closeModal('genericFormModal')">✕ Close</button>
       </div>
-      <div id="genericFormBody" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
+      <div id="genericFormBody" class="modal-body"><p style="color:var(--ink-faint)">Loading...</p></div>
     </div>
   </div>
 
@@ -950,7 +1404,7 @@
         <span id="genericViewTitle">Details</span>
         <button class="modal-close" type="button" onclick="closeModal('genericViewModal')">✕ Close</button>
       </div>
-      <div id="genericViewBody" class="modal-body"><p style="color:var(--gray-500)">Loading...</p></div>
+      <div id="genericViewBody" class="modal-body"><p style="color:var(--ink-faint)">Loading...</p></div>
     </div>
   </div>
 
@@ -971,38 +1425,38 @@
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;width:100%;">
           <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
             <input type="text" id="recordsSearchInput" placeholder="🔍 Search all fields..." oninput="applyRecordsFilters()" style="width:220px;">
-            <select id="recordsFilterMonth" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+            <select id="recordsFilterMonth" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid var(--ivory-deep);border-radius:8px;font-size:.8rem;outline:none;">
               <option value="">All Months</option>
               <option value="1">January</option><option value="2">February</option><option value="3">March</option>
               <option value="4">April</option><option value="5">May</option><option value="6">June</option>
               <option value="7">July</option><option value="8">August</option><option value="9">September</option>
               <option value="10">October</option><option value="11">November</option><option value="12">December</option>
             </select>
-            <select id="recordsFilterYear" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+            <select id="recordsFilterYear" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid var(--ivory-deep);border-radius:8px;font-size:.8rem;outline:none;">
               <option value="">All Years</option>
             </select>
-            <select id="recordsFilterLevel" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+            <select id="recordsFilterLevel" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid var(--ivory-deep);border-radius:8px;font-size:.8rem;outline:none;">
               <option value="">All Levels</option>
               <option>Local</option><option>Regional</option><option>National</option><option>International</option>
             </select>
-            <select id="recordsFilterFinancial" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.8rem;outline:none;">
+            <select id="recordsFilterFinancial" onchange="applyRecordsFilters()" style="padding:.4rem .65rem;border:1.5px solid var(--ivory-deep);border-radius:8px;font-size:.8rem;outline:none;">
               <option value="">Financial — All</option>
               <option value="1">Financial — Yes</option>
               <option value="0">Financial — No</option>
             </select>
-            <button type="button" onclick="clearRecordsFilters()" style="padding:.4rem .75rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.78rem;background:#fff;cursor:pointer;color:#6b7280;">✕ Clear</button>
+            <button type="button" onclick="clearRecordsFilters()" style="padding:.4rem .75rem;border:1.5px solid var(--ivory-deep);border-radius:8px;font-size:.78rem;background:#fff;cursor:pointer;color:var(--ink-faint);">✕ Clear</button>
           </div>
 
           <div style="display:flex;align-items:center;gap:.4rem;">
-            <span id="recordsCountLabel" style="font-size:.78rem;color:#6b7280;"></span>
+            <span id="recordsCountLabel" style="font-size:.78rem;color:var(--ink-faint);"></span>
             <div style="position:relative;display:inline-block;" id="downloadDropWrap">
-              <button type="button" onclick="toggleDownloadDrop()" style="display:flex;align-items:center;gap:.35rem;padding:.4rem .85rem;background:var(--maroon);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;">
+              <button type="button" onclick="toggleDownloadDrop()" style="display:flex;align-items:center;gap:.35rem;padding:.4rem .85rem;background:var(--crimson);color:#fff;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;">
                 ⬇ Download <span style="font-size:.65rem;opacity:.8;">▼</span>
               </button>
-              <div id="downloadDrop" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:190px;z-index:9999;overflow:hidden;">
-                <div style="padding:.4rem .75rem;background:#f9fafb;border-bottom:1px solid #e5e7eb;font-size:.68rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.4pt;">Export as CSV</div>
-                <button type="button" onclick="downloadCSV('filtered')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:#111827;">📄 Filtered / Current View</button>
-                <button type="button" onclick="downloadCSV('all')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:#111827;border-top:1px solid #f3f4f6;">📦 All Records (unfiltered)</button>
+              <div id="downloadDrop" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--ivory-deep);border-radius:var(--radius-md);box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:190px;z-index:9999;overflow:hidden;">
+                <div style="padding:.4rem .75rem;background:var(--ivory-warm);border-bottom:1px solid var(--ivory-deep);font-size:.68rem;font-weight:700;color:var(--ink-ghost);text-transform:uppercase;letter-spacing:.4pt;">Export as CSV</div>
+                <button type="button" onclick="downloadCSV('filtered')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:var(--ink);">📄 Filtered / Current View</button>
+                <button type="button" onclick="downloadCSV('all')" style="display:block;width:100%;padding:.55rem .85rem;background:none;border:none;text-align:left;font-size:.8rem;cursor:pointer;color:var(--ink);border-top:1px solid var(--ivory-deep);">📦 All Records (unfiltered)</button>
               </div>
             </div>
           </div>
@@ -1019,7 +1473,7 @@
       </div>
 
       <div class="records-modal-footer">
-        <span id="recordsFooterInfo" style="font-size:.78rem;color:#9ca3af;"></span>
+        <span id="recordsFooterInfo" style="font-size:.78rem;color:var(--ink-ghost);"></span>
         <button class="btn btn-ghost btn-sm" type="button" onclick="closeRecordsModal()">Close</button>
       </div>
     </div>
@@ -1039,9 +1493,9 @@
           <div style="margin-bottom:.75rem;">
             <label style="display:block;font-weight:600;margin-bottom:.35rem;">Select file</label>
             <input type="file" name="mov_file" required
-                   style="width:100%;padding:.55rem .7rem;border:1.5px solid var(--gray-200);border-radius:10px;">
+                   style="width:100%;padding:.55rem .7rem;border:1.5px solid var(--ivory-deep);border-radius:10px;">
           </div>
-          <div id="movExisting" style="display:none;padding:.75rem;border:1px solid var(--gray-100);border-radius:10px;margin-bottom:.9rem;">
+          <div id="movExisting" style="display:none;padding:.75rem;border:1px solid var(--ivory-deep);border-radius:var(--radius-md);margin-bottom:.9rem;">
             <div class="muted text-sm" style="margin-bottom:.35rem;">Current MOV:</div>
             <button type="button" id="movPreviewBtn" class="btn btn-outline btn-sm" style="margin-bottom:.4rem;">👁 View File</button>
             <div id="movName" class="muted text-xs"></div>
@@ -1071,8 +1525,8 @@
       <iframe id="movPreviewFrame" style="flex:1;width:100%;border:none;background:#f5f5f5;display:none;"></iframe>
       <div id="movUnsupported" style="display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;gap:1rem;background:#f5f5f5;">
         <div style="font-size:3rem;">📄</div>
-        <p style="color:#374151;font-weight:600;" id="movUnsupportedName"></p>
-        <p style="color:#6b7280;font-size:.875rem;">This file type cannot be previewed in the browser.</p>
+        <p style="color:var(--ink-mid);font-weight:600;" id="movUnsupportedName"></p>
+        <p style="color:var(--ink-faint);font-size:.875rem;">This file type cannot be previewed in the browser.</p>
         <a id="movUnsupportedDownload" href="#" target="_blank" class="btn btn-primary">⬇ Download File</a>
       </div>
     </div>
@@ -1095,6 +1549,43 @@ document.addEventListener('DOMContentLoaded', function () {
   }, 2500);
 });
 
+/* ── Helpers for dynamically-loaded form partials ── */
+/* These must live here (not in the injected HTML) because
+   innerHTML-injected <script> tags are NOT executed by browsers. */
+
+function attToggleOthers(chk, txtId) {
+  const t = document.getElementById(txtId);
+  if (!t) return;
+  if (chk.checked) {
+    t.removeAttribute('disabled');
+    t.focus();
+  } else {
+    t.setAttribute('disabled', 'disabled');
+    t.value = '';
+  }
+}
+
+function resetSignatory(btn) {
+  btn.closest('.sig-box').querySelectorAll('[data-default]').forEach(function(i) {
+    i.value = i.dataset.default;
+  });
+}
+
+/* Generic "others" toggle used across all forms */
+function toggleOthersInput(chk, txtId) {
+  attToggleOthers(chk, txtId); // same logic, alias
+}
+
+/* Re-execute inline scripts from dynamically injected HTML */
+function reExecScripts(container) {
+  container.querySelectorAll('script').forEach(function(oldScript) {
+    const newScript = document.createElement('script');
+    Array.from(oldScript.attributes).forEach(a => newScript.setAttribute(a.name, a.value));
+    newScript.textContent = oldScript.textContent;
+    oldScript.parentNode.replaceChild(newScript, oldScript);
+  });
+}
+
 /* ── Tab switching ── */
 function switchTab(name) {
   document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
@@ -1114,71 +1605,107 @@ function closeModal(id) {
   document.body.style.overflow = '';
 }
 
-/* ✅ FORM SHOULD NOT CLOSE:
-   - DO NOT close form modals by clicking overlay (createModal + genericFormModal + movModal)
-   - View modals can still close via overlay click.
-*/
+/* View-only modals close on overlay click */
 ['viewModal','editModal','genericViewModal'].forEach(id => {
   document.getElementById(id)?.addEventListener('click', e => { if (e.target.id === id) closeModal(id); });
 });
 document.getElementById('printModal')?.addEventListener('click', e => { if (e.target.id === 'printModal') closePrintModal(); });
 document.getElementById('movPreviewModal')?.addEventListener('click', e => { if (e.target.id === 'movPreviewModal') closeMovPreview(); });
 
-/* ✅ Flatpickr:
-   - You said "still n1" / only 1 date: most common cause is flatpickr being initialized twice.
-   - This version DESTROYS previous instances before re-init (works for ajax-loaded modals too).
-*/
-function writeRangeValue(selectedDates, instance) {
-  if (!selectedDates || selectedDates.length === 0) return;
-
-  if (selectedDates.length === 1) {
-    instance.input.value = instance.formatDate(selectedDates[0], "F j, Y");
-    return;
-  }
-
-  const start = selectedDates[0];
-  const end   = selectedDates[1];
-
-  const sameYear  = start.getFullYear() === end.getFullYear();
-  const sameMonth = sameYear && start.getMonth() === end.getMonth();
-
-  if (sameMonth) {
-    const month = instance.formatDate(start, "F");
-    instance.input.value = `${month} ${start.getDate()}–${end.getDate()}, ${end.getFullYear()}`;
-  } else if (sameYear) {
-    const a = instance.formatDate(start, "F j");
-    const b = instance.formatDate(end, "F j, Y");
-    instance.input.value = `${a} – ${b}`;
-  } else {
-    const a = instance.formatDate(start, "F j, Y");
-    const b = instance.formatDate(end, "F j, Y");
-    instance.input.value = `${a} – ${b}`;
-  }
-}
-
+/* ══════════════════════════════════════════
+   FIXED DATE PICKERS
+   - writeRangeValue REMOVED entirely
+   - onChange REMOVED (was the bug: fired after 1st click, saved only 1 date)
+   - onClose only fires when calendar closes = both dates already chosen
+   - dateFormat 'Y-m-d' = internal format, won't overwrite your custom display string
+   - Single day   → "March 4, 2026"
+   - Same month   → "March 4-5, 2026"
+   - Same year    → "March 4 - April 2, 2026"
+   - Diff years   → "March 4, 2025 - January 2, 2026"
+══════════════════════════════════════════ */
 function initDatePickers(root = document) {
   if (!window.flatpickr || !root?.querySelectorAll) return;
 
-  // destroy any existing instances inside root
+  // Destroy existing instances to prevent double-init
   root.querySelectorAll('.date-picker, .date-picker-multi, .date-picker-range').forEach(el => {
     if (el._flatpickr) el._flatpickr.destroy();
   });
 
+  // ── Single date ──
   root.querySelectorAll('.date-picker').forEach(el => {
-    flatpickr(el, { dateFormat: 'F j, Y', allowInput: true });
+    flatpickr(el, {
+      dateFormat: 'Y-m-d',
+      allowInput: false,
+      onClose: function(selectedDates, dateStr, instance) {
+        if (selectedDates.length === 0) return;
+        instance.input.value = instance.formatDate(selectedDates[0], "F j, Y");
+      },
+    });
   });
 
+  // ── Multiple dates ──
   root.querySelectorAll('.date-picker-multi').forEach(el => {
-    flatpickr(el, { mode: 'multiple', dateFormat: 'F j, Y', allowInput: true });
+    flatpickr(el, {
+      mode: 'multiple',
+      dateFormat: 'Y-m-d',
+      allowInput: false,
+      onClose: function(selectedDates, dateStr, instance) {
+        if (selectedDates.length === 0) return;
+        instance.input.value = selectedDates
+          .map(d => instance.formatDate(d, "F j, Y"))
+          .join(', ');
+      },
+    });
   });
 
+  // ── Range (the fixed one) ──
   root.querySelectorAll('.date-picker-range').forEach(el => {
+    // Save whatever is already in the input (existing DB value on edit forms)
+    const existingValue = el.value || '';
+
     flatpickr(el, {
       mode: 'range',
+      // Use the human-readable format so flatpickr can parse existing values like "March 4, 2026"
       dateFormat: 'F j, Y',
-      allowInput: true,
-      onChange: (selectedDates, dateStr, instance) => writeRangeValue(selectedDates, instance),
-      onClose:  (selectedDates, dateStr, instance) => writeRangeValue(selectedDates, instance),
+      allowInput: false,
+
+      // onReady: runs once after flatpickr initialises.
+      // If flatpickr couldn't parse the existing value (e.g. "March 4-5, 2026" range format)
+      // it clears the input — so we restore it here.
+      onReady: function(selectedDates, dateStr, instance) {
+        if (existingValue && instance.input.value === '') {
+          instance.input.value = existingValue;
+        }
+      },
+
+      onClose: function(selectedDates, dateStr, instance) {
+        if (selectedDates.length === 0) return;
+
+        const fmt = (d, f) => instance.formatDate(d, f);
+
+        // Single day selected → "March 4, 2026"
+        if (selectedDates.length === 1) {
+          instance.input.value = fmt(selectedDates[0], "F j, Y");
+          return;
+        }
+
+        const start = selectedDates[0];
+        const end   = selectedDates[1];
+
+        const sameYear  = start.getFullYear() === end.getFullYear();
+        const sameMonth = sameYear && start.getMonth() === end.getMonth();
+
+        if (sameMonth) {
+          // "March 4-5, 2026"
+          instance.input.value = `${fmt(start, "F")} ${start.getDate()}-${end.getDate()}, ${end.getFullYear()}`;
+        } else if (sameYear) {
+          // "March 4 - April 2, 2026"
+          instance.input.value = `${fmt(start, "F j")} - ${fmt(end, "F j, Y")}`;
+        } else {
+          // "March 4, 2025 - January 2, 2026"
+          instance.input.value = `${fmt(start, "F j, Y")} - ${fmt(end, "F j, Y")}`;
+        }
+      },
     });
   });
 }
@@ -1196,12 +1723,10 @@ function bindOthersToggle(chkId, txtId) {
   const chk = document.getElementById(chkId);
   const txt = document.getElementById(txtId);
   if (!chk || !txt) return;
-
   const sync = () => {
     if (chk.checked) { txt.disabled = false; txt.focus(); }
     else { txt.value = ''; txt.disabled = true; }
   };
-
   chk.addEventListener('change', sync);
   sync();
 }
@@ -1214,11 +1739,11 @@ function openEditModal(id) {
   openModal('editModal');
   const body = document.getElementById('edit-modal-body');
   body.innerHTML = loadingHtml();
-
   fetch(`/ld-requests/${id}/edit-modal`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
     .then(r => r.text())
     .then(html => {
       body.innerHTML = html;
+      reExecScripts(body);
       initEditModalToggles();
       initDatePickers(body);
     })
@@ -1248,11 +1773,12 @@ function openFormModal(type, title, id = null) {
     .then(html => {
       const container = document.getElementById('genericFormBody');
       container.innerHTML = html;
+      reExecScripts(container);
       initDatePickers(container);
     })
     .catch(() => {
       document.getElementById('genericFormBody').innerHTML =
-        '<div style="padding:2.5rem;text-align:center;color:#6b7280;">' +
+        '<div style="padding:2.5rem;text-align:center;color:var(--ink-faint);">' +
         '<div style="font-size:2.5rem;margin-bottom:.75rem;">🚧</div>' +
         '<strong>Form coming soon</strong><p style="margin-top:.5rem;font-size:.875rem;">This form is under construction.</p></div>';
     });
@@ -1272,7 +1798,7 @@ function openGenericView(type, id, title) {
   fetch(viewRoutes[type](id), { headers:{ 'X-Requested-With':'XMLHttpRequest' } })
     .then(r => r.text())
     .then(html => { document.getElementById('genericViewBody').innerHTML = html; })
-    .catch(() => { document.getElementById('genericViewBody').innerHTML = '<p style="padding:2rem;text-align:center;color:#6b7280;">Could not load details.</p>'; });
+    .catch(() => { document.getElementById('genericViewBody').innerHTML = '<p style="padding:2rem;text-align:center;color:var(--ink-faint);">Could not load details.</p>'; });
 }
 
 /* ── Print modal ── */
@@ -1297,6 +1823,7 @@ const recordsConfig = {
     addFn:  () => { closeRecordsModal(); openCreateModal(); },
     columns: [
       { label: '#', key: '_index' },
+      { label: 'Tracking #', key: 'tracking_number' },
       { label: 'Participant Name', key: 'participant_name' },
       { label: 'Position', key: 'position' },
       { label: 'Campus', key: 'campus' },
@@ -1329,6 +1856,7 @@ const recordsConfig = {
     addFn:  () => { closeRecordsModal(); openFormModal('attendance','📅 New Attendance Request'); },
     columns: [
       { label: '#', key: '_index' },
+      { label: 'Tracking #', key: 'tracking_number' },
       { label: 'Attendee Name', key: 'attendee_name' },
       { label: 'Position', key: 'position' },
       { label: 'Campus', key: 'campus' },
@@ -1356,6 +1884,7 @@ const recordsConfig = {
     addFn:  () => { closeRecordsModal(); openFormModal('publication','📰 New Publication Incentive Request'); },
     columns: [
       { label: '#', key: '_index' },
+      { label: 'Tracking #', key: 'tracking_number' },
       { label: 'Faculty / Employee', key: 'faculty_name' },
       { label: 'Position', key: 'position' },
       { label: 'Campus', key: 'campus' },
@@ -1393,6 +1922,7 @@ const recordsConfig = {
     addFn:  () => { closeRecordsModal(); openFormModal('reimbursement','💰 New Reimbursement Request'); },
     columns: [
       { label: '#', key: '_index' },
+      { label: 'Tracking #', key: 'tracking_number' },
       { label: 'Department / Office', key: 'department' },
       { label: 'Activity Type', key: 'activity_types', array: true },
       { label: 'Other Activity', key: 'activity_type_others' },
@@ -1410,6 +1940,7 @@ const recordsConfig = {
     addFn:  () => { closeRecordsModal(); openFormModal('travel','✈️ New Authority to Travel'); },
     columns: [
       { label: '#', key: '_index' },
+      { label: 'Tracking #', key: 'tracking_number' },
       { label: 'Employee Name/s', key: 'employee_names', pre: true },
       { label: 'Position/s', key: 'positions', pre: true },
       { label: 'Date/s of Travel', key: 'travel_dates' },
@@ -1484,12 +2015,10 @@ function recordsAddNew() {
   if (cfg && cfg.addFn) cfg.addFn();
 }
 
-/* close records by overlay click */
 document.getElementById('recordsModal')?.addEventListener('click', e => {
   if (e.target.id === 'recordsModal') closeRecordsModal();
 });
 
-/* date key per type */
 const recordsDateKey = {
   participation: 'intervention_date',
   attendance:    'activity_date',
@@ -1672,20 +2201,14 @@ function renderRecordsTable(rows, type) {
     return;
   }
 
-  const wrapKeys = new Set([
-    'title','venue','organizer','purpose','competency',
-    'college_office','paper_title','journal_title','co_authors','places_visited',
-    'employee_names','positions','reason','remarks','chargeable_against'
-  ]);
-
   let html = '<div>';
   html += '<table style="width:100%;border-collapse:collapse;font-size:.78rem;">';
 
   html += '<thead><tr>';
   cfg.columns.forEach(col => {
-    html += `<th style="padding:.5rem .75rem;background:#f3f4f6;border-bottom:2px solid #e5e7eb;
-      border-right:1px solid #e5e7eb;text-align:left;font-size:.68rem;font-weight:700;
-      color:#6b7280;text-transform:uppercase;letter-spacing:.4pt;position:sticky;top:0;z-index:1;
+    html += `<th style="padding:.5rem .75rem;background:var(--crimson-deep);border-bottom:2px solid var(--crimson);
+      border-right:1px solid var(--ivory-deep);text-align:left;font-size:.68rem;font-weight:700;
+      color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4pt;position:sticky;top:0;z-index:1;
       white-space:nowrap;">${esc(col.label)}</th>`;
   });
   html += '</tr></thead>';
@@ -1696,45 +2219,48 @@ function renderRecordsTable(rows, type) {
     html += `<tr style="background:${bg};">`;
 
     cfg.columns.forEach(col => {
-      const canWrap = wrapKeys.has(col.key) || col.array || col.expenseCell || col.pre;
-      const cellStyle = canWrap
-        ? 'padding:.45rem .75rem;border-bottom:1px solid #f3f4f6;border-right:1px solid #f3f4f6;vertical-align:top;min-width:140px;max-width:260px;white-space:normal;word-break:break-word;'
-        : 'padding:.45rem .75rem;border-bottom:1px solid #f3f4f6;border-right:1px solid #f3f4f6;vertical-align:top;white-space:nowrap;';
-      html += `<td style="${cellStyle}">`;
+      const isWide = col.expenseCell || col.array;
+      const cellStyle = isWide
+        ? 'padding:.45rem .75rem;border-bottom:1px solid var(--ivory-deep);border-right:1px solid var(--ivory-deep);vertical-align:top;white-space:nowrap;'
+        : 'padding:.45rem .75rem;border-bottom:1px solid var(--ivory-deep);border-right:1px solid var(--ivory-deep);vertical-align:top;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;';
+      const rawVal = col.key !== '_index' && !col.array && !col.expenseCell && !col.bool && !col.badge && !col.currency && !col.totalCalc
+        ? String(row[col.key] ?? '')
+        : '';
+      html += `<td style="${cellStyle}" title="${esc(rawVal)}">`;
 
       if (col.key === '_index') {
-        html += `<span style="color:#9ca3af;">${idx + 1}</span>`;
+        html += `<span style="color:var(--ink-ghost);">${idx + 1}</span>`;
 
       } else if (col.totalCalc) {
         const items = row.expense_items || [];
         const total = items.reduce((s, x) => s + parseFloat(x.amount || 0), 0);
         html += total > 0
           ? `<strong>Php ${total.toLocaleString('en-PH',{minimumFractionDigits:2})}</strong>`
-          : '<span style="color:#9ca3af;">—</span>';
+          : '<span style="color:var(--ink-ghost);">—</span>';
 
       } else if (col.expenseCell) {
         const items = row[col.key] || [];
         if (items.length === 0) {
-          html += '<span style="color:#9ca3af;">—</span>';
+          html += '<span style="color:var(--ink-ghost);">—</span>';
         } else {
           html += '<div style="white-space:normal;min-width:260px;">';
           html += '<table style="width:100%;border-collapse:collapse;font-size:.72rem;">';
-          html += '<tr style="background:#f9fafb;">'
-            + '<th style="padding:.2rem .4rem;border:1px solid #e5e7eb;text-align:left;">Payee</th>'
-            + '<th style="padding:.2rem .4rem;border:1px solid #e5e7eb;text-align:left;">Description</th>'
-            + '<th style="padding:.2rem .4rem;border:1px solid #e5e7eb;text-align:right;">Qty</th>'
-            + '<th style="padding:.2rem .4rem;border:1px solid #e5e7eb;text-align:right;">Unit Cost</th>'
-            + '<th style="padding:.2rem .4rem;border:1px solid #e5e7eb;text-align:right;">Amount</th>'
+          html += '<tr style="background:var(--ivory-warm);">'
+            + '<th style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);text-align:left;">Payee</th>'
+            + '<th style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);text-align:left;">Description</th>'
+            + '<th style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);text-align:right;">Qty</th>'
+            + '<th style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);text-align:right;">Unit Cost</th>'
+            + '<th style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);text-align:right;">Amount</th>'
             + '</tr>';
           items.forEach(item => {
             const amt = parseFloat(item.amount || 0);
             const uc  = parseFloat(item.unit_cost || 0);
             html += `<tr>
-              <td style="padding:.2rem .4rem;border:1px solid #e5e7eb;">${esc(item.payee||'')}</td>
-              <td style="padding:.2rem .4rem;border:1px solid #e5e7eb;">${esc(item.description||'')}</td>
-              <td style="padding:.2rem .4rem;border:1px solid #e5e7eb;text-align:right;">${esc(String(item.quantity||''))}</td>
-              <td style="padding:.2rem .4rem;border:1px solid #e5e7eb;text-align:right;">${uc>0?'Php '+uc.toLocaleString('en-PH',{minimumFractionDigits:2}):''}</td>
-              <td style="padding:.2rem .4rem;border:1px solid #e5e7eb;text-align:right;">${amt>0?'Php '+amt.toLocaleString('en-PH',{minimumFractionDigits:2}):''}</td>
+              <td style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);">${esc(item.payee||'')}</td>
+              <td style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);">${esc(item.description||'')}</td>
+              <td style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);text-align:right;">${esc(String(item.quantity||''))}</td>
+              <td style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);text-align:right;">${uc>0?'Php '+uc.toLocaleString('en-PH',{minimumFractionDigits:2}):''}</td>
+              <td style="padding:.2rem .4rem;border:1px solid var(--ivory-deep);text-align:right;">${amt>0?'Php '+amt.toLocaleString('en-PH',{minimumFractionDigits:2}):''}</td>
             </tr>`;
           });
           html += '</table></div>';
@@ -1746,32 +2272,32 @@ function renderRecordsTable(rows, type) {
           ? '<div style="display:flex;flex-wrap:wrap;gap:.2rem;white-space:normal;">'
             + arr.map(t => `<span class="badge badge-maroon" style="font-size:.65rem;">${esc(t)}</span>`).join('')
             + '</div>'
-          : '<span style="color:#9ca3af;">—</span>';
+          : '<span style="color:var(--ink-ghost);">—</span>';
 
       } else if (col.badge) {
         const v = row[col.key];
         html += v
           ? `<span class="badge badge-${col.badge}" style="font-size:.68rem;">${esc(v)}</span>`
-          : '<span style="color:#9ca3af;">—</span>';
+          : '<span style="color:var(--ink-ghost);">—</span>';
 
       } else if (col.bool) {
         html += row[col.key]
           ? '<span class="badge badge-green" style="font-size:.65rem;">Yes</span>'
-          : '<span style="color:#9ca3af;font-size:.72rem;">No</span>';
+          : '<span style="color:var(--ink-ghost);font-size:.72rem;">No</span>';
 
       } else if (col.currency) {
         const num = parseFloat(row[col.key] || 0);
         html += num > 0
           ? `<span style="font-weight:600;">Php ${num.toLocaleString('en-PH',{minimumFractionDigits:2})}</span>`
-          : '<span style="color:#9ca3af;">—</span>';
+          : '<span style="color:var(--ink-ghost);">—</span>';
 
       } else if (col.pre) {
         const v = row[col.key] || '';
-        html += v ? `<div>${esc(v)}</div>` : '<span style="color:#9ca3af;">—</span>';
+        html += v ? `<span>${esc(v)}</span>` : '<span style="color:var(--ink-ghost);">—</span>';
 
       } else {
         const v = row[col.key] ?? '';
-        html += v !== '' ? `<div>${esc(String(v))}</div>` : '<span style="color:#9ca3af;">—</span>';
+        html += v !== '' ? `<span>${esc(String(v))}</span>` : '<span style="color:var(--ink-ghost);">—</span>';
       }
 
       html += '</td>';
@@ -1866,18 +2392,15 @@ function closeMovPreview() {
   document.body.style.overflow = '';
 }
 
-/* ── Global Escape ── */
+/* ── Global Escape key ── */
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Escape') return;
   closeModal('viewModal');
   closeModal('editModal');
   closeModal('genericViewModal');
-
-  // form modals close ONLY via X button, but ESC is fine to close them:
   closeModal('createModal');
   closeModal('genericFormModal');
   closeModal('movModal');
-
   closePrintModal();
   closeMovPreview();
   closeRecordsModal();
@@ -1885,19 +2408,15 @@ document.addEventListener('keydown', function(e) {
 
 /* ── Loading helper ── */
 function loadingHtml() {
-  return '<p style="padding:2rem;color:var(--gray-500);text-align:center;">Loading...</p>';
+  return '<p style="padding:2rem;color:var(--ink-faint);text-align:center;">Loading...</p>';
 }
 
-/* ✅ On page load:
-   - restore tab from URL
-   - reopen MOV modal if old mov_record_id exists
-   - if validation errors exist, keep modal open (heuristic)
-*/
+/* ── On page load ── */
 document.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(location.search);
   switchTab(params.get('tab') || 'participation');
 
-  // init flatpickr on quick-add date fields if flatpickr is on the page
+  // Init flatpickr on all quick-add date fields on the page
   initDatePickers(document);
 
   // Re-open MOV modal if validation failed
@@ -1906,16 +2425,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector(`[data-mov-btn="${failedId}"]`)?.click();
   }
 
-  // Keep a form modal open if validation failed (no controller changes required)
+  // Keep form modal open if validation failed
   const hasErrors = {{ $errors->any() ? 'true' : 'false' }};
-  const oldInput = @json(old());
+  const oldInput  = @json(old());
 
   if (hasErrors) {
-    // If participation form likely
     const looksLikeParticipation =
       oldInput.participant_name || oldInput.title || oldInput.intervention_date || oldInput.level;
-
-    // If travel form likely
     const looksLikeTravel =
       oldInput.travel_dates || oldInput.places_visited || oldInput.chargeable_against || oldInput.employee_names || oldInput.emp_names;
 
@@ -1924,10 +2440,8 @@ document.addEventListener('DOMContentLoaded', function() {
       openCreateModal();
     } else if (looksLikeTravel) {
       switchTab('travel');
-      // Re-open Travel form in generic modal
       openFormModal('travel', '✈️ New Authority to Travel');
     }
-    // For other forms: you can add more heuristics later (attendance/publication/reimbursement)
   }
 });
 </script>

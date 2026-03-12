@@ -241,6 +241,11 @@ class LdRequestController extends Controller
         'sig_approved_position'     => 'nullable|string|max:255',
     ]);
 
+    // Generate tracking number if record doesn't have one
+    if (empty($validated['tracking_number']) && empty($ld->tracking_number)) {
+        $validated['tracking_number'] = 'LD-'.date('Ymd').'-'.Str::upper(Str::random(6));
+    }
+
     // Fill first (don't save yet)
     $ld->fill($validated);
 

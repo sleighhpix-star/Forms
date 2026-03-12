@@ -22,7 +22,13 @@
     <div class="section-label">Participant Information</div>
     <div class="field-grid cols-2">
 
-  
+      <div class="field span-2 {{ $errors->has('tracking_number') ? 'has-error' : '' }}">
+        <label for="tracking_number">Tracking Number <span class="hint">(optional — leave empty to auto-generate)</span></label>
+        <input type="text" id="tracking_number" name="tracking_number"
+               value="{{ old('tracking_number', $record?->tracking_number) }}"
+               placeholder="e.g. LD-20260312-XXXXXX">
+        @error('tracking_number') <span class="field-error">{{ $message }}</span> @enderror
+      </div>
 
       <div class="field span-2 {{ $errors->has('participant_name') ? 'has-error' : '' }}">
         <label>Name of Participant <span class="req">*</span></label>
@@ -154,15 +160,6 @@
     </div>
   </div>
 
-  {{-- Tracking number (optional) --}}
-  <div class="field span-2 {{ $errors->has('tracking_number') ? 'has-error' : '' }}">
-    <label for="tracking_number">Tracking Number <span class="hint">(optional)</span></label>
-    <input type="text" id="tracking_number" name="tracking_number"
-           value="{{ old('tracking_number', $record?->tracking_number) }}"
-           placeholder="Leave empty to auto-generate">
-    @error('tracking_number') <span class="field-error">{{ $message }}</span> @enderror
-  </div>
-
   {{-- ASSESSMENT QUESTIONS --}}
   <div class="card-section">
     <div class="section-label">Assessment Questions</div>
@@ -223,7 +220,7 @@
 
   {{-- ACTIONS --}}
   <div class="form-actions">
-    <button type="button" onclick="closeEditModal()" class="btn btn-ghost">Cancel</button>
+    <button type="button" onclick="closeModal('editModal')" class="btn btn-ghost">Cancel</button>
     <button type="submit" class="btn btn-primary">💾 Update Request</button>
   </div>
 

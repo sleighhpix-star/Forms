@@ -7,31 +7,30 @@
 @endphp
 
 <style>
+/* ── Signatory block — new design system ── */
 .sig-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:.5rem; }
-.sig-box { border:1px solid #e5e7eb; border-radius:10px; padding:.75rem 1rem; background:#fafafa; transition:border-color .15s,background .15s; }
-.sig-box:focus-within { border-color:var(--maroon); background:#fff; }
-.sig-role { font-size:.68rem; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.5pt; margin-bottom:.45rem; }
+.sig-box { border:1.5px solid var(--ivory-deep); border-radius:var(--radius-md); padding:.75rem 1rem; background:var(--surface-raised); transition:border-color .18s,background .18s; }
+.sig-box:focus-within { border-color:var(--gold); background:var(--surface); }
+.sig-role { font-size:.64rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.5pt; margin-bottom:.45rem; }
 .sig-field-wrap { position:relative; }
-.sig-name-input { width:100%; border:none; border-bottom:1.5px dashed #d1d5db; background:transparent; font-size:.85rem; font-weight:700; color:#111827; padding:.15rem 1.4rem .15rem 0; outline:none; font-family:inherit; transition:border-color .15s; }
-.sig-name-input:focus { border-bottom-color:var(--maroon); border-bottom-style:solid; }
-.sig-pos-input { width:100%; border:none; border-bottom:1px dashed #e5e7eb; background:transparent; font-size:.72rem; color:#6b7280; padding:.15rem 1.4rem .15rem 0; outline:none; font-family:inherit; margin-top:.3rem; transition:border-color .15s; }
-.sig-pos-input:focus { border-bottom-color:var(--maroon); border-bottom-style:solid; }
-.sig-edit-icon { position:absolute; right:0; top:50%; transform:translateY(-50%); font-size:.65rem; color:#d1d5db; pointer-events:none; }
-.sig-box:focus-within .sig-edit-icon { color:var(--maroon); }
-.sig-reset-btn { margin-top:.5rem; font-size:.65rem; color:#9ca3af; background:none; border:none; cursor:pointer; padding:0; text-decoration:underline; }
-.sig-reset-btn:hover { color:var(--maroon); }
-
+.sig-name-input { width:100%; border:none; border-bottom:1.5px dashed var(--ivory-deep); background:transparent; font-size:.85rem; font-weight:700; color:var(--crimson); padding:.15rem 1.4rem .15rem 0; outline:none; font-family:var(--font-body); transition:border-color .15s; }
+.sig-name-input:focus { border-bottom-color:var(--crimson); border-bottom-style:solid; }
+.sig-pos-input { width:100%; border:none; border-bottom:1px dashed var(--ivory-deep); background:transparent; font-size:.72rem; color:var(--ink-soft); padding:.15rem 1.4rem .15rem 0; outline:none; font-family:var(--font-body); margin-top:.3rem; transition:border-color .15s; }
+.sig-pos-input:focus { border-bottom-color:var(--crimson); border-bottom-style:solid; }
+.sig-edit-icon { position:absolute; right:0; top:50%; transform:translateY(-50%); font-size:.65rem; color:var(--ink-ghost); pointer-events:none; }
+.sig-box:focus-within .sig-edit-icon { color:var(--crimson); }
+.sig-reset-btn { margin-top:.5rem; font-size:.65rem; color:var(--ink-ghost); background:none; border:none; cursor:pointer; padding:0; text-decoration:underline; font-family:var(--font-body); }
+.sig-reset-btn:hover { color:var(--crimson); }
+/* Employee table */
 .emp-table { width:100%; border-collapse:collapse; font-size:.82rem; }
-.emp-table th { background:#f3f4f6; padding:.4rem .6rem; text-align:left; font-size:.7rem; font-weight:700; color:#6b7280; text-transform:uppercase; border-bottom:2px solid #e5e7eb; }
-.emp-table td { padding:.3rem .4rem; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
-.emp-table input, .emp-table textarea { width:100%; border:1.5px solid #e5e7eb; border-radius:6px; padding:.3rem .5rem; font-size:.8rem; font-family:inherit; outline:none; background:#fff; resize:none; }
-.emp-table input:focus, .emp-table textarea:focus { border-color:var(--maroon); }
+.emp-table th { background:linear-gradient(135deg,var(--crimson-deep),var(--crimson)); padding:.4rem .6rem; text-align:left; font-size:.67rem; font-weight:700; color:rgba(255,255,255,.88); text-transform:uppercase; border-bottom:2px solid var(--crimson-deep); }
+.emp-table td { padding:.3rem .4rem; border-bottom:1px solid var(--ivory-deep); vertical-align:middle; }
+.emp-table input, .emp-table textarea { width:100%; border:1.5px solid var(--ivory-deep); border-radius:var(--radius-sm); padding:.3rem .5rem; font-size:.8rem; font-family:var(--font-body); outline:none; background:var(--surface); resize:none; transition:border-color .15s; }
+.emp-table input:focus, .emp-table textarea:focus { border-color:var(--crimson); box-shadow:0 0 0 2px var(--crimson-glow); }
 .emp-del-btn { background:none; border:none; color:#ef4444; cursor:pointer; font-size:.9rem; padding:.2rem .4rem; border-radius:5px; }
 .emp-del-btn:hover { background:#fef2f2; }
-.btn-add-emp { display:inline-flex; align-items:center; gap:.35rem; margin-top:.6rem;
-  background:#fff; border:1.5px dashed #d1d5db; border-radius:7px;
-  padding:.35rem .85rem; font-size:.78rem; font-weight:600; color:#6b7280; cursor:pointer; }
-.btn-add-emp:hover { border-color:var(--maroon); color:var(--maroon); background:#fdf2f2; }
+.btn-add-emp { display:inline-flex; align-items:center; gap:.35rem; margin-top:.6rem; background:var(--surface); border:1.5px dashed var(--ivory-deep); border-radius:var(--radius-md); padding:.35rem .85rem; font-size:.78rem; font-weight:600; color:var(--ink-soft); cursor:pointer; font-family:var(--font-body); transition:var(--transition); }
+.btn-add-emp:hover { border-color:var(--crimson); color:var(--crimson); background:var(--crimson-glow); }
 </style>
 
 <div class="page" style="max-width:880px">
@@ -44,6 +43,18 @@
       {{-- ══ EMPLOYEES ══ --}}
       <div class="card-section">
         <div class="section-label">Employee/s Information</div>
+
+        <div class="field-grid cols-2" style="margin-bottom:1.25rem;">
+          <div class="field {{ $errors->has('tracking_number') ? 'has-error' : '' }}">
+            <label for="tracking_number">Tracking Number <span class="hint">(optional)</span></label>
+            <input type="text" id="tracking_number" name="tracking_number"
+                   value="{{ old('tracking_number', $record?->tracking_number) }}"
+                   placeholder="Auto-generated if empty"
+                   style="max-width:260px;">
+            @error('tracking_number') <span class="field-error">{{ $message }}</span> @enderror
+          </div>
+        </div>
+
         <p class="text-muted text-xs" style="margin-bottom:.75rem;">Add one row per employee. For single traveller, one row is enough.</p>
 
         @php
@@ -122,15 +133,6 @@
           </div>
 
         </div>
-      </div>
-
-      {{-- Tracking number (optional) --}}
-      <div class="field span-2 {{ $errors->has('tracking_number') ? 'has-error' : '' }}">
-        <label for="tracking_number">Tracking Number <span class="hint">(optional)</span></label>
-        <input type="text" id="tracking_number" name="tracking_number"
-               value="{{ old('tracking_number', $record?->tracking_number) }}"
-               placeholder="Leave empty to auto-generate">
-        @error('tracking_number') <span class="field-error">{{ $message }}</span> @enderror
       </div>
 
       {{-- ══ SIGNATORIES ══ --}}
