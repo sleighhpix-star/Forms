@@ -300,7 +300,7 @@ function resetSignatory(btn) {
 
       {{-- Actions --}}
       <div class="form-actions">
-        <button type="button" onclick="closeModal('genericFormModal')" class="btn btn-ghost">Cancel</button>
+        <button type="button" onclick="closeModal('gFormModal')" class="btn btn-ghost">Cancel</button>
         <button type="reset" class="btn btn-outline" onclick="document.querySelectorAll('#attendance-form [data-default]').forEach(i=>i.value=i.dataset.default)">Clear</button>
         <button type="submit" class="btn btn-primary">{{ $isEdit ? '💾 Update' : '💾 Save' }} Request</button>
       </div>

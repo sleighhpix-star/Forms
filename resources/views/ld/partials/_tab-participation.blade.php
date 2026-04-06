@@ -6,7 +6,7 @@
   $p_lvls   = \App\Models\LdRequest::selectRaw('level, count(*) as n')->groupBy('level')->pluck('n','level')->toArray();
 @endphp
 
-<div class="idx-panel active" id="idx-p-participation" role="tabpanel">
+<div class="idx-panel {{ request('tab', 'participation') === 'participation' ? 'active' : '' }}" id="idx-p-participation" role="tabpanel">
 <div class="idx-panel-body">
 
   {{-- Stats --}}

@@ -50,7 +50,7 @@ class LdRequestController extends Controller
 
         // Tab 2: Attendance
         $attQuery = LdAttendance::query();
-        if ($s = $request->input('att_search')) {
+        if ($s = $request->input('att_q')) {
             $attQuery->where(fn($q) => $q
                 ->whereRaw('attendee_name ILIKE ?', ["%{$s}%"])
                 ->orWhereRaw('campus ILIKE ?',       ["%{$s}%"])
@@ -62,7 +62,7 @@ class LdRequestController extends Controller
 
         // Tab 3: Publication
         $pubQuery = LdPublication::query();
-        if ($s = $request->input('pub_search')) {
+        if ($s = $request->input('pub_q')) {
             $pubQuery->where(fn($q) => $q
                 ->whereRaw('faculty_name ILIKE ?',    ["%{$s}%"])
                 ->orWhereRaw('paper_title ILIKE ?',   ["%{$s}%"])
@@ -75,14 +75,14 @@ class LdRequestController extends Controller
 
         // Tab 4: Reimbursement
         $reiQuery = LdReimbursement::query();
-        if ($s = $request->input('rei_search')) {
+        if ($s = $request->input('rei_q')) {
             $reiQuery->whereRaw('department ILIKE ?', ["%{$s}%"]);
         }
         $reimbursementRecords = $reiQuery->latest()->paginate(20, ['*'], 'rei_page')->withQueryString();
 
         // Tab 5: Travel
         $trvQuery = LdTravel::query();
-        if ($s = $request->input('trv_search')) {
+        if ($s = $request->input('trv_q')) {
             $trvQuery->where(fn($q) => $q
                 ->whereRaw('employee_names ILIKE ?',   ["%{$s}%"])
                 ->orWhereRaw('places_visited ILIKE ?', ["%{$s}%"])
@@ -126,13 +126,12 @@ class LdRequestController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validateForm($request);
-        $ld = LdRequest::create($validated);
 
-        if (empty($ld->tracking_number)) {
-            $ld->forceFill([
-                'tracking_number' => 'LD-' . date('Ymd') . '-' . Str::upper(Str::random(6)),
-            ])->save();
+        if (empty($validated['tracking_number'])) {
+            $validated['tracking_number'] = 'LD-' . date('Ymd') . '-' . Str::upper(Str::random(6));
         }
+
+        LdRequest::create($validated);
 
         return redirect()->route('ld.index')->with('success', 'Request submitted successfully.');
     }
@@ -210,12 +209,33 @@ class LdRequestController extends Controller
 
     public function uploadMov(Request $request, LdRequest $ld)
     {
-        return parent::uploadMov($request, $ld, 'participation', 'participation');
+        $request->validate([
+            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
+        ]);
+        if ($ld->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($ld->mov_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($ld->mov_path);
+        }
+        $file = $request->file('mov_file');
+        $ld->forceFill([
+            'mov_path'          => $file->store('ld/participation/mov', 'public'),
+            'mov_original_name' => $file->getClientOriginalName(),
+            'mov_size'          => $file->getSize(),
+            'mov_mime'          => $file->getMimeType(),
+        ])->save();
+        return redirect()->route('ld.index', ['tab' => 'participation'])
+            ->with('success', '✅ MOV uploaded.');
     }
 
     public function viewMov(LdRequest $ld)
     {
-        return parent::viewMov($ld);
+        abort_unless(
+            $ld->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($ld->mov_path),
+            404
+        );
+        return \Illuminate\Support\Facades\Storage::disk('public')->response(
+            $ld->mov_path,
+            $ld->mov_original_name ?? basename($ld->mov_path)
+        );
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

@@ -2,13 +2,22 @@
      Index-page specific styles. Design tokens come from layouts/app.blade.php. --}}
 <style>
 /* ── Page wrapper ── */
-.idx { max-width:1360px; margin:0 auto; padding:2rem 1.75rem 6rem; }
+/* ── One-page layout: no body scroll on index ── */
+body.idx-page { overflow:hidden; height:100vh; }
+.idx {
+  max-width:1360px; margin:0 auto;
+  padding:1.25rem 1.75rem 0;
+  height:calc(100vh - 60px);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
 
 /* ── Page heading strip ── */
 .idx-heading {
   display:flex; align-items:flex-end; justify-content:space-between;
   flex-wrap:wrap; gap:1rem;
-  margin-bottom:1.5rem;
+  margin-bottom:1rem;
+  flex-shrink:0;
 }
 .idx-heading h1 {
   font-family:var(--f-display); font-size:1.65rem;
@@ -22,6 +31,7 @@
   padding:5px; background:var(--surface);
   border:1px solid var(--border); border-bottom:none;
   border-radius:var(--r-lg) var(--r-lg) 0 0;
+  flex-shrink:0;
 }
 .idx-tab {
   flex-shrink:0; display:flex; align-items:center; gap:6px;
@@ -40,12 +50,14 @@
 .idx-tab.active .idx-tab-n { background:rgba(255,255,255,.2); }
 
 /* ── Panel wrapper ── */
-.idx-panel { display:none; }
-.idx-panel.active { display:block; }
+.idx-panel { display:none; flex:1; min-height:0; flex-direction:column; }
+.idx-panel.active { display:flex; }
 .idx-panel-body {
   background:var(--surface);
   border:1px solid var(--border); border-top:none;
   border-radius:0 0 var(--r-lg) var(--r-lg);
+  flex:1; min-height:0;
+  display:flex; flex-direction:column;
   overflow:hidden;
 }
 
@@ -53,6 +65,7 @@
 .idx-stats {
   display:grid; grid-template-columns:repeat(auto-fit, minmax(148px,1fr));
   border-bottom:1px solid var(--border-sm);
+  flex-shrink:0;
 }
 .idx-stat {
   padding:18px 22px; position:relative;
@@ -81,6 +94,7 @@
   flex-wrap:wrap; gap:8px;
   padding:12px 20px;
   background:var(--bg); border-bottom:1px solid var(--border-sm);
+  flex-shrink:0;
 }
 .idx-toolbar-l { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .idx-toolbar-r { display:flex; align-items:center; gap:8px; }
@@ -96,7 +110,7 @@
 .idx-toolbar input[type=text]::placeholder { color:var(--ink-5); }
 
 /* ── Table ── */
-.idx-table-wrap { overflow:auto; max-height:480px; }
+.idx-table-wrap { overflow:auto; flex:1; min-height:0; }
 .idx-table-wrap::-webkit-scrollbar { width:5px; height:5px; }
 .idx-table-wrap::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 .idx-table thead th { position:sticky; top:0; z-index:2; background:#F8F4EE; }
@@ -159,7 +173,7 @@
 .idx-empty p { font-size:.9rem; margin-bottom:14px; }
 
 /* ── Pagination ── */
-.idx-pagination { padding:12px 20px; background:var(--bg); border-top:1px solid var(--border-sm); }
+.idx-pagination { padding:12px 20px; background:var(--bg); border-top:1px solid var(--border-sm); flex-shrink:0; }
 
 /* ═══════════════════════════════════════
    MODALS
@@ -167,16 +181,18 @@
 .idx-overlay {
   display:none; position:fixed; inset:0;
   background:rgba(18,12,10,.5); backdrop-filter:blur(4px);
-  z-index:9999; align-items:flex-start; justify-content:center;
-  overflow-y:auto; padding:48px 16px;
+  z-index:9999; align-items:center; justify-content:center;
+  overflow:hidden; padding:16px;
 }
 .idx-overlay.active { display:flex; }
 .idx-modal {
   background:var(--surface); border-radius:var(--r-2xl);
   width:100%; max-width:900px; margin:auto;
+  max-height:90vh; display:flex; flex-direction:column;
   box-shadow:0 4px 24px rgba(0,0,0,.1), 0 20px 60px rgba(0,0,0,.08);
   border:1px solid var(--border);
   animation:idxModalIn .2s cubic-bezier(.34,1.1,.64,1);
+  overflow:hidden;
 }
 .idx-modal-sm  { max-width:520px; }
 .idx-modal-lg  { max-width:96vw; }
@@ -202,7 +218,7 @@
   cursor:pointer; font-size:.76rem; font-weight:600; transition:background .14s;
 }
 .idx-modal-close:hover { background:rgba(255,255,255,.22); }
-.idx-modal-body { min-height:160px; }
+.idx-modal-body { min-height:160px; overflow-y:auto; flex:1; }
 .idx-modal-loading { display:flex; align-items:center; justify-content:center; min-height:160px; }
 
 /* Iframe modal */
@@ -236,7 +252,7 @@
 .idx-rec-filters input { width:200px; }
 .idx-rec-filters input:focus, .idx-rec-filters select:focus { border-color:var(--c); box-shadow:0 0 0 3px var(--c-ring); }
 .idx-rec-body { max-height:calc(90vh - 200px); overflow-y:auto; overflow-x:hidden; }
-.idx-rec-scroll { overflow-x:auto; }
+.idx-rec-scroll { overflow-x:auto; overflow-y:visible; }
 .idx-rec-scroll::-webkit-scrollbar { height:5px; }
 .idx-rec-scroll::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 .idx-rec-footer {
@@ -255,7 +271,29 @@
 .idx-rec-table tbody tr:nth-child(even) { background:var(--bg); }
 .idx-rec-table tbody tr:hover { background:#fdfaf4; }
 .idx-rec-table tbody td { padding:7px 12px; vertical-align:top; border-right:1px solid var(--border-sm); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
 .idx-rec-table tbody td[title] { cursor:help; }
+
+/* ── RECORDS TOOLTIP ── */
+.rec-tip {
+  cursor:help;
+  display:inline-block; max-width:200px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  vertical-align:middle;
+}
+#recTooltip {
+  position:fixed;
+  background:#1C1410; color:#fff;
+  font-size:.72rem; font-family:var(--f-body); font-weight:400; line-height:1.5;
+  padding:6px 10px; border-radius:var(--r-sm);
+  white-space:pre-wrap; word-break:break-word;
+  max-width:280px; min-width:60px;
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+  pointer-events:none;
+  opacity:0; transition:opacity .12s ease;
+  z-index:999999;
+  text-align:left;
+}
 
 /* Download dropdown */
 .idx-dl-wrap { position:relative; display:inline-block; }

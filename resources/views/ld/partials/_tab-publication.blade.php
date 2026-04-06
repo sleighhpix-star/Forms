@@ -4,7 +4,7 @@
   $pb_month = \App\Models\LdPublication::whereMonth('created_at',now()->month)->whereYear('created_at',now()->year)->count();
   $pb_avg   = \App\Models\LdPublication::avg('amount_requested') ?? 0;
 @endphp
-<div class="idx-panel" id="idx-p-publication" role="tabpanel">
+<div class="idx-panel {{ request('tab') === 'publication' ? 'active' : '' }}" id="idx-p-publication" role="tabpanel">
 <div class="idx-panel-body">
   <div class="idx-stats">
     <div class="idx-stat"><div class="idx-stat-label">Total</div><div class="idx-stat-num">{{ $pb_total }}</div><div class="idx-stat-sub">incentive requests</div></div>

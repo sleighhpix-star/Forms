@@ -5,7 +5,7 @@
   $a_fin   = \App\Models\LdAttendance::where('financial_requested',true)->count();
   $a_lvls  = \App\Models\LdAttendance::selectRaw('level, count(*) as n')->groupBy('level')->pluck('n','level')->toArray();
 @endphp
-<div class="idx-panel" id="idx-p-attendance" role="tabpanel">
+<div class="idx-panel {{ request('tab') === 'attendance' ? 'active' : '' }}" id="idx-p-attendance" role="tabpanel">
 <div class="idx-panel-body">
   <div class="idx-stats">
     <div class="idx-stat"><div class="idx-stat-label">Total</div><div class="idx-stat-num">{{ $a_total }}</div><div class="idx-stat-sub">attendance requests</div></div>

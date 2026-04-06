@@ -3,7 +3,7 @@
   $ri_total = $counts['reimbursement'] ?? 0;
   $ri_month = \App\Models\LdReimbursement::whereMonth('created_at',now()->month)->whereYear('created_at',now()->year)->count();
 @endphp
-<div class="idx-panel" id="idx-p-reimbursement" role="tabpanel">
+<div class="idx-panel {{ request('tab') === 'reimbursement' ? 'active' : '' }}" id="idx-p-reimbursement" role="tabpanel">
 <div class="idx-panel-body">
   <div class="idx-stats">
     <div class="idx-stat"><div class="idx-stat-label">Total</div><div class="idx-stat-num">{{ $ri_total }}</div><div class="idx-stat-sub">reimbursement requests</div></div>

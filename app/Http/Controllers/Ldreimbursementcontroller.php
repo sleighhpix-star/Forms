@@ -78,12 +78,33 @@ class LdReimbursementController extends Controller
 
     public function uploadMov(Request $request, LdReimbursement $reimbursement)
     {
-        return parent::uploadMov($request, $reimbursement, 'reimbursement', 'reimbursement');
+        $request->validate([
+            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
+        ]);
+        if ($reimbursement->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($reimbursement->mov_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($reimbursement->mov_path);
+        }
+        $file = $request->file('mov_file');
+        $reimbursement->forceFill([
+            'mov_path'          => $file->store('ld/reimbursement/mov', 'public'),
+            'mov_original_name' => $file->getClientOriginalName(),
+            'mov_size'          => $file->getSize(),
+            'mov_mime'          => $file->getMimeType(),
+        ])->save();
+        return redirect()->route('ld.index', ['tab' => 'reimbursement'])
+            ->with('success', '✅ MOV uploaded.');
     }
 
     public function viewMov(LdReimbursement $reimbursement)
     {
-        return parent::viewMov($reimbursement);
+        abort_unless(
+            $reimbursement->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($reimbursement->mov_path),
+            404
+        );
+        return \Illuminate\Support\Facades\Storage::disk('public')->response(
+            $reimbursement->mov_path,
+            $reimbursement->mov_original_name ?? basename($reimbursement->mov_path)
+        );
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

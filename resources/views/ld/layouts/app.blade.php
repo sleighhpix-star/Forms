@@ -200,6 +200,7 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.25}
 }
 </style>
 @stack('styles')
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
 <header class="app-header no-print">

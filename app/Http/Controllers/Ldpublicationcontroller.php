@@ -76,12 +76,33 @@ class LdPublicationController extends Controller
 
     public function uploadMov(Request $request, LdPublication $publication)
     {
-        return parent::uploadMov($request, $publication, 'publication', 'publication');
+        $request->validate([
+            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
+        ]);
+        if ($publication->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($publication->mov_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($publication->mov_path);
+        }
+        $file = $request->file('mov_file');
+        $publication->forceFill([
+            'mov_path'          => $file->store('ld/publication/mov', 'public'),
+            'mov_original_name' => $file->getClientOriginalName(),
+            'mov_size'          => $file->getSize(),
+            'mov_mime'          => $file->getMimeType(),
+        ])->save();
+        return redirect()->route('ld.index', ['tab' => 'publication'])
+            ->with('success', '✅ MOV uploaded.');
     }
 
     public function viewMov(LdPublication $publication)
     {
-        return parent::viewMov($publication);
+        abort_unless(
+            $publication->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($publication->mov_path),
+            404
+        );
+        return \Illuminate\Support\Facades\Storage::disk('public')->response(
+            $publication->mov_path,
+            $publication->mov_original_name ?? basename($publication->mov_path)
+        );
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

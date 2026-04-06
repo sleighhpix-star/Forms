@@ -16,7 +16,7 @@ class LdAttendanceController extends Controller
         $validated = $this->validateForm($request);
 
         if (empty($validated['tracking_number'])) {
-            $validated['tracking_number'] = 'LT-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LA-' . date('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         LdAttendance::create($validated);
@@ -30,7 +30,7 @@ class LdAttendanceController extends Controller
         $validated = $this->validateForm($request);
 
         if (empty($validated['tracking_number']) && empty($attendance->tracking_number)) {
-            $validated['tracking_number'] = 'LT-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LA-' . date('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         $attendance->update($validated);
@@ -76,12 +76,33 @@ class LdAttendanceController extends Controller
 
     public function uploadMov(Request $request, LdAttendance $attendance)
     {
-        return parent::uploadMov($request, $attendance, 'attendance', 'attendance');
+        $request->validate([
+            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
+        ]);
+        if ($attendance->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($attendance->mov_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($attendance->mov_path);
+        }
+        $file = $request->file('mov_file');
+        $attendance->forceFill([
+            'mov_path'          => $file->store('ld/attendance/mov', 'public'),
+            'mov_original_name' => $file->getClientOriginalName(),
+            'mov_size'          => $file->getSize(),
+            'mov_mime'          => $file->getMimeType(),
+        ])->save();
+        return redirect()->route('ld.index', ['tab' => 'attendance'])
+            ->with('success', '✅ MOV uploaded.');
     }
 
     public function viewMov(LdAttendance $attendance)
     {
-        return parent::viewMov($attendance);
+        abort_unless(
+            $attendance->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($attendance->mov_path),
+            404
+        );
+        return \Illuminate\Support\Facades\Storage::disk('public')->response(
+            $attendance->mov_path,
+            $attendance->mov_original_name ?? basename($attendance->mov_path)
+        );
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

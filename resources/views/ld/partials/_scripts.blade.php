@@ -5,13 +5,13 @@ function openModal(id){document.getElementById(id)?.classList.add('active');docu
 function closeModal(id){document.getElementById(id)?.classList.remove('active');document.body.style.overflow=''}
 function loading(){return '<div class="idx-modal-loading"><p style="color:var(--ink-4)">Loading…</p></div>'}
 function reExec(el){el.querySelectorAll('script').forEach(old=>{const s=document.createElement('script');[...old.attributes].forEach(a=>s.setAttribute(a.name,a.value));s.textContent=old.textContent;old.parentNode.replaceChild(s,old)})}
-function initFP(root=document){if(!window.flatpickr||!root?.querySelectorAll)return;root.querySelectorAll('.date-picker,_multi,.date-picker-multi,.date-picker-range').forEach(e=>{if(e._flatpickr)e._flatpickr.destroy()});root.querySelectorAll('.date-picker').forEach(e=>flatpickr(e,{dateFormat:'F j, Y',allowInput:true}));root.querySelectorAll('.date-picker-multi').forEach(e=>flatpickr(e,{mode:'multiple',dateFormat:'F j, Y',allowInput:true}));root.querySelectorAll('.date-picker-range').forEach(e=>flatpickr(e,{mode:'range',dateFormat:'F j, Y',allowInput:true}))}
+function initFP(root=document){if(!window.flatpickr||!root?.querySelectorAll)return;root.querySelectorAll('.date-picker,.date-picker-multi,.date-picker-range').forEach(e=>{if(e._flatpickr)e._flatpickr.destroy()});root.querySelectorAll('.date-picker').forEach(e=>flatpickr(e,{dateFormat:'F j, Y',allowInput:true}));root.querySelectorAll('.date-picker-multi').forEach(e=>flatpickr(e,{mode:'multiple',dateFormat:'F j, Y',allowInput:true}));root.querySelectorAll('.date-picker-range').forEach(e=>flatpickr(e,{mode:'range',dateFormat:'F j, Y',allowInput:true}))}
 
 /* ── TAB SWITCHING ── */
 function idxTab(name){
   document.querySelectorAll('.idx-tab').forEach(t=>{t.classList.toggle('active',t.id==='idx-t-'+name);t.setAttribute('aria-selected',t.id==='idx-t-'+name)});
   document.querySelectorAll('.idx-panel').forEach(p=>p.classList.toggle('active',p.id==='idx-p-'+name));
-  history.replaceState(null,'','{{ route("ld.index") }}?tab='+name);
+  const _params=new URLSearchParams(location.search);_params.set('tab',name);history.replaceState(null,'','{{ route("ld.index") }}?'+_params.toString());
 }
 
 /* ── PRINT MODAL ── */
@@ -154,20 +154,82 @@ function renderRec(rows){
     h+='<tr>';
     cfg.cols.forEach(c=>{
       h+=`<td>`;
-      if(c.k==='_index'){h+=`<span style="color:var(--ink-5)">${idx+1}</span>`}
-      else if(c.tot){const t=(row.expense_items||[]).reduce((s,x)=>s+parseFloat(x.amount||0),0);h+=t>0?`<strong>₱${t.toLocaleString('en-PH',{minimumFractionDigits:2})}</strong>`:'<span style="color:var(--ink-5)">—</span>'}
-      else if(c.exp){const items=row[c.k]||[];h+=items.length?`<span title="${esc(items.map(i=>`${i.description||''} x${i.quantity||''} = ₱${i.amount||''}`).join(' | '))}">${items.length} item${items.length!==1?'s':''}</span>`:'<span style="color:var(--ink-5)">—</span>'}
-      else if(c.arr){const a=Array.isArray(row[c.k])?row[c.k]:[];h+=a.length?a.map(t=>`<span class="badge badge-crimson" style="font-size:.6rem">${esc(t)}</span>`).join(' '):'<span style="color:var(--ink-5)">—</span>'}
-      else if(c.badge){const v=row[c.k];h+=v?`<span class="badge badge-${c.badge}" style="font-size:.62rem">${esc(v)}</span>`:'<span style="color:var(--ink-5)">—</span>'}
-      else if(c.bool){h+=row[c.k]?'<span class="badge badge-green" style="font-size:.6rem">Yes</span>':'<span style="color:var(--ink-5);font-size:.76rem">No</span>'}
-      else if(c.cur){const n=parseFloat(row[c.k]||0);h+=n>0?`<span style="font-weight:600">₱${n.toLocaleString('en-PH',{minimumFractionDigits:2})}</span>`:'<span style="color:var(--ink-5)">—</span>'}
-      else{const v=row[c.k]??'';h+=v!==''?esc(String(v)):'<span style="color:var(--ink-5)">—</span>'}
+      if(c.k==='_index'){
+        h+=`<span style="color:var(--ink-5)">${idx+1}</span>`;
+      } else if(c.tot){
+        const t=(row.expense_items||[]).reduce((s,x)=>s+parseFloat(x.amount||0),0);
+        h+=t>0?`<strong>₱${t.toLocaleString('en-PH',{minimumFractionDigits:2})}</strong>`:'<span style="color:var(--ink-5)">—</span>';
+      } else if(c.exp){
+        const items=row[c.k]||[];
+        if(items.length){
+          const tip=esc(items.map(i=>`${i.description||''} × ${i.quantity||''} = ₱${i.amount||''}`).join('\n'));
+          h+=`<span class="rec-tip" data-tip="${tip}">${items.length} item${items.length!==1?'s':''}</span>`;
+        } else { h+='<span style="color:var(--ink-5)">—</span>'; }
+      } else if(c.arr){
+        const a=Array.isArray(row[c.k])?row[c.k]:[];
+        if(a.length){
+          const tip=esc(a.join(', '));
+          h+=`<span class="rec-tip" data-tip="${tip}">${a.map(t=>`<span class="badge badge-crimson" style="font-size:.6rem">${esc(t)}</span>`).join(' ')}</span>`;
+        } else { h+='<span style="color:var(--ink-5)">—</span>'; }
+      } else if(c.badge){
+        const v=row[c.k];
+        h+=v?`<span class="badge badge-${c.badge}" style="font-size:.62rem">${esc(v)}</span>`:'<span style="color:var(--ink-5)">—</span>';
+      } else if(c.bool){
+        h+=row[c.k]?'<span class="badge badge-green" style="font-size:.6rem">Yes</span>':'<span style="color:var(--ink-5);font-size:.76rem">No</span>';
+      } else if(c.cur){
+        const n=parseFloat(row[c.k]||0);
+        h+=n>0?`<span style="font-weight:600">₱${n.toLocaleString('en-PH',{minimumFractionDigits:2})}</span>`:'<span style="color:var(--ink-5)">—</span>';
+      } else {
+        const v=String(row[c.k]??'');
+        if(v!==''){
+          const tip=esc(v);
+          h+=`<span class="rec-tip" data-tip="${tip}">${esc(v)}</span>`;
+        } else { h+='<span style="color:var(--ink-5)">—</span>'; }
+      }
       h+='</td>';
     });
     h+='</tr>';
   });
   h+='</tbody></table>';el.innerHTML=h;
 }
+
+
+/* ── RECORDS TOOLTIP ── */
+(function(){
+  const tt=document.createElement('div');
+  tt.id='recTooltip';
+  document.body.appendChild(tt);
+
+  function show(el,e){
+    const tip=el.dataset.tip;
+    if(!tip)return;
+    tt.textContent=tip;
+    tt.style.opacity='1';
+    position(e);
+  }
+  function position(e){
+    const pad=10, w=tt.offsetWidth, h=tt.offsetHeight;
+    let x=e.clientX+14, y=e.clientY-h-10;
+    if(x+w>window.innerWidth-pad) x=e.clientX-w-14;
+    if(y<pad) y=e.clientY+20;
+    tt.style.left=x+'px';
+    tt.style.top=y+'px';
+  }
+  function hide(){tt.style.opacity='0';}
+
+  document.getElementById('recContent').addEventListener('mouseover',e=>{
+    const el=e.target.closest('.rec-tip');
+    if(el) show(el,e);
+  });
+  document.getElementById('recContent').addEventListener('mousemove',e=>{
+    if(tt.style.opacity==='1') position(e);
+  });
+  document.getElementById('recContent').addEventListener('mouseout',e=>{
+    if(!e.target.closest('.rec-tip')) return;
+    if(!e.relatedTarget?.closest('.rec-tip')) hide();
+  });
+  document.getElementById('recordsModal').addEventListener('mouseleave',hide);
+})();
 
 /* ── CSV Download ── */
 function toggleDlMenu(){document.getElementById('dlMenu')?.classList.toggle('open')}
@@ -201,17 +263,68 @@ function openMovModal(upUrl,fileUrl,fileName,recordId){
   openModal('movModal');
 }
 function openMovPreview(url,fileName){
-  const frame=document.getElementById('movPreviewFrame'),imgCon=document.getElementById('movImgCon'),img=document.getElementById('movPreviewImg'),unsupp=document.getElementById('movUnsupported'),dlBtn=document.getElementById('movDlBtn'),titleEl=document.getElementById('movPreviewTitle');
-  [frame,imgCon,unsupp].forEach(e=>{e.style.display='none'});frame.src='';img.src='';
-  const name=fileName||url.split('/').pop()||'file';const ext=name.split('.').pop().toLowerCase();
-  titleEl.textContent='📎 '+name;dlBtn.href=url;
-  if(['jpg','jpeg','png','gif','webp','bmp'].includes(ext)){imgCon.style.display='flex';img.src=url}
-  else if(ext==='pdf'){frame.style.display='block';frame.src=url}
-  else if(['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)){frame.style.display='block';frame.src=`https://docs.google.com/gview?url=${encodeURIComponent(location.origin+url)}&embedded=true`}
-  else{unsupp.style.display='flex';document.getElementById('movUnsuppName').textContent=name;document.getElementById('movUnsuppDl').href=url}
+  const frame=document.getElementById('movPreviewFrame'),
+        imgCon=document.getElementById('movImgCon'),
+        img=document.getElementById('movPreviewImg'),
+        unsupp=document.getElementById('movUnsupported'),
+        docxCon=document.getElementById('movDocxCon'),
+        docxContent=document.getElementById('movDocxContent'),
+        docxLoading=document.getElementById('movDocxLoading'),
+        dlBtn=document.getElementById('movDlBtn'),
+        titleEl=document.getElementById('movPreviewTitle');
+
+  [frame,imgCon,unsupp,docxCon].forEach(e=>{e.style.display='none'});
+  frame.src='';img.src='';docxContent.innerHTML='';
+
+  const name=fileName||url.split('/').pop()||'file';
+  const ext=name.split('.').pop().toLowerCase();
+  titleEl.textContent='📎 '+name;
+  dlBtn.href=url;
+
+  if(['jpg','jpeg','png','gif','webp','bmp'].includes(ext)){
+    imgCon.style.display='flex';img.src=url;
+  } else if(ext==='pdf'){
+    frame.style.display='block';frame.src=url;
+  } else if(ext==='docx'){
+    docxCon.style.display='flex';
+    docxLoading.style.display='block';
+    docxContent.innerHTML='';
+    fetch(url)
+      .then(r=>r.arrayBuffer())
+      .then(buffer=>{
+        if(typeof mammoth==='undefined'){
+          docxLoading.style.display='none';
+          docxContent.innerHTML='<p style="color:#c00;">mammoth.js not loaded. Please download the file instead.</p>';
+          return;
+        }
+        return mammoth.convertToHtml({arrayBuffer:buffer});
+      })
+      .then(result=>{
+        if(!result) return;
+        docxLoading.style.display='none';
+        docxContent.innerHTML=result.value||'<p style="color:#888;">No content found.</p>';
+      })
+      .catch(()=>{
+        docxLoading.style.display='none';
+        docxContent.innerHTML='<p style="color:#c00;">Failed to load document. Please download the file instead.</p>';
+      });
+  } else if(['doc','xls','xlsx','ppt','pptx'].includes(ext)){
+    frame.style.display='block';
+    frame.src=`https://docs.google.com/gview?url=${encodeURIComponent(location.origin+url)}&embedded=true`;
+  } else {
+    unsupp.style.display='flex';
+    document.getElementById('movUnsuppName').textContent=name;
+    document.getElementById('movUnsuppDl').href=url;
+  }
   openModal('movPreviewModal');
 }
-function closeMovPreview(){closeModal('movPreviewModal');const f=document.getElementById('movPreviewFrame');if(f){f.src='';f.style.display='none'}const i=document.getElementById('movImgCon');if(i)i.style.display='none';const u=document.getElementById('movUnsupported');if(u)u.style.display='none'}
+function closeMovPreview(){
+  closeModal('movPreviewModal');
+  const f=document.getElementById('movPreviewFrame');if(f){f.src='';f.style.display='none';}
+  const i=document.getElementById('movImgCon');if(i)i.style.display='none';
+  const u=document.getElementById('movUnsupported');if(u)u.style.display='none';
+  const d=document.getElementById('movDocxCon');if(d)d.style.display='none';
+}
 document.getElementById('movPreviewModal')?.addEventListener('click',e=>{if(e.target.id==='movPreviewModal')closeMovPreview()});
 
 /* ── SIGNATORY HELPERS (used by dynamically loaded form HTML) ── */
@@ -236,7 +349,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(failedMov){document.querySelector(`[data-mov="${failedMov}"]`)?.click()}
   // Re-open participation create on error
   const hasErr={{ $errors->any() ? 'true' : 'false' }};
-  if(hasErr){const old=@json(old());if(old?.participant_name||old?.title){idxTab('participation');openCreateModal()}}
+  if(hasErr){const old=@json(old());const isParticipationErr=old?.participant_name||old?.title;if(isParticipationErr){idxTab('participation');openCreateModal()}}
   // Toast auto-dismiss
   const toast=document.getElementById('idx-toast');
   if(toast){setTimeout(()=>{toast.style.transition='all .3s';toast.style.opacity='0';toast.style.transform='translateY(-8px)';setTimeout(()=>toast.remove(),350)},2800)}

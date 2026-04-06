@@ -12,13 +12,13 @@
 </div>
 
 {{-- Participation — view --}}
-<div class="idx-overlay" id="viewModal">
-  <div class="idx-modal" style="display:flex;flex-direction:column;max-height:90vh">
+<div class="idx-overlay" id="viewModal" style="align-items:center;padding:24px 16px">
+  <div class="idx-modal" style="display:flex;flex-direction:column;width:100%;max-width:520px;max-height:88vh;margin:auto">
     <div class="idx-modal-head" style="flex-shrink:0">
       <span class="idx-modal-title">📋 Request Details</span>
       <button class="idx-modal-close" onclick="closeModal('viewModal')">✕ Close</button>
     </div>
-    <div id="viewModalBody" style="display:flex;flex-direction:column;flex:1;min-height:0">
+    <div id="viewModalBody" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
       <div class="idx-modal-loading"><p style="color:var(--ink-4)">Loading…</p></div>
     </div>
   </div>
@@ -60,13 +60,13 @@
 </div>
 
 {{-- Generic view (Attendance / Publication / Reimbursement / Travel detail) --}}
-<div class="idx-overlay" id="gViewModal">
-  <div class="idx-modal" style="display:flex;flex-direction:column;max-height:90vh">
+<div class="idx-overlay" id="gViewModal" style="align-items:center;padding:24px 16px">
+  <div class="idx-modal" style="display:flex;flex-direction:column;width:100%;max-width:520px;max-height:88vh;margin:auto">
     <div class="idx-modal-head" style="flex-shrink:0">
       <span class="idx-modal-title" id="gViewTitle">Details</span>
       <button class="idx-modal-close" onclick="closeModal('gViewModal')">✕ Close</button>
     </div>
-    <div id="gViewBody" style="display:flex;flex-direction:column;flex:1;min-height:0">
+    <div id="gViewBody" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
       <div class="idx-modal-loading"><p style="color:var(--ink-4)">Loading…</p></div>
     </div>
   </div>
@@ -167,6 +167,11 @@
       <img id="movPreviewImg" style="max-width:100%;max-height:100%;object-fit:contain;display:block;margin:auto">
     </div>
     <iframe id="movPreviewFrame" style="flex:1;width:100%;border:none;background:#f0f0f0;display:none"></iframe>
+    {{-- mammoth.js docx preview --}}
+    <div id="movDocxCon" style="display:none;flex:1;overflow:auto;background:#fff;padding:2rem;">
+      <div id="movDocxLoading" style="text-align:center;padding:2rem;color:#666;">⏳ Loading document preview...</div>
+      <div id="movDocxContent" style="max-width:800px;margin:0 auto;font-family:Times New Roman,serif;font-size:11pt;line-height:1.6;"></div>
+    </div>
     <div id="movUnsupported" style="display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:#f0f0f0">
       <div style="font-size:3rem">📄</div>
       <p style="font-weight:600;color:var(--ink-2)" id="movUnsuppName"></p>

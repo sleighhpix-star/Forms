@@ -3,7 +3,7 @@
   $tv_total = $counts['travel'] ?? 0;
   $tv_month = \App\Models\LdTravel::whereMonth('created_at',now()->month)->whereYear('created_at',now()->year)->count();
 @endphp
-<div class="idx-panel" id="idx-p-travel" role="tabpanel">
+<div class="idx-panel {{ request('tab') === 'travel' ? 'active' : '' }}" id="idx-p-travel" role="tabpanel">
 <div class="idx-panel-body">
   <div class="idx-stats">
     <div class="idx-stat"><div class="idx-stat-label">Total</div><div class="idx-stat-num">{{ $tv_total }}</div><div class="idx-stat-sub">travel authority requests</div></div>
