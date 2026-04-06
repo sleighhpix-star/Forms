@@ -24,6 +24,7 @@ class LdPublication extends Model
         'prev_paper_title', 'prev_co_authors',
         'prev_journal_title', 'prev_vol_issue', 'prev_issn_isbn',
         'prev_doi', 'prev_publisher', 'prev_editors', 'prev_pub_scope',
+        'prev_pub_format', 'prev_website', 'prev_email_address',
         'sig_requested_name',    'sig_requested_position',
         'sig_reviewed_name',     'sig_reviewed_position',
         'sig_recommending_name', 'sig_recommending_position',

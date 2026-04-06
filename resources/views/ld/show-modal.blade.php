@@ -1,201 +1,112 @@
-{{-- resources/views/ld/show-modal.blade.php — Participation view --}}
+{{-- show-modal.blade.php — Participation detail inside a modal --}}
 @php
-  $types   = $record->types   ?? [];
-  $natures = $record->natures ?? [];
-  $covSel  = $record->coverage ?? [];
-  if (is_string($types))   $types   = json_decode($types,   true) ?: [];
-  if (is_string($natures)) $natures = json_decode($natures, true) ?: [];
-  if (is_string($covSel))  $covSel  = json_decode($covSel,  true) ?: [];
-  $coverageMap = [
+  $types   = is_array($record->types   ?? null) ? $record->types   : (json_decode($record->types   ?? '[]', true) ?: []);
+  $natures = is_array($record->natures ?? null) ? $record->natures : (json_decode($record->natures ?? '[]', true) ?: []);
+  $covSel  = is_array($record->coverage ?? null) ? $record->coverage : (json_decode($record->coverage ?? '[]', true) ?: []);
+  $covMap  = [
     'registration'  => 'Registration',   'accommodation' => 'Accommodation',
-    'materials'     => 'Materials / Kit','speaker_fee'   => "Speaker's Fee",
-    'meals'         => 'Meals / Snacks', 'transportation'=> 'Transportation',
+    'materials'     => 'Materials / Kit', 'speaker_fee'   => "Speaker's Fee",
+    'meals'         => 'Meals / Snacks',  'transportation' => 'Transportation',
   ];
 @endphp
 
-<div class="card" style="box-shadow:none;border-radius:0 0 var(--radius-lg) var(--radius-lg);border:none;">
-
-  {{-- Hero --}}
-  <div style="background:linear-gradient(135deg,var(--crimson-deep) 0%,var(--crimson) 60%,var(--crimson-mid) 100%);padding:1.25rem 1.75rem 1.1rem;position:relative;overflow:hidden;">
-    <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-light),var(--gold),var(--gold-light),transparent);opacity:.55;"></div>
-    <div class="ref-badge" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.88);margin-bottom:.55rem;">
-      📋 Participation Request · BatStateU-FO-HRD-28
-    </div>
-    <h2 style="font-family:var(--font-display);color:#fff;font-size:1.05rem;font-weight:600;line-height:1.3;margin-bottom:.35rem;">
-      Request for Participation in External L&D Interventions
-    </h2>
-    <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
-      <span style="font-size:.7rem;color:rgba(255,255,255,.65);">
-        🗓 Submitted <strong style="color:rgba(255,255,255,.88);">{{ optional($record->created_at)->format('F j, Y') }}</strong>
-      </span>
-      @if($record->tracking_number)
-        <span style="font-size:.7rem;color:rgba(255,255,255,.65);">
-          🔖 <strong style="color:rgba(255,255,255,.88);">{{ $record->tracking_number }}</strong>
-        </span>
-      @endif
-    </div>
+{{-- Hero header --}}
+<div style="background:var(--c-dk);padding:1.1rem 1.75rem 1rem;position:relative;flex-shrink:0">
+  <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),var(--g-lt),var(--g),transparent);opacity:.55"></div>
+  <div class="ref-badge" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.88);margin-bottom:.5rem;font-size:.64rem">
+    📋 Participation &middot; BatStateU-FO-HRD-28
   </div>
+  <h2 style="font-family:var(--f-display);color:#fff;font-size:1rem;font-weight:400;line-height:1.3">
+    Request for Participation in External L&amp;D Interventions
+  </h2>
+  <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.3rem">
+    <span style="font-size:.7rem;color:rgba(255,255,255,.6)">🗓 <strong style="color:rgba(255,255,255,.85)">{{ optional($record->created_at)->format('F j, Y') }}</strong></span>
+    @if($record->tracking_number)
+      <span style="font-size:.7rem;color:rgba(255,255,255,.6)">🔖 <strong style="color:rgba(255,255,255,.85)">{{ $record->tracking_number }}</strong></span>
+    @endif
+  </div>
+</div>
+
+{{-- Scrollable body --}}
+<div style="overflow-y:auto;max-height:65vh">
 
   {{-- Participant Info --}}
   <div class="card-section">
     <div class="section-label">Participant Information</div>
     <div class="detail-grid">
-      <div class="detail-field">
-        <div class="dlabel">Name of Participant</div>
-        <div class="dval" style="font-weight:600;">{{ $record->participant_name ?? '—' }}</div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">Position / Designation</div>
-        <div class="dval">{{ $record->position ?? '—' }}</div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">Campus / Operating Unit</div>
-        <div class="dval">{{ $record->campus ?? '—' }}</div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">College / Office</div>
-        <div class="dval">{{ $record->college_office ?? '—' }}</div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">Employment Status</div>
-        <div class="dval">{{ $record->employment_status ?? '—' }}</div>
-      </div>
+      <div class="detail-field"><div class="dlabel">Name</div><div class="dval" style="font-weight:600">{{ $record->participant_name ?? '—' }}</div></div>
+      <div class="detail-field"><div class="dlabel">Position</div><div class="dval">{{ $record->position ?? '—' }}</div></div>
+      <div class="detail-field"><div class="dlabel">Campus</div><div class="dval">{{ $record->campus ?? '—' }}</div></div>
+      <div class="detail-field"><div class="dlabel">College / Office</div><div class="dval">{{ $record->college_office ?? '—' }}</div></div>
+      <div class="detail-field"><div class="dlabel">Employment Status</div><div class="dval">{{ $record->employment_status ?? '—' }}</div></div>
     </div>
   </div>
 
   {{-- Intervention Details --}}
   <div class="card-section">
     <div class="section-label">Intervention Details</div>
-
-    <div class="detail-field mb-2" style="background:var(--ivory-warm);border:1px solid var(--gold-pale);border-radius:var(--radius-md);padding:.65rem .9rem;">
-      <div class="dlabel">Title of Intervention</div>
-      <div class="dval" style="font-size:.95rem;font-weight:600;color:var(--crimson-deep);">{{ $record->title ?? '—' }}</div>
+    <div class="detail-field mb-2">
+      <div class="dlabel">Title</div>
+      <div class="dval" style="font-weight:600">{{ $record->title ?? '—' }}</div>
     </div>
-
     <div class="detail-grid">
       <div class="detail-field">
-        <div class="dlabel">Type of Intervention</div>
-        <div class="dval" style="display:flex;flex-wrap:wrap;gap:.25rem;">
-          @forelse($types as $t)
-            <span class="badge badge-maroon">{{ $t }}</span>
-          @empty <span class="text-muted text-sm">—</span>
-          @endforelse
-          @if(!empty($record->type_others))
-            <span class="badge badge-maroon">Others: {{ $record->type_others }}</span>
-          @endif
-        </div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">Level</div>
+        <div class="dlabel">Type</div>
         <div class="dval">
-          @if($record->level) <span class="badge badge-gold">{{ $record->level }}</span>
-          @else <span class="text-muted text-sm">—</span> @endif
+          @foreach($types as $t)<span class="badge badge-crimson" style="font-size:.65rem">{{ $t }}</span> @endforeach
+          @if($record->type_others)<span class="badge badge-neutral" style="font-size:.65rem">{{ $record->type_others }}</span>@endif
         </div>
       </div>
+      <div class="detail-field"><div class="dlabel">Level</div><div class="dval"><span class="badge badge-gold">{{ $record->level ?? '—' }}</span></div></div>
       <div class="detail-field">
-        <div class="dlabel">Nature of Participation</div>
-        <div class="dval" style="display:flex;flex-wrap:wrap;gap:.25rem;">
-          @forelse($natures as $n)
-            <span class="badge badge-maroon">{{ $n }}</span>
-          @empty <span class="text-muted text-sm">—</span>
-          @endforelse
-          @if(!empty($record->nature_others))
-            <span class="badge badge-maroon">Others: {{ $record->nature_others }}</span>
-          @endif
+        <div class="dlabel">Nature</div>
+        <div class="dval">@foreach($natures as $n)<span class="badge badge-neutral" style="font-size:.65rem">{{ $n }}</span> @endforeach</div>
+      </div>
+      <div class="detail-field"><div class="dlabel">Date</div><div class="dval">{{ $record->intervention_date ?? '—' }}</div></div>
+      <div class="detail-field"><div class="dlabel">Hours</div><div class="dval">{{ $record->hours ? $record->hours.' hrs' : '—' }}</div></div>
+      <div class="detail-field"><div class="dlabel">Venue</div><div class="dval">{{ $record->venue ?? '—' }}</div></div>
+      <div class="detail-field"><div class="dlabel">Organizer</div><div class="dval">{{ $record->organizer ?? '—' }}</div></div>
+      @if($record->competency)
+        <div class="detail-field" style="grid-column:span 2">
+          <div class="dlabel">Competencies</div>
+          <div class="dval">{{ $record->competency }}</div>
         </div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">Date</div>
-        <div class="dval">{{ $record->intervention_date ?? '—' }}</div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">Actual No. of Hours</div>
-        <div class="dval">{{ $record->hours ?? '—' }}</div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">Venue</div>
-        <div class="dval">{{ $record->venue ?? '—' }}</div>
-      </div>
-      <div class="detail-field">
-        <div class="dlabel">Sponsor / Organizer</div>
-        <div class="dval">{{ $record->organizer ?? '—' }}</div>
-      </div>
+      @endif
     </div>
-
-    @if($record->competency)
-      <div class="detail-field mt-2">
-        <div class="dlabel">Competency/ies to be Developed</div>
-        <div class="dval" style="white-space:pre-line;">{{ $record->competency }}</div>
-      </div>
-    @endif
   </div>
 
-  {{-- Assessment Questions --}}
+  {{-- Assessment --}}
   <div class="card-section">
     <div class="section-label">Assessment</div>
-    @foreach([
-      ['label' => 'Endorsed by a recognized or registered professional organization?', 'val' => $record->endorsed_by_org],
-      ['label' => "Related to the participant's current field / workload?",             'val' => $record->related_to_field],
-      ['label' => 'Has pending implementation of L&D Application Plan?',               'val' => $record->has_pending_ldap],
-      ['label' => 'Has any unliquidated cash advance?',                                'val' => $record->has_cash_advance],
-      ['label' => 'Financial assistance requested from the University?',               'val' => $record->financial_requested],
-    ] as $q)
-      <div class="yn-row">
-        <div>{{ $q['label'] }}</div>
-        <div>
-          @if($q['val']) <span class="badge badge-green">Yes</span>
-          @else <span class="text-muted text-sm">No</span> @endif
-        </div>
-      </div>
-    @endforeach
-
-    @if($record->financial_requested)
-      <div class="fin-box mt-2">
-        <div class="detail-grid">
-          <div class="detail-field">
-            <div class="dlabel">Amount Requested</div>
-            <div class="dval" style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--crimson);">
-              ₱ {{ number_format((float)($record->amount_requested ?? 0), 2) }}
-            </div>
-          </div>
-          <div class="detail-field">
-            <div class="dlabel">Coverage</div>
-            <div class="dval" style="display:flex;flex-wrap:wrap;gap:.25rem;">
-              @forelse($covSel as $c)
-                <span class="badge badge-maroon">{{ $coverageMap[$c] ?? $c }}</span>
-              @empty <span class="text-muted text-sm">—</span>
-              @endforelse
-              @if(!empty($record->coverage_others))
-                <span class="badge badge-maroon">Others: {{ $record->coverage_others }}</span>
-              @endif
-            </div>
-          </div>
+    <div class="detail-grid">
+      <div class="detail-field"><div class="dlabel">Endorsed by org?</div><div class="dval"><span class="badge {{ $record->endorsed_by_org ? 'badge-green' : 'badge-neutral' }}">{{ $record->endorsed_by_org ? 'Yes' : 'No' }}</span></div></div>
+      <div class="detail-field"><div class="dlabel">Related to field?</div><div class="dval"><span class="badge {{ $record->related_to_field ? 'badge-green' : 'badge-neutral' }}">{{ $record->related_to_field ? 'Yes' : 'No' }}</span></div></div>
+      <div class="detail-field"><div class="dlabel">Pending LDAP?</div><div class="dval"><span class="badge {{ $record->has_pending_ldap ? 'badge-amber' : 'badge-neutral' }}">{{ $record->has_pending_ldap ? 'Yes' : 'No' }}</span></div></div>
+      <div class="detail-field"><div class="dlabel">Cash advance?</div><div class="dval"><span class="badge {{ $record->has_cash_advance ? 'badge-amber' : 'badge-neutral' }}">{{ $record->has_cash_advance ? 'Yes' : 'No' }}</span></div></div>
+      <div class="detail-field"><div class="dlabel">Financial requested?</div><div class="dval"><span class="badge {{ $record->financial_requested ? 'badge-green' : 'badge-neutral' }}">{{ $record->financial_requested ? 'Yes' : 'No' }}</span></div></div>
+      @if($record->financial_requested)
+        <div class="detail-field"><div class="dlabel">Amount</div><div class="dval" style="font-weight:600;color:var(--c)">₱{{ number_format($record->amount_requested ?? 0, 2) }}</div></div>
+      @endif
+    </div>
+    @if($record->financial_requested && count($covSel))
+      <div class="detail-field" style="margin-top:.75rem">
+        <div class="dlabel">Coverage Items</div>
+        <div class="dval">
+          @foreach($covSel as $cov)
+            <span class="badge badge-gold" style="font-size:.65rem">{{ $covMap[$cov] ?? ucwords(str_replace('_', ' ', $cov)) }}</span>
+          @endforeach
         </div>
       </div>
     @endif
   </div>
 
-  {{-- Signatories --}}
-  <div class="card-section">
-    <div class="section-label">Signatories</div>
-    <div class="sig-grid">
-      @foreach([
-        ['role'=>'Requested by',          'name'=>$record->sig_requested_name     ?? 'Dr. Bryan John A. Magoling',    'pos'=>$record->sig_requested_position     ?? 'Director, Research Management Services'],
-        ['role'=>'Reviewed by',           'name'=>$record->sig_reviewed_name      ?? 'Engr. Albertson D. Amante',    'pos'=>$record->sig_reviewed_position      ?? 'VP for Research, Development and Extension Services'],
-        ['role'=>'Recommending Approval', 'name'=>$record->sig_recommending_name  ?? 'Atty. Noel Alberto S. Omandap','pos'=>$record->sig_recommending_position  ?? 'VP for Administration and Finance'],
-        ['role'=>'Approved by',           'name'=>$record->sig_approved_name      ?? 'Dr. Tirso A. Ronquillo',       'pos'=>$record->sig_approved_position      ?? 'University President'],
-      ] as $s)
-        <div class="sig-box">
-          <div class="sig-role">{{ $s['role'] }}</div>
-          <div class="sig-name">{{ $s['name'] }}</div>
-          <div class="sig-position">{{ $s['pos'] }}</div>
-        </div>
-      @endforeach
-    </div>
-  </div>
+</div>
 
-  <div class="form-actions">
-    <button type="button" onclick="openEditModal({{ $record->id }})" class="btn btn-outline btn-sm">✏️ Edit</button>
-    <button type="button" onclick="openPrintModal('{{ route('ld.print', $record) }}')" class="btn btn-gold btn-sm">🖨 Print</button>
+{{-- Footer actions --}}
+<div style="padding:12px 20px;background:var(--bg);border-top:1px solid var(--border-sm);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0">
+  <a href="{{ route('ld.show', $record) }}" target="_blank" class="btn btn-ghost btn-sm">🔗 Full View</a>
+  <div style="display:flex;gap:6px">
+    <a href="{{ route('ld.print', $record) }}" target="_blank" class="btn btn-gold btn-sm">🖨 Print</a>
+    <button onclick="closeModal('viewModal')" class="btn btn-primary btn-sm">✓ Close</button>
   </div>
 </div>

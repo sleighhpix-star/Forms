@@ -1,41 +1,29 @@
-{{-- resources/views/forms/hrd31.blade.php --}}
+{{-- resources/views/ld/publication/print.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>BatStateU-FO-HRD-31 &mdash; {{ $record->attendee_name ?? '' }}</title>
+<title>BatStateU-FO-RMS-11 &mdash; {{ $record->faculty_name ?? '' }}</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Times New Roman", Times, serif; font-size: 11pt; color: #000; background: #fff; }
 
-body {
-  font-family: "Times New Roman", Times, serif;
-  font-size: 10pt;
-  color: #000;
-  background: #e5e7eb;
-}
-
-/* ── Print bar ── */
 .pbar {
-  background: #8B1A2B;
-  padding: .35rem 1.1rem;
-  display: flex;
-  gap: .7rem;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  background: #5C0E24;
+  padding: .4rem 1.1rem;
+  display: flex; gap: .65rem; align-items: center;
+  border-bottom: 2px solid #B5832A;
+  font-family: 'Geist', system-ui, sans-serif;
 }
 .pbar button {
-  background: #C8922A; color: #fff; border: none; border-radius: 4px;
-  padding: .3rem 1rem; font-family: Arial, sans-serif;
-  font-size: .78rem; font-weight: 700; cursor: pointer;
-  letter-spacing: .02em;
+  background: #B5832A; color: #fff; border: none; border-radius: 5px;
+  padding: .28rem .85rem; font-family: inherit; font-size: .76rem; font-weight: 600; cursor: pointer;
+  transition: background .15s;
 }
-.pbar button:hover { background: #b07d22; }
-.pbar span { color: rgba(255,255,255,.65); font-size: .78rem; }
+.pbar button:hover { background: #9A6E20; }
+.pbar span { color: rgba(255,255,255,.65); font-size: .76rem; }
 
-/* ── Page shell ── */
-.wrap { padding: .7cm 0 1.2cm; display: flex; justify-content: center; }
+.wrap { display: flex; justify-content: center; padding: 0.2cm; }
 .sheet {
   width: 17.26cm;
   background: #fff;
@@ -43,332 +31,311 @@ body {
   padding: .5cm .82cm .6cm .82cm;
 }
 
-/* ── Table base ── */
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-td {
-  border: 1px solid #000;
-  padding: 2pt 5pt;
-  vertical-align: middle;
-  font-size: 10pt;
-  font-family: "Times New Roman", Times, serif;
-  line-height: 1.25;
-}
+td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-break: break-word; }
+.center { text-align: center; }
+.bold   { font-weight: bold; }
 
-/* ── Utility classes ── */
-.s   { background: #F2F2F2; }
-.c   { text-align: center; }
-.r   { text-align: right; }
-.vt  { vertical-align: top !important; padding-top: 3pt !important; }
-.vm  { vertical-align: middle !important; }
-.b   { font-weight: bold; }
-.u   { text-decoration: underline; }
-.sm  { font-size: 8.5pt; line-height: 1.2; }
-
-/* ── Footer ── */
-.foot     { font-size: 9pt; font-style: italic; line-height: 1.35; }
-.noteItem { margin-left: 2em; text-indent: -1em; margin-top: 2pt; }
-.footBottom { margin-top: 12pt; display: flex; justify-content: space-between; align-items: flex-end; }
-.ccLine   { font-size: 8.5pt; font-style: italic; }
-.trackWrap{ font-size: 8.5pt; font-style: italic; text-align: right; margin-top: 30pt; }
-.trackLine{
-  display: inline-block; width: 130px;
-  border-bottom: 1px solid #000;
-  margin-left: 5pt; height: 10pt; vertical-align: bottom;
-}
-
-/* ── Print colour fix ── */
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
 
 @media print {
-  @page { size: 8.5in 13in; margin: 0.394in 0.920in 0.295in 0.787in; }
-  html, body { margin: 0; padding: 0; background: #fff !important; }
   .pbar { display: none !important; }
+  @page { size: 8.5in 13in; margin: 0.394in 0.920in 0.295in 0.787in; }
+  html, body { margin: 0; padding: 0; }
   .wrap { padding: 0 !important; display: block !important; }
   .sheet { width: 100% !important; padding: 0 !important; box-shadow: none !important; }
-  table { width: 100% !important; }
-  td { padding: 2pt 4pt !important; font-size: 10pt !important; }
-  .foot { font-size: 8.5pt !important; }
 }
 </style>
 </head>
 <body>
 
 @php
-  $r   = $record ?? null;
-  $act = $r ? (is_string($r->activity_types) ? json_decode($r->activity_types, true) : ($r->activity_types ?? [])) : [];
-  $nat = $r ? (is_string($r->natures)        ? json_decode($r->natures, true)        : ($r->natures        ?? [])) : [];
-  $cov = $r ? (is_string($r->coverage)       ? json_decode($r->coverage, true)       : ($r->coverage       ?? [])) : [];
-  $fin = (bool)($r?->financial_requested ?? false);
 
-  // Checkbox: red-filled when true, empty box when false
+  $fmtName = function($name) {
+    $prefixes = ['Dr.','Engr.','Atty.','Prof.','Mr.','Ms.','Mrs.','Gen.','Col.','Maj.','Capt.','Lt.'];
+    $words = explode(' ', trim($name));
+    $result = [];
+    foreach ($words as $word) {
+      $upper = strtoupper(rtrim($word, '.'));
+      $found = false;
+      foreach ($prefixes as $p) {
+        if (strtoupper(rtrim($p, '.')) === $upper) {
+          $result[] = $p;
+          $found = true;
+          break;
+        }
+      }
+      if (!$found) $result[] = strtoupper($word);
+    }
+    return implode(' ', $result);
+  };
   $chk = fn($v) => $v
-    ? '<span style="display:inline-block;width:9.5pt;height:9.5pt;background:#C00000;border:1px solid #900;vertical-align:middle;position:relative;top:-1pt;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
-    : '<span style="display:inline-block;width:9.5pt;height:9.5pt;border:1px solid #000;vertical-align:middle;position:relative;top:-1pt;flex-shrink:0;"></span>';
+    ? '<span style="display:inline-block;width:12px;height:12px;background:#C00000;border:1px solid #900;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
+    : '<span style="display:inline-block;width:12px;height:12px;border:1px solid #000;vertical-align:middle;"></span>';
 
-  $v = fn($f, $d = '') => e($r?->$f ?? $d);
+  $norm = fn($v) => is_string($v) ? strtolower(trim($v)) : $v;
+
+  $sScope  = fn($v) => $norm($record->pub_scope  ?? null) == $norm($v);
+  $sMedium = fn($v) => $norm($record->pub_medium ?? null) == $norm($v);
+  $pScope  = fn($v) => $norm($record->prev_pub_scope  ?? null) == $norm($v);
+  $pMedium = fn($v) => $norm($record->prev_pub_medium ?? null) == $norm($v);
+
+  $nature = $record->nature ?? '';
+  $nature_ched_multi   = $record->nature_ched_multi     ?? str_contains(strtolower($nature), 'multidisciplinary');
+  $nature_ched_specific = $record->nature_ched_specific ?? str_contains(strtolower($nature), 'specific discipline');
+  $nature_isi_indexed  = $record->nature_isi_indexed    ?? str_contains(strtolower($nature), 'isi');
+  $nature_scopus_indexed = $record->nature_scopus_indexed ?? str_contains(strtolower($nature), 'scopus');
 @endphp
 
-{{-- ── Print bar ── --}}
 <div class="pbar">
-  <span>BatStateU-FO-HRD-31 &mdash; Preview</span>
+  <span>BatStateU-FO-RMS-11 &mdash; Preview</span>
   <button onclick="window.print()">&#128424;&nbsp; Print / Save PDF</button>
 </div>
 
 <div class="wrap"><div class="sheet">
 
-{{-- ════════════ HEADER ════════════ --}}
 <table>
   <colgroup>
-    <col style="width:9%">
-    <col style="width:37%">
-    <col style="width:35%">
-    <col style="width:19%">
+    <col style="width:11%"><col style="width:11%"><col style="width:9%">
+    <col style="width:9%"><col style="width:9%"><col style="width:9%">
+    <col style="width:9%"><col style="width:9%"><col style="width:9%">
+    <col style="width:15%">
   </colgroup>
-  <tr style="height:0.90cm">
-    <td class="c" style="padding:2pt;">
+
+  {{-- Header --}}
+  <tr>
+    <td class="center" style="padding:2pt;">
       @php $logo = public_path('images/batstateu-logo.png'); @endphp
       @if(file_exists($logo))
-        <img src="{{ asset('images/batstateu-logo.png') }}"
-             style="width:1.2cm;height:1.2cm;object-fit:contain;display:block;margin:0 auto;">
+        <img src="{{ asset('images/batstateu-logo.png') }}" style="width:1.2cm;height:1.2cm;object-fit:contain;display:block;margin:0 auto;">
       @else
-        <div style="width:1.2cm;height:1.2cm;border:1px dashed #bbb;margin:0 auto;"></div>
+        <div style="width:1.2cm;height:1.2cm;border:1px dashed #aaa;margin:0 auto"></div>
       @endif
     </td>
-    <td style="font-size:9.5pt;">Reference No.: BatStateU-FO-HRD-31</td>
-    <td style="font-size:9.5pt;">Effectivity Date: October 27, 2025</td>
-    <td style="font-size:9.5pt;">&nbsp;Revision No.: 00</td>
+    <td colspan="4" style="font-size:9.5pt;">Reference No.: BatStateU-FO-RMS-11</td>
+    <td colspan="3" style="font-size:9.5pt;">Effectivity Date: May 18, 2022</td>
+    <td colspan="2" style="font-size:9.5pt;">Revision No.: 02</td>
   </tr>
-</table>
 
-{{-- ════════════ BODY — 12-col grid ════════════ --}}
-<table style="margin-top:-1px;">
-  <colgroup>
-    <col style="width:5.5%">  {{-- 1 --}}
-    <col style="width:5.5%">  {{-- 2 --}}
-    <col style="width:8%">    {{-- 3 --}}
-    <col style="width:8%">    {{-- 4 --}}
-    <col style="width:7%">    {{-- 5 --}}
-    <col style="width:7%">    {{-- 6 --}}
-    <col style="width:8%">    {{-- 7 --}}
-    <col style="width:7%">    {{-- 8 --}}
-    <col style="width:7%">    {{-- 9 --}}
-    <col style="width:8%">    {{-- 10 --}}
-    <col style="width:11%">   {{-- 11 --}}
-    <col style="width:18%">   {{-- 12 --}}
-  </colgroup>
-
-  {{-- R01 Title --}}
+  {{-- Title --}}
   <tr>
-    <td colspan="12" class="c b" style="font-size:11.5pt;padding:6pt 4pt;line-height:1.4;letter-spacing:.01em;">
-      REQUEST FOR ATTENDANCE TO EXTERNAL MEETINGS AND OTHER NON-TRAINING RELATED ACTIVITIES
+    <td colspan="10" class="center bold" style="font-size:12pt;padding:6pt 4pt;">
+      REQUEST FOR RESEARCH PUBLICATION INCENTIVE
     </td>
   </tr>
 
-  {{-- R02 Name --}}
-  <tr style="height:0.68cm">
-    <td colspan="3" class="s">Name of Attendee:</td>
-    <td colspan="9">{!! $v('attendee_name') !!}</td>
+  {{-- Name: colspan=3 label so it fits on one line --}}
+  <tr>
+    <td colspan="4">Name of faculty member / employee</td>
+    <td colspan="6">{{ $record->faculty_name ?? '' }}</td>
   </tr>
 
-  {{-- R03 Campus --}}
-  <tr style="height:0.68cm">
-    <td colspan="3" class="s">Campus/ Operating Unit:</td>
-    <td colspan="9">{!! $v('campus') !!}</td>
+  <tr>
+    <td colspan="2">College / office</td>
+    <td colspan="3">{{ $record->college_office ?? '' }}</td>
+    <td colspan="3">Employment status</td>
+    <td colspan="2">{{ $record->employment_status ?? '' }}</td>
   </tr>
 
-  {{-- R04 College | Employment Status — [3][4][3][2] --}}
-  <tr style="height:0.62cm">
-    <td colspan="3" class="s">College/Office:</td>
-    <td colspan="4">{!! $v('college_office') !!}</td>
-    <td colspan="3" class="s sm">Employment Status:</td>
-    <td colspan="2">{!! $v('employment_status') !!}</td>
+  <tr>
+    <td colspan="2">Campus</td>
+    <td colspan="3">{{ $record->campus ?? '' }}</td>
+    <td colspan="3">Position/designation</td>
+    <td colspan="2">{{ $record->position ?? '' }}</td>
   </tr>
 
-  {{-- R05 Position --}}
-  <tr style="height:0.62cm">
-    <td colspan="3" class="s sm">Academic Rank/<br>Position/Designation:</td>
-    <td colspan="9">{!! $v('position') !!}</td>
+  <tr>
+    <td colspan="2">Title of paper</td>
+    <td colspan="8">{{ $record->paper_title ?? '' }}</td>
   </tr>
 
-  {{-- R06 Type of Activity --}}
-  <tr style="height:1.35cm">
-    <td colspan="3" class="s vm">Type of Activity:</td>
-    <td colspan="9" style="padding:3pt 5pt 3pt 5pt;font-size:9pt;vertical-align:middle;overflow:hidden;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4pt;">
-        <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;">{!! $chk(in_array('Meeting',$act)) !!} Meeting</span>
-        <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;">{!! $chk(in_array('Planning Session',$act)) !!} Planning Session</span>
-        <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;">{!! $chk(in_array('Benchmarking',$act)) !!} Benchmarking</span>
-        <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;">{!! $chk(in_array('Project/Product Launch',$act)||in_array('Project/ Product Launch',$act)) !!} Project/ Product Launch</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:10pt;">
-        <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;">{!! $chk(in_array('Ceremonial/Representational',$act)||in_array('Ceremonial/ Representational Events',$act)) !!} Ceremonial/ Representational Events</span>
-        <span style="display:inline-flex;align-items:center;gap:3pt;flex:1;">
-          @php $aOther = $r?->activity_type_others ?? null; @endphp
-          {!! $chk(!empty($aOther)) !!} Others:&nbsp;<span style="flex:1;border-bottom:1px solid #000;height:11pt;line-height:11pt;display:inline-block;min-width:50pt;">{{ $aOther ?? '' }}</span>
-        </span>
-      </div>
+  <tr>
+    <td colspan="2">Co-author/s (if any)</td>
+    <td colspan="8">{{ $record->co_authors ?? '' }}</td>
+  </tr>
+
+  <tr>
+    <td colspan="2">Title of the journal</td>
+    <td colspan="8">{{ $record->journal_title ?? '' }}</td>
+  </tr>
+
+  <tr>
+    <td colspan="2">Vol./issue/ no.</td>
+    <td colspan="3">{{ $record->vol_issue ?? '' }}</td>
+    <td colspan="2">ISSN/ISBN</td>
+    <td colspan="3">{{ $record->issn_isbn ?? '' }}</td>
+  </tr>
+
+  <tr>
+    <td colspan="2">Publisher</td>
+    <td colspan="8">{{ $record->publisher ?? '' }}</td>
+  </tr>
+
+  <tr>
+    <td colspan="2">Editors</td>
+    <td colspan="8">{{ $record->editors ?? '' }}</td>
+  </tr>
+
+  {{-- Type of publication --}}
+  <tr>
+    <td colspan="2" rowspan="2" style="vertical-align:middle;">Type of publication</td>
+    <td colspan="2" style="border:none;vertical-align:middle;">Check one</td>
+    <td colspan="2" style="border:none;vertical-align:middle;">{!! $chk($sScope('Regional')) !!} Regional</td>
+    <td colspan="2" style="border:none;vertical-align:middle;">{!! $chk($sScope('National')) !!} National</td>
+    <td colspan="2" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($sScope('International')) !!} International</td>
+  </tr>
+  <tr>
+    <td colspan="2" style="border:none;vertical-align:middle;">Check one</td>
+    <td colspan="3" style="border:none;vertical-align:middle;">{!! $chk($sMedium('Print') || $sMedium('Print journal')) !!} Print journal</td>
+    <td colspan="3" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($sMedium('Online') || $sMedium('Online journal')) !!} Online journal</td>
+  </tr>
+
+  <tr>
+    <td colspan="2">Website</td>
+    <td colspan="3">{{ $record->website ?? '' }}</td>
+    <td colspan="3">Email address</td>
+    <td colspan="2">{{ $record->email_address ?? '' }}</td>
+  </tr>
+
+  {{-- Nature --}}
+  <tr>
+    <td colspan="2" rowspan="2" style="vertical-align:middle;">Nature</td>
+    <td colspan="5" style="border:none;vertical-align:middle;">{!! $chk($nature_ched_multi) !!} CHED accredited (multidisciplinary)</td>
+    <td colspan="3" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($nature_isi_indexed) !!} ISI indexed</td>
+  </tr>
+  <tr>
+    <td colspan="5" style="border:none;vertical-align:middle;">{!! $chk($nature_ched_specific) !!} CHED accredited (specific discipline)</td>
+    <td colspan="3" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($nature_scopus_indexed) !!} SCOPUS indexed</td>
+  </tr>
+
+  <tr>
+    <td colspan="7">How much is the total amount being requested for incentive?</td>
+    <td colspan="3" style="vertical-align:middle;">Php &nbsp; {{ $record->amount_requested ? number_format((float)$record->amount_requested, 2) : '' }}</td>
+  </tr>
+
+  <tr>
+    <td colspan="7">Has the faculty/ employee previously claimed research publication incentive for paper published in CHED accredited journal within current year?</td>
+    <td colspan="3" class="center">
+      {!! $chk($record->has_previous_claim ?? false) !!} Yes
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      {!! $chk(!($record->has_previous_claim ?? false)) !!} No
     </td>
   </tr>
 
-  {{-- R07 Nature of Participation --}}
-  <tr style="height:1.45cm">
-    <td colspan="3" class="s vm">Nature of Participation:</td>
-    <td colspan="9" style="padding:4pt 6pt;font-size:9.5pt;vertical-align:middle;">
-      <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
-        <colgroup>
-          <col style="width:16%"><col style="width:17%"><col style="width:16%">
-          <col style="width:16%"><col style="width:18%"><col style="width:17%">
-        </colgroup>
-        <tr>
-          <td style="border:none;padding:0 0 4pt 0;white-space:nowrap;"><span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(in_array('Attendee',$nat)) !!} Attendee</span></td>
-          <td style="border:none;padding:0 0 4pt 0;white-space:nowrap;"><span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(in_array('Presenter',$nat)) !!} Presenter</span></td>
-          <td style="border:none;padding:0 0 4pt 0;white-space:nowrap;"><span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(in_array('Officer',$nat)) !!} Officer</span></td>
-          <td style="border:none;padding:0 0 4pt 0;white-space:nowrap;"><span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(in_array('Speaker',$nat)) !!} Speaker</span></td>
-          <td style="border:none;padding:0 0 4pt 0;white-space:nowrap;"><span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(in_array('Facilitator',$nat)) !!} Facilitator</span></td>
-          <td style="border:none;padding:0 0 4pt 0;white-space:nowrap;"><span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(in_array('Organizer',$nat)) !!} Organizer</span></td>
-        </tr>
-        <tr>
-          <td style="border:none;padding:0;white-space:nowrap;"><span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(in_array('Exhibitor',$nat)) !!} Exhibitor</span></td>
-          <td colspan="5" style="border:none;padding:0;">
-            @php $nOther = $r?->nature_others ?? null; @endphp
-            <span style="display:inline-flex;align-items:center;gap:4pt;width:100%;">
-              {!! $chk(!empty($nOther)) !!} Others:&nbsp;<span style="flex:1;border-bottom:1px solid #000;height:11pt;line-height:11pt;display:inline-block;min-width:80pt;">{{ !empty($nOther) ? e($nOther) : '' }}</span>
-            </span>
-          </td>
-        </tr>
-      </table>
-    </td>
+  <tr>
+    <td colspan="7">If Yes, how much did the university shoulder for that incentive?</td>
+    <td colspan="3" style="vertical-align:middle;">Php &nbsp; {{ $record->previous_claim_amount ? number_format((float)$record->previous_claim_amount, 2) : '' }}</td>
   </tr>
 
-  {{-- R08 Purpose --}}
-  <tr style="height:0.68cm">
-    <td colspan="3" class="s">Purpose of Activity:</td>
-    <td colspan="9">{!! $v('purpose') !!}</td>
+  <tr>
+    <td colspan="10">If yes, fill up the details below.</td>
   </tr>
 
-  {{-- R09 Level — evenly spread --}}
-  <tr style="height:0.65cm">
-    <td colspan="3" class="s">Level:</td>
-    <td colspan="9" style="font-size:9.5pt;padding:0;">
-      <span style="display:flex;justify-content:space-evenly;align-items:center;width:100%;height:100%;">
-        <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(($r?->level??'')==='Local') !!} Local</span>
-        <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(($r?->level??'')==='Regional') !!} Regional</span>
-        <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(($r?->level??'')==='National') !!} National</span>
-        <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(($r?->level??'')==='International') !!} International</span>
-      </span>
-    </td>
+  <tr>
+    <td colspan="2">Title of the paper</td>
+    <td colspan="8">{{ $record->prev_paper_title ?? '' }}</td>
   </tr>
 
-  {{-- R10 Date | Actual Hours — [2][5] | [3][2] = 12 --}}
-  <tr style="height:0.65cm">
-    <td colspan="2" class="s">Date:</td>
-    <td colspan="5">{!! $v('activity_date') !!}</td>
-    <td colspan="3" class="s sm">Actual No. of<br>Hours:</td>
-    <td colspan="2">{!! $v('hours') !!}</td>
+  <tr>
+    <td colspan="2">Co-authors (if any)</td>
+    <td colspan="8">{{ $record->prev_co_authors ?? '' }}</td>
   </tr>
 
-  {{-- R11 Venue | Organizer — same split as R10 --}}
-  <tr style="height:0.78cm">
-    <td colspan="2" class="s">Venue:</td>
-    <td colspan="5">{!! $v('venue') !!}</td>
-    <td colspan="3" class="s sm">Sponsor Agency/<br>Organizer:</td>
-    <td colspan="2">{!! $v('organizer') !!}</td>
+  <tr>
+    <td colspan="2">Title of the journal</td>
+    <td colspan="8">{{ $record->prev_journal_title ?? '' }}</td>
   </tr>
 
-  {{-- R12 Financial Assistance — label cols 1-10, Yes+No cols 11-12 (no divider) --}}
-  <tr style="height:0.65cm">
-    <td colspan="10" class="s">Is financial assistance requested from the University?</td>
-    <td colspan="2" style="font-size:9.5pt;">
-      <span style="display:inline-flex;align-items:center;justify-content:space-around;width:100%;">
-        <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk($fin) !!} Yes</span>
-        <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(!$fin) !!} No</span>
-      </span>
-    </td>
+  <tr>
+    <td colspan="2">Vol./issue/no.</td>
+    <td colspan="3">{{ $record->prev_vol_issue ?? '' }}</td>
+    <td colspan="2">ISSN/ISBN</td>
+    <td colspan="3">{{ $record->prev_issn_isbn ?? '' }}</td>
   </tr>
 
-  {{-- R13 Total Amount — same split as R12 --}}
-  <tr style="height:0.65cm">
-    <td colspan="10" class="s">If yes, how much is the <u>total amount</u> being requested?</td>
-    <td colspan="2" style="white-space:nowrap;">
-      Php&nbsp;{{ ($fin && !empty($r?->amount_requested)) ? number_format((float)$r->amount_requested, 2) : '_____________.00' }}
-    </td>
+  <tr>
+    <td colspan="2">DOI (for e-journal)</td>
+    <td colspan="8">{{ $record->prev_doi ?? '' }}</td>
   </tr>
 
-  {{-- R14–R16 Coverage (label rowspans 3) --}}
-  <tr style="height:0.48cm">
-    <td colspan="2" rowspan="3" class="s vm">Coverage:</td>
-    <td colspan="3" style="border-bottom:none;border-right:none;font-size:9.5pt;">{!! $chk(in_array('registration',$cov)) !!} Registration</td>
-    <td colspan="4" style="border-bottom:none;border-right:none;border-left:none;font-size:9.5pt;">{!! $chk(in_array('accommodation',$cov)) !!} Accommodation</td>
-    <td colspan="3" style="border-bottom:none;border-left:none;font-size:9.5pt;">{!! $chk(in_array('materials',$cov)) !!} Materials/ Kit</td>
-  </tr>
-  <tr style="height:0.50cm">
-    <td colspan="3" style="border-top:none;border-bottom:none;border-right:none;font-size:9.5pt;">{!! $chk(in_array('speaker_fee',$cov)) !!} Speaker&#x2019;s Fee</td>
-    <td colspan="4" style="border-top:none;border-bottom:none;border-right:none;border-left:none;font-size:9.5pt;">{!! $chk(in_array('meals',$cov)) !!} Meals/ Snacks</td>
-    <td colspan="3" style="border-top:none;border-bottom:none;border-left:none;font-size:9.5pt;">{!! $chk(in_array('transportation',$cov)) !!} Transportation</td>
-  </tr>
-  <tr style="height:0.55cm">
-    <td colspan="10" style="border-top:none;font-size:9.5pt;">
-      @php $cOther = $r?->coverage_others ?? null; @endphp
-      {!! $chk(!empty($cOther)) !!} Others, specify:&nbsp;<span style="display:inline-block;border-bottom:1px solid #000;min-width:140pt;height:11pt;vertical-align:bottom;">{{ !empty($cOther) ? e($cOther) : '' }}</span>
-    </td>
+  <tr>
+    <td colspan="2">Publisher</td>
+    <td colspan="8">{{ $record->prev_publisher ?? '' }}</td>
   </tr>
 
-  {{-- R17 Signatories row 1 --}}
+  <tr>
+    <td colspan="2">Editors</td>
+    <td colspan="8">{{ $record->prev_editors ?? '' }}</td>
+  </tr>
+
+  {{-- Prev Type of publication --}}
+  <tr>
+    <td colspan="2" rowspan="2" style="vertical-align:middle;">Type of publication</td>
+    <td colspan="2" style="border:none;vertical-align:middle;">Check one</td>
+    <td colspan="2" style="border:none;vertical-align:middle;">{!! $chk($pScope('Regional')) !!} Regional</td>
+    <td colspan="2" style="border:none;vertical-align:middle;">{!! $chk($pScope('National')) !!} National</td>
+    <td colspan="2" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($pScope('International')) !!} International</td>
+  </tr>
+  <tr>
+    <td colspan="2" style="border:none;vertical-align:middle;">Check one</td>
+    <td colspan="3" style="border:none;vertical-align:middle;">{!! $chk($pMedium('Print') || $pMedium('Print journal')) !!} Print journal</td>
+    <td colspan="3" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($pMedium('Online') || $pMedium('Online journal')) !!} Online journal</td>
+  </tr>
+
+  <tr>
+    <td colspan="2">Website</td>
+    <td colspan="3">{{ $record->prev_website ?? '' }}</td>
+    <td colspan="3">Email address</td>
+    <td colspan="2">{{ $record->prev_email ?? '' }}</td>
+  </tr>
+
+  {{-- Signatories --}}
   <tr style="height:1.75cm">
-    <td colspan="6" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
+    <td colspan="5" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:10pt;">Requested by:</div>
       <div style="height:0.62cm;"></div>
-      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ strtoupper($r?->sig_requested_name ?? 'DR. BRYAN JOHN A. MAGOLING') }}</div>
-      <div style="text-align:center;font-size:10pt;">{{ $r?->sig_requested_position ?? 'Director, Research Management Services' }}</div>
+      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ $fmtName($record->sig_requested_name ?? 'DR. BRYAN JOHN A. MAGOLING') }}</div>
+      <div style="text-align:center;font-size:10pt;">{{ $record->sig_requested_position ?? 'Director, Research Management Services' }}</div>
       <div style="font-size:10pt;margin-top:3pt;">Date Signed:</div>
     </td>
-    <td colspan="6" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
+    <td colspan="5" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:10pt;">Reviewed by:</div>
       <div style="height:0.62cm;"></div>
-      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ strtoupper($r?->sig_reviewed_name ?? 'ENGR. ALBERTSON D. AMANTE') }}</div>
+      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ $fmtName($record->sig_reviewed_name ?? 'ENGR. ALBERTSON D. AMANTE') }}</div>
       <div style="text-align:center;font-size:10pt;">Vice President for Research, Development,</div>
       <div style="text-align:center;font-size:10pt;">and Extension Services</div>
       <div style="font-size:10pt;margin-top:3pt;">Date Signed:</div>
     </td>
   </tr>
-
-  {{-- R18 Signatories row 2 --}}
   <tr style="height:1.65cm">
-    <td colspan="6" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
+    <td colspan="5" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:10pt;">Recommending Approval:</div>
       <div style="height:0.55cm;"></div>
-      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ strtoupper($r?->sig_recommending_name ?? 'ATTY. NOEL ALBERTO S. OMANDAP') }}</div>
-      <div style="text-align:center;font-size:10pt;">{{ $r?->sig_recommending_position ?? 'Vice President for Administration and Finance' }}</div>
+      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ $fmtName($record->sig_recommending_name ?? 'ATTY. NOEL ALBERTO S. OMANDAP') }}</div>
+      <div style="text-align:center;font-size:10pt;">{{ $record->sig_recommending_position ?? 'Vice President for Administration and Finance' }}</div>
       <div style="font-size:10pt;margin-top:3pt;">Date Signed:</div>
     </td>
-    <td colspan="6" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
+    <td colspan="5" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:10pt;">Approved by:</div>
       <div style="height:0.55cm;"></div>
-      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ strtoupper($r?->sig_approved_name ?? 'DR. TIRSO A. RONQUILLO') }}</div>
-      <div style="text-align:center;font-size:10pt;">{{ $r?->sig_approved_position ?? 'University President' }}</div>
+      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ $fmtName($record->sig_approved_name ?? 'DR. TIRSO A. RONQUILLO') }}</div>
+      <div style="text-align:center;font-size:10pt;">{{ $record->sig_approved_position ?? 'University President' }}</div>
       <div style="font-size:10pt;margin-top:3pt;">Date Signed:</div>
     </td>
   </tr>
 
 </table>
 
-{{-- ════════════ FOOTER ════════════ --}}
-<div style="margin-top:5pt;">
-  <p class="foot"><em>Required Attachments: (1) official invitation/ call for participation, (2) signed itinerary of travel, if requesting for financial support</em></p>
-  <p class="foot" style="margin-top:6pt;"><em>Notes:</em></p>
-  <p class="foot noteItem"><em>1.&nbsp;For faculty with designation, the counterpart VP/VC shall countersign as notice prior to the assessment by the reviewing VP/VC.</em></p>
-  <p class="foot noteItem"><em>2.&nbsp;For extension campuses, there shall be an initial of the Campus Director prior to recommendation of the Vice Chancellor Concerned.</em></p>
-  <p class="foot noteItem"><em>3.&nbsp;The signature of the VPAF/VCAF shall only be required if requesting for financial support.</em></p>
-</div>
-
-<div style="margin-top:12pt;">
-  <div class="ccLine"><em>cc: HRMO</em></div>
-</div>
-<div style="margin-top:30pt;text-align:right;">
-  <div class="trackWrap">
-    <em>Tracking Number:</em>
-    <span class="trackLine">{{ !empty($r?->tracking_number) ? $r->tracking_number : '' }}</span>
-  </div>
+<p style="margin-top:8pt;font-size:9pt;font-style:italic;line-height:1.35;">
+  Required Attachments: (1) Certificate/Notice of Paper Acceptance; (2) Certificate of Authorship,
+  (3) Copy of the page in the Research Manual; (4) Hard Copy of the Research Journal;
+  (5) Proof of the Peer Review Process; (6) Copy of the Journal Title and Table of Contents bearing
+  the Names and Affiliation of the Requester
+</p>
+<div style="margin-top:8pt;font-size:8pt;font-style:italic;">cc: HRMO/ FTDC</div>
+<div style="text-align:right;margin-top:30pt;font-size:8pt;font-style:italic;">
+  Tracking Number:
+  <span style="display:inline-block;width:130px;border-bottom:1px solid #000;margin-left:5pt;height:10pt;vertical-align:bottom;">{{ $record->tracking_number ?? '' }}</span>
 </div>
 
 </div></div>

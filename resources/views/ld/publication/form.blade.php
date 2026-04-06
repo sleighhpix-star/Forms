@@ -15,24 +15,7 @@
     : route('ld.publication.store');
 @endphp
 
-<style>
-/* ── Signatory block — new design system ── */
-.sig-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:.5rem; }
-.sig-box { border:1.5px solid var(--ivory-deep); border-radius:var(--radius-md); padding:.75rem 1rem; background:var(--surface-raised); transition:border-color .18s,background .18s; }
-.sig-box:focus-within { border-color:var(--gold); background:var(--surface); }
-.sig-role { font-size:.64rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.5pt; margin-bottom:.45rem; }
-.sig-field-wrap { position:relative; }
-.sig-name-input { width:100%; border:none; border-bottom:1.5px dashed var(--ivory-deep); background:transparent; font-size:.85rem; font-weight:700; color:var(--crimson); padding:.15rem 1.4rem .15rem 0; outline:none; font-family:var(--font-body); transition:border-color .15s; }
-.sig-name-input:focus { border-bottom-color:var(--crimson); border-bottom-style:solid; }
-.sig-pos-input { width:100%; border:none; border-bottom:1px dashed var(--ivory-deep); background:transparent; font-size:.72rem; color:var(--ink-soft); padding:.15rem 1.4rem .15rem 0; outline:none; font-family:var(--font-body); margin-top:.3rem; transition:border-color .15s; }
-.sig-pos-input:focus { border-bottom-color:var(--crimson); border-bottom-style:solid; }
-.sig-edit-icon { position:absolute; right:0; top:50%; transform:translateY(-50%); font-size:.65rem; color:var(--ink-ghost); pointer-events:none; }
-.sig-box:focus-within .sig-edit-icon { color:var(--crimson); }
-.sig-reset-btn { margin-top:.5rem; font-size:.65rem; color:var(--ink-ghost); background:none; border:none; cursor:pointer; padding:0; text-decoration:underline; font-family:var(--font-body); }
-.sig-reset-btn:hover { color:var(--crimson); }
-.prev-section { background:var(--ivory-warm); border:1px solid var(--gold-pale); border-radius:var(--radius-md); padding:1rem 1.25rem; margin-top:.5rem; }
-.prev-section-label { font-size:.72rem; font-weight:700; color:var(--gold); margin-bottom:.75rem; text-transform:uppercase; letter-spacing:.4pt; }
-</style>
+
 
 <div class="page" style="max-width:880px">
   <form action="{{ $action }}" method="POST" id="publication-form">
@@ -154,7 +137,7 @@
 
           <div class="field">
             <label>Website</label>
-            <input type="url" name="website"
+            <input type="text" name="website"
                    value="{{ old('website', $record?->website) }}"
                    placeholder="https://...">
           </div>
@@ -289,6 +272,27 @@
                     <option value="{{ $s }}" {{ old('prev_pub_scope', $record?->prev_pub_scope) === $s ? 'selected' : '' }}>{{ $s }}</option>
                   @endforeach
                 </select>
+              </div>
+              <div class="field">
+                <label>Previous Type of Publication</label>
+                <select name="prev_pub_format">
+                  <option value="">— Select —</option>
+                  @foreach($formats as $f)
+                    <option value="{{ $f }}" {{ old('prev_pub_format', $record?->prev_pub_format) === $f ? 'selected' : '' }}>{{ $f }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="field">
+                <label>Previous Website</label>
+                <input type="text" name="prev_website"
+                       value="{{ old('prev_website', $record?->prev_website) }}"
+                       placeholder="https://...">
+              </div>
+              <div class="field">
+                <label>Previous Email Address</label>
+                <input type="email" name="prev_email_address"
+                       value="{{ old('prev_email_address', $record?->prev_email_address) }}"
+                       placeholder="journal@email.com">
               </div>
             </div>
           </div>

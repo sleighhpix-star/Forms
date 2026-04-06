@@ -24,4 +24,7 @@ class LdTravel extends Model
         'sig_approved_name',     'sig_approved_position',
         'mov_original_name', 'mov_path', 'mov_size', 'mov_mime',
     ];
+    protected $casts = [
+        'deleted_at' => 'datetime',
+    ];
 }

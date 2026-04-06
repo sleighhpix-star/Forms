@@ -6,32 +6,7 @@
     : route('ld.travel.store');
 @endphp
 
-<style>
-/* ── Signatory block — new design system ── */
-.sig-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:.5rem; }
-.sig-box { border:1.5px solid var(--ivory-deep); border-radius:var(--radius-md); padding:.75rem 1rem; background:var(--surface-raised); transition:border-color .18s,background .18s; }
-.sig-box:focus-within { border-color:var(--gold); background:var(--surface); }
-.sig-role { font-size:.64rem; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.5pt; margin-bottom:.45rem; }
-.sig-field-wrap { position:relative; }
-.sig-name-input { width:100%; border:none; border-bottom:1.5px dashed var(--ivory-deep); background:transparent; font-size:.85rem; font-weight:700; color:var(--crimson); padding:.15rem 1.4rem .15rem 0; outline:none; font-family:var(--font-body); transition:border-color .15s; }
-.sig-name-input:focus { border-bottom-color:var(--crimson); border-bottom-style:solid; }
-.sig-pos-input { width:100%; border:none; border-bottom:1px dashed var(--ivory-deep); background:transparent; font-size:.72rem; color:var(--ink-soft); padding:.15rem 1.4rem .15rem 0; outline:none; font-family:var(--font-body); margin-top:.3rem; transition:border-color .15s; }
-.sig-pos-input:focus { border-bottom-color:var(--crimson); border-bottom-style:solid; }
-.sig-edit-icon { position:absolute; right:0; top:50%; transform:translateY(-50%); font-size:.65rem; color:var(--ink-ghost); pointer-events:none; }
-.sig-box:focus-within .sig-edit-icon { color:var(--crimson); }
-.sig-reset-btn { margin-top:.5rem; font-size:.65rem; color:var(--ink-ghost); background:none; border:none; cursor:pointer; padding:0; text-decoration:underline; font-family:var(--font-body); }
-.sig-reset-btn:hover { color:var(--crimson); }
-/* Employee table */
-.emp-table { width:100%; border-collapse:collapse; font-size:.82rem; }
-.emp-table th { background:linear-gradient(135deg,var(--crimson-deep),var(--crimson)); padding:.4rem .6rem; text-align:left; font-size:.67rem; font-weight:700; color:rgba(255,255,255,.88); text-transform:uppercase; border-bottom:2px solid var(--crimson-deep); }
-.emp-table td { padding:.3rem .4rem; border-bottom:1px solid var(--ivory-deep); vertical-align:middle; }
-.emp-table input, .emp-table textarea { width:100%; border:1.5px solid var(--ivory-deep); border-radius:var(--radius-sm); padding:.3rem .5rem; font-size:.8rem; font-family:var(--font-body); outline:none; background:var(--surface); resize:none; transition:border-color .15s; }
-.emp-table input:focus, .emp-table textarea:focus { border-color:var(--crimson); box-shadow:0 0 0 2px var(--crimson-glow); }
-.emp-del-btn { background:none; border:none; color:#ef4444; cursor:pointer; font-size:.9rem; padding:.2rem .4rem; border-radius:5px; }
-.emp-del-btn:hover { background:#fef2f2; }
-.btn-add-emp { display:inline-flex; align-items:center; gap:.35rem; margin-top:.6rem; background:var(--surface); border:1.5px dashed var(--ivory-deep); border-radius:var(--radius-md); padding:.35rem .85rem; font-size:.78rem; font-weight:600; color:var(--ink-soft); cursor:pointer; font-family:var(--font-body); transition:var(--transition); }
-.btn-add-emp:hover { border-color:var(--crimson); color:var(--crimson); background:var(--crimson-glow); }
-</style>
+
 
 <div class="page" style="max-width:880px">
   <form action="{{ $action }}" method="POST" id="travel-form">

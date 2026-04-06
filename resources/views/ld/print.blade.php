@@ -4,18 +4,36 @@
 <meta charset="UTF-8">
 <title>BatStateU-FO-HRD-28 &mdash; {{ $record->participant_name ?? '' }}</title>
 <style>
+.pbar {
+  background: #5C0E24;
+  padding: .4rem 1.1rem;
+  display: flex; gap: .65rem; align-items: center;
+  border-bottom: 2px solid #B5832A;
+  font-family: 'Geist', system-ui, sans-serif;
+}
+.pbar button {
+  background: #B5832A; color: #fff; border: none; border-radius: 5px;
+  padding: .28rem .85rem; font-family: inherit; font-size: .76rem; font-weight: 600; cursor: pointer;
+  transition: background .15s;
+}
+.pbar button:hover { background: #9A6E20; }
+.pbar span { color: rgba(255,255,255,.65); font-size: .76rem; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: "Times New Roman", Times, serif; font-size: 11pt; color: #000; background: #fff; }
+body { font-family: "Times New Roman", Times, serif; font-size: 11pt; color: #000; background: #e5e7eb; }
 
-.pbar { background: #8B1A2B; padding: .3rem 1rem; display: flex; gap: .6rem; align-items: center; }
-.pbar button { background: #C8922A; color: #fff; border: none; border-radius: 5px; padding: .28rem .8rem;
-  font-family: Arial, sans-serif; font-size: .78rem; font-weight: 700; cursor: pointer; }
-.pbar span { color: rgba(255,255,255,.7); font-size: .78rem; }
+
+
+
 
 .wrap { padding: 0.2cm 0; display: flex; justify-content: center; }
-.sheet { width: 17.26cm; font-family: "Times New Roman", Times, serif; font-size: 10pt; }
+.sheet {
+  width: 17.26cm;
+  background: #fff;
+  box-shadow: 0 3px 16px rgba(0,0,0,.15);
+  padding: .5cm .82cm .6cm .82cm;
+}
 
-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size: 10pt;
   font-family: "Times New Roman", Times, serif; line-height: 1.2; }
 .s   { background: #edeaea; }
@@ -36,11 +54,12 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
 * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
 
 @media print {
+  .pbar { display: none !important; }
   @page { size: 8.5in 13in; margin: 0.394in 0.920in 0.295in 0.787in; }
   html, body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .pbar { display: none !important; }
+  
   .wrap { padding: 0 !important; display: block !important; }
-  .sheet { width: 100% !important; font-size: 10.5pt !important; }
+  .sheet { width: 100% !important; padding: 0 !important; box-shadow: none !important; }
   table { width: 100% !important; table-layout: fixed !important; }
   td { padding: 2pt 4pt !important; font-size: 10.5pt !important; line-height: 1.2 !important; }
   .foot { font-size: 8pt !important; line-height: 1.25 !important; }

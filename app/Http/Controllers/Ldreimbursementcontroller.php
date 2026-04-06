@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HandlesMovUpload;
 use App\Models\LdReimbursement;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LdReimbursementController extends Controller
 {
+    use HandlesMovUpload;
+
     public function store(Request $request)
     {
         $validated = $this->validateForm($request);
         $validated['expense_items'] = $this->buildExpenseItems($request);
+
         if (empty($validated['tracking_number'])) {
-            $validated['tracking_number'] = 'LR-'.date('Ymd').'-'.Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LR-' . date('Ymd') . '-' . Str::upper(Str::random(6));
         }
+
         LdReimbursement::create($validated);
+
         return redirect()->route('ld.index', ['tab' => 'reimbursement'])
             ->with('success', 'Reimbursement request submitted successfully.');
     }
@@ -25,10 +30,13 @@ class LdReimbursementController extends Controller
     {
         $validated = $this->validateForm($request);
         $validated['expense_items'] = $this->buildExpenseItems($request);
+
         if (empty($validated['tracking_number']) && empty($reimbursement->tracking_number)) {
-            $validated['tracking_number'] = 'LR-'.date('Ymd').'-'.Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LR-' . date('Ymd') . '-' . Str::upper(Str::random(6));
         }
+
         $reimbursement->update($validated);
+
         return redirect()->route('ld.index', ['tab' => 'reimbursement'])
             ->with('success', 'Reimbursement request updated successfully.');
     }
@@ -36,6 +44,7 @@ class LdReimbursementController extends Controller
     public function destroy(LdReimbursement $reimbursement)
     {
         $reimbursement->delete();
+
         return redirect()->route('ld.index', ['tab' => 'reimbursement'])
             ->with('success', 'Record deleted.');
     }
@@ -63,71 +72,48 @@ class LdReimbursementController extends Controller
     public function recordsJson()
     {
         return response()->json([
-            'records' => LdReimbursement::orderByDesc('created_at')->get()
+            'records' => LdReimbursement::orderByDesc('created_at')->get(),
         ]);
     }
 
-    // ── MOV ──────────────────────────────────────────────────────────────────
-
     public function uploadMov(Request $request, LdReimbursement $reimbursement)
     {
-        $request->validate([
-            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
-        ]);
-
-        if ($reimbursement->mov_path && Storage::disk('public')->exists($reimbursement->mov_path)) {
-            Storage::disk('public')->delete($reimbursement->mov_path);
-        }
-
-        $file = $request->file('mov_file');
-        $reimbursement->forceFill([
-            'mov_path'          => $file->store('ld/reimbursement/mov', 'public'),
-            'mov_original_name' => $file->getClientOriginalName(),
-            'mov_size'          => $file->getSize(),
-            'mov_mime'          => $file->getMimeType(),
-        ])->save();
-
-        return redirect()->route('ld.index', ['tab' => 'reimbursement'])
-            ->with('success', '✅ MOV uploaded.');
+        return parent::uploadMov($request, $reimbursement, 'reimbursement', 'reimbursement');
     }
 
     public function viewMov(LdReimbursement $reimbursement)
     {
-        abort_unless($reimbursement->mov_path && Storage::disk('public')->exists($reimbursement->mov_path), 404);
-        return Storage::disk('public')->response(
-            $reimbursement->mov_path,
-            $reimbursement->mov_original_name ?? basename($reimbursement->mov_path)
-        );
+        return parent::viewMov($reimbursement);
     }
 
-    // ── Private ──────────────────────────────────────────────────────────────
+    // ── Private ───────────────────────────────────────────────────────────────
 
     private function validateForm(Request $request): array
     {
         return $request->validate([
             'tracking_number'           => 'nullable|string|max:100',
-            'department'                 => 'required|string|max:255',
-            'activity_types'             => 'required|array|min:1',
-            'activity_types.*'           => 'string',
-            'activity_type_others'       => 'nullable|string|max:255',
-            'venue'                      => 'nullable|string|max:255',
-            'activity_date'              => 'nullable|string|max:100',
-            'reason'                     => 'nullable|string',
-            'remarks'                    => 'nullable|string',
-            'sig_requested_name'         => 'nullable|string|max:255',
-            'sig_requested_position'     => 'nullable|string|max:255',
-            'sig_reviewed_name'          => 'nullable|string|max:255',
-            'sig_reviewed_position'      => 'nullable|string|max:255',
-            'sig_recommending_name'      => 'nullable|string|max:255',
-            'sig_recommending_position'  => 'nullable|string|max:255',
-            'sig_approved_name'          => 'nullable|string|max:255',
-            'sig_approved_position'      => 'nullable|string|max:255',
+            'department'                => 'required|string|max:255',
+            'activity_types'            => 'required|array|min:1',
+            'activity_types.*'          => 'string',
+            'activity_type_others'      => 'nullable|string|max:255',
+            'venue'                     => 'nullable|string|max:255',
+            'activity_date'             => 'nullable|string|max:100',
+            'reason'                    => 'nullable|string',
+            'remarks'                   => 'nullable|string',
+            'sig_requested_name'        => 'nullable|string|max:255',
+            'sig_requested_position'    => 'nullable|string|max:255',
+            'sig_reviewed_name'         => 'nullable|string|max:255',
+            'sig_reviewed_position'     => 'nullable|string|max:255',
+            'sig_recommending_name'     => 'nullable|string|max:255',
+            'sig_recommending_position' => 'nullable|string|max:255',
+            'sig_approved_name'         => 'nullable|string|max:255',
+            'sig_approved_position'     => 'nullable|string|max:255',
         ]);
     }
 
     /**
-     * Convert flat arrays (payees[], descriptions[], ...) into a JSON array of objects.
-     * The form sends parallel arrays for each expense row.
+     * Convert parallel form arrays (payees[], descriptions[], ...) into
+     * a single JSON array of expense-row objects for storage.
      */
     private function buildExpenseItems(Request $request): array
     {
@@ -139,9 +125,11 @@ class LdReimbursementController extends Controller
 
         $items = [];
         foreach ($payees as $i => $payee) {
-            // Skip completely empty rows
             $desc = $descriptions[$i] ?? '';
-            if (empty($payee) && empty($desc)) continue;
+
+            if (empty($payee) && empty($desc)) {
+                continue;
+            }
 
             $qty      = (float) ($quantities[$i] ?? 0);
             $unitCost = (float) ($unitCosts[$i] ?? 0);

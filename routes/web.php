@@ -79,3 +79,7 @@ Route::prefix('ld-requests')->name('ld.')->group(function () {
     Route::get('/travel/{travel}/mov/view',   [LdTravelController::class, 'viewMov'])->name('travel.mov.view');
 
 });
+
+// Settings
+Route::get('/settings',  [\App\Http\Controllers\SettingsController::class, 'edit'])->name('settings.edit');
+Route::put('/settings',  [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
