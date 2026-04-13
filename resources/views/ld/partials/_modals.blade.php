@@ -102,7 +102,7 @@
           <option value="1">Financial — Yes</option>
           <option value="0">Financial — No</option>
         </select>
-        <button onclick="clearRecFilters()" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:white;cursor:pointer;font-size:.75rem;color:var(--ink-4)">✕ Clear</button>
+        <button id="recClearBtn" onclick="clearRecFilters()" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:white;cursor:pointer;font-size:.75rem;color:var(--ink-4);display:none">✕ Clear</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <span id="recCount" style="font-size:.76rem;color:var(--ink-4)"></span>

@@ -17,10 +17,19 @@ class LdRequestController extends Controller
 
     // ── Constants ─────────────────────────────────────────────────────────────
 
-    private const TYPES    = ['Seminar', 'Convention', 'Conference', 'Training', 'Symposium', 'Workshop', 'Immersion'];
-    private const LEVELS   = ['Local', 'Regional', 'National', 'International'];
-    private const NATURES  = ['Learner', 'Presenter', 'Officer', 'Speaker', 'Facilitator', 'Organizer'];
+    private const TYPES = [
+        'Seminar', 'Convention', 'Conference', 'Training',
+        'Symposium', 'Workshop', 'Immersion',
+    ];
+
+    private const LEVELS = ['Local', 'Regional', 'National', 'International'];
+
+    private const NATURES = [
+        'Learner', 'Presenter', 'Officer', 'Speaker', 'Facilitator', 'Organizer',
+    ];
+
     private const STATUSES = ['Permanent', 'Temporary', 'Casual', 'Contractual', 'Part-time'];
+
     private const COVERAGE = [
         'registration'   => 'Registration',
         'accommodation'  => 'Accommodation',
@@ -34,28 +43,28 @@ class LdRequestController extends Controller
 
     public function index(Request $request)
     {
-        // Tab 1: Participation
+        // Tab 1: Participation — use the FTS scope for full-text search,
+        // JSONB @> containment for type, and a plain WHERE for level.
         $query = LdRequest::query();
         if ($s = $request->input('search')) {
-            $query->where(fn($q) => $q
-                ->whereRaw('participant_name ILIKE ?', ["%{$s}%"])
-                ->orWhereRaw('title ILIKE ?',          ["%{$s}%"])
-                ->orWhereRaw('campus ILIKE ?',         ["%{$s}%"])
-                ->orWhereRaw('college_office ILIKE ?', ["%{$s}%"])
-            );
+            // scopeSearch uses the generated fts_vector tsvector column (GIN indexed).
+            $query->search($s);
         }
-        if ($t = $request->input('type'))  $query->whereJsonContains('types', $t);
-        if ($l = $request->input('level')) $query->where('level', $l);
+        if ($t = $request->input('type'))  $query->ofType($t);
+        if ($l = $request->input('level')) $query->ofLevel($l);
         $records = $query->latest()->paginate(20)->withQueryString();
 
         // Tab 2: Attendance
         $attQuery = LdAttendance::query();
         if ($s = $request->input('att_q')) {
-            $attQuery->where(fn($q) => $q
-                ->whereRaw('attendee_name ILIKE ?', ["%{$s}%"])
-                ->orWhereRaw('campus ILIKE ?',       ["%{$s}%"])
-                ->orWhereRaw('purpose ILIKE ?',      ["%{$s}%"])
-            );
+            $attQuery->where(function ($q) use ($s) {
+                $q->whereRaw('attendee_name ILIKE ?', ["%{$s}%"])
+                  ->orWhereRaw('campus ILIKE ?',       ["%{$s}%"])
+                  ->orWhereRaw('purpose ILIKE ?',      ["%{$s}%"]);
+            });
+        }
+        if ($t = $request->input('att_type')) {
+            $attQuery->whereRaw('activity_types::jsonb @> ?::jsonb', [json_encode([$t])]);
         }
         if ($l = $request->input('att_level')) $attQuery->where('level', $l);
         $attendanceRecords = $attQuery->latest()->paginate(20, ['*'], 'att_page')->withQueryString();
@@ -63,11 +72,11 @@ class LdRequestController extends Controller
         // Tab 3: Publication
         $pubQuery = LdPublication::query();
         if ($s = $request->input('pub_q')) {
-            $pubQuery->where(fn($q) => $q
-                ->whereRaw('faculty_name ILIKE ?',    ["%{$s}%"])
-                ->orWhereRaw('paper_title ILIKE ?',   ["%{$s}%"])
-                ->orWhereRaw('journal_title ILIKE ?', ["%{$s}%"])
-            );
+            $pubQuery->where(function ($q) use ($s) {
+                $q->whereRaw('faculty_name ILIKE ?',  ["%{$s}%"])
+                  ->orWhereRaw('paper_title ILIKE ?', ["%{$s}%"])
+                  ->orWhereRaw('journal_title ILIKE ?', ["%{$s}%"]);
+            });
         }
         if ($sc = $request->input('pub_scope'))  $pubQuery->where('pub_scope', $sc);
         if ($n  = $request->input('pub_nature')) $pubQuery->where('nature', $n);
@@ -83,11 +92,11 @@ class LdRequestController extends Controller
         // Tab 5: Travel
         $trvQuery = LdTravel::query();
         if ($s = $request->input('trv_q')) {
-            $trvQuery->where(fn($q) => $q
-                ->whereRaw('employee_names ILIKE ?',   ["%{$s}%"])
-                ->orWhereRaw('places_visited ILIKE ?', ["%{$s}%"])
-                ->orWhereRaw('purpose ILIKE ?',        ["%{$s}%"])
-            );
+            $trvQuery->where(function ($q) use ($s) {
+                $q->whereRaw('employee_names ILIKE ?',  ["%{$s}%"])
+                  ->orWhereRaw('places_visited ILIKE ?', ["%{$s}%"])
+                  ->orWhereRaw('purpose ILIKE ?',        ["%{$s}%"]);
+            });
         }
         $travelRecords = $trvQuery->latest()->paginate(20, ['*'], 'trv_page')->withQueryString();
 
@@ -128,7 +137,7 @@ class LdRequestController extends Controller
         $validated = $this->validateForm($request);
 
         if (empty($validated['tracking_number'])) {
-            $validated['tracking_number'] = 'LD-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LD-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         LdRequest::create($validated);
@@ -140,7 +149,11 @@ class LdRequestController extends Controller
 
     public function show(LdRequest $ld)
     {
-        return view('ld.show', ['ld' => $ld, 'record' => $ld, 'coverage' => self::COVERAGE]);
+        return view('ld.show', [
+            'ld'       => $ld,
+            'record'   => $ld,
+            'coverage' => self::COVERAGE,
+        ]);
     }
 
     public function edit(LdRequest $ld)
@@ -160,12 +173,12 @@ class LdRequestController extends Controller
         $validated = $this->validateForm($request);
 
         if (empty($validated['tracking_number']) && empty($ld->tracking_number)) {
-            $validated['tracking_number'] = 'LD-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LD-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         $ld->fill($validated);
 
-        if (!$ld->isDirty()) {
+        if (! $ld->isDirty()) {
             return back()->with('success', 'No changes detected.');
         }
 
@@ -198,7 +211,7 @@ class LdRequestController extends Controller
         return view('ld.print', ['record' => $ld]);
     }
 
-    // ── Records JSON (used by the All Records modal) ───────────────────────────
+    // ── Records JSON ──────────────────────────────────────────────────────────
 
     public function recordsParticipation()
     {
@@ -209,33 +222,12 @@ class LdRequestController extends Controller
 
     public function uploadMov(Request $request, LdRequest $ld)
     {
-        $request->validate([
-            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
-        ]);
-        if ($ld->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($ld->mov_path)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($ld->mov_path);
-        }
-        $file = $request->file('mov_file');
-        $ld->forceFill([
-            'mov_path'          => $file->store('ld/participation/mov', 'public'),
-            'mov_original_name' => $file->getClientOriginalName(),
-            'mov_size'          => $file->getSize(),
-            'mov_mime'          => $file->getMimeType(),
-        ])->save();
-        return redirect()->route('ld.index', ['tab' => 'participation'])
-            ->with('success', '✅ MOV uploaded.');
+        return $this->handleMovUpload($request, $ld, 'participation', 'participation');
     }
 
     public function viewMov(LdRequest $ld)
     {
-        abort_unless(
-            $ld->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($ld->mov_path),
-            404
-        );
-        return \Illuminate\Support\Facades\Storage::disk('public')->response(
-            $ld->mov_path,
-            $ld->mov_original_name ?? basename($ld->mov_path)
-        );
+        return $this->handleMovView($ld);
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

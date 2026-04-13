@@ -61,7 +61,11 @@ function smRow($l,$v){return '<div style="display:flex;align-items:baseline;padd
 <div style="padding:10px 16px;background:var(--bg);border-top:1px solid var(--border-sm);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
   <a href="{{ route('ld.show', $record) }}" target="_blank" class="btn btn-ghost btn-sm">🔗 Full View</a>
   <div style="display:flex;gap:6px">
-    <a href="{{ route('ld.print', $record) }}" target="_blank" class="btn btn-gold btn-sm">🖨 Print</a>
+    <button type="button"
+    onclick="closeModal('viewModal'); openPrintModal('{{ route('ld.print', $record) }}')"
+    class="btn btn-gold btn-sm">
+    🖨 Print
+</button>
     <button onclick="closeModal('viewModal')" class="btn btn-primary btn-sm">✓ Close</button>
   </div>
 </div>

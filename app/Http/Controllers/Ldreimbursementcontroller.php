@@ -17,7 +17,7 @@ class LdReimbursementController extends Controller
         $validated['expense_items'] = $this->buildExpenseItems($request);
 
         if (empty($validated['tracking_number'])) {
-            $validated['tracking_number'] = 'LR-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LR-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         LdReimbursement::create($validated);
@@ -32,7 +32,7 @@ class LdReimbursementController extends Controller
         $validated['expense_items'] = $this->buildExpenseItems($request);
 
         if (empty($validated['tracking_number']) && empty($reimbursement->tracking_number)) {
-            $validated['tracking_number'] = 'LR-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LR-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         $reimbursement->update($validated);
@@ -78,33 +78,12 @@ class LdReimbursementController extends Controller
 
     public function uploadMov(Request $request, LdReimbursement $reimbursement)
     {
-        $request->validate([
-            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
-        ]);
-        if ($reimbursement->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($reimbursement->mov_path)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($reimbursement->mov_path);
-        }
-        $file = $request->file('mov_file');
-        $reimbursement->forceFill([
-            'mov_path'          => $file->store('ld/reimbursement/mov', 'public'),
-            'mov_original_name' => $file->getClientOriginalName(),
-            'mov_size'          => $file->getSize(),
-            'mov_mime'          => $file->getMimeType(),
-        ])->save();
-        return redirect()->route('ld.index', ['tab' => 'reimbursement'])
-            ->with('success', '✅ MOV uploaded.');
+        return $this->handleMovUpload($request, $reimbursement, 'reimbursement', 'reimbursement');
     }
 
     public function viewMov(LdReimbursement $reimbursement)
     {
-        abort_unless(
-            $reimbursement->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($reimbursement->mov_path),
-            404
-        );
-        return \Illuminate\Support\Facades\Storage::disk('public')->response(
-            $reimbursement->mov_path,
-            $reimbursement->mov_original_name ?? basename($reimbursement->mov_path)
-        );
+        return $this->handleMovView($reimbursement);
     }
 
     // ── Private ───────────────────────────────────────────────────────────────
@@ -133,8 +112,8 @@ class LdReimbursementController extends Controller
     }
 
     /**
-     * Convert parallel form arrays (payees[], descriptions[], ...) into
-     * a single JSON array of expense-row objects for storage.
+     * Convert parallel form arrays (payees[], descriptions[], …) into a
+     * single JSON-serialisable array of expense-row objects for storage.
      */
     private function buildExpenseItems(Request $request): array
     {
@@ -145,21 +124,28 @@ class LdReimbursementController extends Controller
         $amounts      = $request->input('amounts', []);
 
         $items = [];
+
         foreach ($payees as $i => $payee) {
             $desc = $descriptions[$i] ?? '';
 
-            if (empty($payee) && empty($desc)) {
+            // Skip completely blank rows.
+            if (empty(trim((string) $payee)) && empty(trim((string) $desc))) {
                 continue;
             }
 
             $qty      = (float) ($quantities[$i] ?? 0);
-            $unitCost = (float) ($unitCosts[$i] ?? 0);
-            $amount   = (float) ($amounts[$i] ?? ($qty * $unitCost));
+            $unitCost = (float) ($unitCosts[$i]  ?? 0);
+
+            // Use explicitly submitted amount, or fall back to qty × unit_cost.
+            $rawAmount = $amounts[$i] ?? null;
+            $amount    = ($rawAmount !== null && $rawAmount !== '')
+                ? (float) $rawAmount
+                : ($qty * $unitCost);
 
             $items[] = [
                 'payee'       => $payee,
                 'description' => $desc,
-                'quantity'    => $qty ?: null,
+                'quantity'    => $qty      ?: null,
                 'unit_cost'   => $unitCost ?: null,
                 'amount'      => $amount,
             ];

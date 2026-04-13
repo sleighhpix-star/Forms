@@ -25,9 +25,23 @@
     <div class="idx-toolbar-l">
       <form method="GET" action="{{ route('ld.index') }}" style="display:contents">
         <input type="hidden" name="tab" value="attendance">
-        <input type="text" name="att_q" value="{{ request('att_q') }}" placeholder="🔍 Search name, purpose…">
+        <input class="filter-input" type="text" name="att_q" value="{{ request('att_q') }}" placeholder="🔍 Search name, purpose…">
+        <select class="filter-select" name="att_type" onchange="this.form.submit()">
+          <option value="">All Types</option>
+          @foreach(['Meeting','Planning Session','Benchmarking','Project/Product Launch','Ceremonial/Representational'] as $t)
+            <option value="{{ $t }}" {{ request('att_type') === $t ? 'selected' : '' }}>{{ $t }}</option>
+          @endforeach
+        </select>
+        <select class="filter-select" name="att_level" onchange="this.form.submit()">
+          <option value="">All Levels</option>
+          @foreach($levels ?? [] as $l)
+            <option value="{{ $l }}" {{ request('att_level') === $l ? 'selected' : '' }}>{{ $l }}</option>
+          @endforeach
+        </select>
         <button class="btn btn-primary btn-sm" type="submit">Search</button>
-        @if(request('att_q'))<a href="{{ route('ld.index') }}?tab=attendance" class="btn btn-ghost btn-sm">✕ Clear</a>@endif
+        @if(request()->anyFilled(['att_q','att_type','att_level']))
+          <a href="{{ route('ld.index') }}?tab=attendance" class="btn btn-ghost btn-sm">✕ Clear</a>
+        @endif
       </form>
     </div>
     <div class="idx-toolbar-r">

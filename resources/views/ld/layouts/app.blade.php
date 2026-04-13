@@ -223,7 +223,7 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.25}
 </header>
 <main>@yield('content')</main>
 <footer class="no-print" style="text-align:center;padding:1.1rem 2rem;font-size:.7rem;color:var(--ink-5);border-top:1px solid var(--border-sm);background:var(--surface);letter-spacing:.04em;">
-  &copy; {{ date('Y') }} &nbsp;&middot;&nbsp; Batangas State University &nbsp;&middot;&nbsp; Research Management Services &nbsp;&middot;&nbsp; L&amp;D Request System
+  &copy; {{ date('Y') }} &nbsp;&middot;&nbsp; Batangas State University &nbsp;&middot;&nbsp; Research Management Services &nbsp;&middot;&nbsp; Request Form System
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>

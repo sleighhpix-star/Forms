@@ -60,6 +60,10 @@ function smRow($l,$v){return '<div style="display:flex;align-items:baseline;padd
 
 <div style="padding:10px 16px;background:var(--bg);border-top:1px solid var(--border-sm);display:flex;justify-content:flex-end;gap:6px;flex-shrink:0">
   <button type="button" onclick="openFormModal('attendance-edit','✏️ Edit Attendance',{{ $record->id }})" class="btn btn-outline btn-sm">✏️ Edit</button>
-  <button type="button" onclick="openPrintModal('{{ route('ld.attendance.print', $record) }}')" class="btn btn-gold btn-sm">🖨 Print</button>
+  <button type="button"
+    onclick="closeModal('gViewModal'); openPrintModal('{{ route('ld.attendance.print', $record) }}')"
+    class="btn btn-gold btn-sm">
+    🖨 Print
+</button>
   <button type="button" onclick="closeModal('gViewModal')" class="btn btn-primary btn-sm">✓ Close</button>
 </div>

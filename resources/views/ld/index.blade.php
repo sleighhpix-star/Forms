@@ -10,7 +10,7 @@
 
   {{-- Page heading --}}
   <div class="idx-heading">
-    <h1>L&amp;D <span>Requests</span></h1>
+    <h1>Forms</h1>
     <div style="font-size:.78rem;color:var(--ink-4)">
       Batangas State University &nbsp;&middot;&nbsp; Research Management Services
     </div>

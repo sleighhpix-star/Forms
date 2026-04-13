@@ -88,7 +88,7 @@ class LdRequest extends Model
     {
         // JSONB containment: types array must contain this value
         return $type
-            ? $query->whereRaw('types @> ?::jsonb', [json_encode([$type])])
+            ? $query->whereRaw('types::jsonb @> ?::jsonb', [json_encode([$type])])
             : $query;
     }
 

@@ -16,7 +16,7 @@ class LdTravelController extends Controller
         $validated = $this->validateForm($request);
 
         if (empty($validated['tracking_number'])) {
-            $validated['tracking_number'] = 'LTv-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LTv-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         LdTravel::create($validated);
@@ -30,7 +30,7 @@ class LdTravelController extends Controller
         $validated = $this->validateForm($request);
 
         if (empty($validated['tracking_number']) && empty($travel->tracking_number)) {
-            $validated['tracking_number'] = 'LTv-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LTv-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         $travel->update($validated);
@@ -76,33 +76,12 @@ class LdTravelController extends Controller
 
     public function uploadMov(Request $request, LdTravel $travel)
     {
-        $request->validate([
-            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
-        ]);
-        if ($travel->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($travel->mov_path)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($travel->mov_path);
-        }
-        $file = $request->file('mov_file');
-        $travel->forceFill([
-            'mov_path'          => $file->store('ld/travel/mov', 'public'),
-            'mov_original_name' => $file->getClientOriginalName(),
-            'mov_size'          => $file->getSize(),
-            'mov_mime'          => $file->getMimeType(),
-        ])->save();
-        return redirect()->route('ld.index', ['tab' => 'travel'])
-            ->with('success', '✅ MOV uploaded.');
+        return $this->handleMovUpload($request, $travel, 'travel', 'travel');
     }
 
     public function viewMov(LdTravel $travel)
     {
-        abort_unless(
-            $travel->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($travel->mov_path),
-            404
-        );
-        return \Illuminate\Support\Facades\Storage::disk('public')->response(
-            $travel->mov_path,
-            $travel->mov_original_name ?? basename($travel->mov_path)
-        );
+        return $this->handleMovView($travel);
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

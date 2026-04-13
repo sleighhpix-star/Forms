@@ -16,7 +16,7 @@ class LdPublicationController extends Controller
         $validated = $this->validateForm($request);
 
         if (empty($validated['tracking_number'])) {
-            $validated['tracking_number'] = 'LP-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LP-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         LdPublication::create($validated);
@@ -30,7 +30,7 @@ class LdPublicationController extends Controller
         $validated = $this->validateForm($request);
 
         if (empty($validated['tracking_number']) && empty($publication->tracking_number)) {
-            $validated['tracking_number'] = 'LP-' . date('Ymd') . '-' . Str::upper(Str::random(6));
+            $validated['tracking_number'] = 'LP-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
         }
 
         $publication->update($validated);
@@ -76,33 +76,12 @@ class LdPublicationController extends Controller
 
     public function uploadMov(Request $request, LdPublication $publication)
     {
-        $request->validate([
-            'mov_file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx',
-        ]);
-        if ($publication->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($publication->mov_path)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($publication->mov_path);
-        }
-        $file = $request->file('mov_file');
-        $publication->forceFill([
-            'mov_path'          => $file->store('ld/publication/mov', 'public'),
-            'mov_original_name' => $file->getClientOriginalName(),
-            'mov_size'          => $file->getSize(),
-            'mov_mime'          => $file->getMimeType(),
-        ])->save();
-        return redirect()->route('ld.index', ['tab' => 'publication'])
-            ->with('success', '✅ MOV uploaded.');
+        return $this->handleMovUpload($request, $publication, 'publication', 'publication');
     }
 
     public function viewMov(LdPublication $publication)
     {
-        abort_unless(
-            $publication->mov_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($publication->mov_path),
-            404
-        );
-        return \Illuminate\Support\Facades\Storage::disk('public')->response(
-            $publication->mov_path,
-            $publication->mov_original_name ?? basename($publication->mov_path)
-        );
+        return $this->handleMovView($publication);
     }
 
     // ── Private ───────────────────────────────────────────────────────────────
@@ -123,7 +102,7 @@ class LdPublicationController extends Controller
             'issn_isbn'                 => 'nullable|string|max:100',
             'publisher'                 => 'nullable|string|max:255',
             'editors'                   => 'nullable|string|max:500',
-            'website'                   => 'nullable|string|max:500',
+            'website'                   => 'nullable|url|max:500',   // fixed: was plain string
             'email_address'             => 'nullable|email|max:255',
             'pub_scope'                 => 'required|string',
             'pub_format'                => 'nullable|string',
@@ -141,7 +120,7 @@ class LdPublicationController extends Controller
             'prev_editors'              => 'nullable|string|max:500',
             'prev_pub_scope'            => 'nullable|string',
             'prev_pub_format'           => 'nullable|string',
-            'prev_website'              => 'nullable|string|max:500',
+            'prev_website'              => 'nullable|url|max:500',   // fixed: was plain string
             'prev_email_address'        => 'nullable|email|max:255',
             'sig_requested_name'        => 'nullable|string|max:255',
             'sig_requested_position'    => 'nullable|string|max:255',
