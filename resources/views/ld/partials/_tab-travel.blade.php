@@ -30,7 +30,7 @@
         <tbody>
           @foreach($travelRecords as $i => $r)
           <tr>
-            <td class="idx-muted">{{ $travelRecords->firstItem()+$i }}</td>
+            <td class="idx-muted">{{ $loop->iteration }}</td>
             <td><span class="idx-trunc" title="{{ $r->employee_names }}">{{ $r->employee_names }}</span></td>
             <td><span class="idx-trunc" title="{{ $r->places_visited }}">{{ $r->places_visited }}</span></td>
             <td><span class="idx-trunc" title="{{ $r->purpose }}">{{ $r->purpose }}</span></td>
@@ -50,7 +50,7 @@
         </tbody>
       </table>
     </div>
-    @if($travelRecords->hasPages())<div class="idx-pagination">{{ $travelRecords->appends(['tab'=>'travel'])->links('ld.partials.pagination') }}</div>@endif
+    
   @else
     <div class="idx-empty"><span class="idx-empty-icon">✈️</span><p>No travel authority requests yet.</p><button class="btn btn-primary btn-sm" onclick="openFormModal('travel','✈️ New Authority to Travel')">＋ Create First Request</button></div>
   @endif

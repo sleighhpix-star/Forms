@@ -32,7 +32,14 @@ body { font-family: "Times New Roman", Times, serif; font-size: 11pt; color: #00
 }
 
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-break: break-word; }
+td {
+  border: 1px solid #000;
+  padding: 4px 6px;
+  vertical-align: middle;
+  word-break: break-word;
+  font-size: 11pt;
+  font-family: "Times New Roman", Times, serif;
+}
 .center { text-align: center; }
 .bold   { font-weight: bold; }
 
@@ -40,10 +47,11 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-brea
 
 @media print {
   .pbar { display: none !important; }
-  @page { size: 8.5in 13in; margin: 0.394in 0.920in 0.295in 0.787in; }
+  @page { size: 8.5in 13in; margin: 0.5in 0.5in 0.5in 0.5in; }
   html, body { margin: 0; padding: 0; }
   .wrap { padding: 0 !important; display: block !important; }
   .sheet { width: 100% !important; padding: 0 !important; box-shadow: none !important; }
+  td { font-size: 11pt; }
 }
 </style>
 </head>
@@ -70,9 +78,8 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-brea
     return implode(' ', $result);
   };
   $chk = fn($v) => $v
-    ? '<span style="display:inline-block;width:12px;height:12px;background:#C00000;border:1px solid #900;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
-    : '<span style="display:inline-block;width:12px;height:12px;border:1px solid #000;vertical-align:middle;"></span>';
-
+ ? '<span style="display:inline-block;width:15pt;height:15pt;background:#C00000;border:1px solid #900;vertical-align:middle;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
+ : '<span style="display:inline-block;width:15pt;height:15pt;border:1px solid #000;vertical-align:middle;flex-shrink:0;"></span>';
   $norm = fn($v) => is_string($v) ? strtolower(trim($v)) : $v;
 
   $sScope  = fn($v) => $norm($record->pub_scope  ?? null) == $norm($v);
@@ -124,7 +131,6 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-brea
     </td>
   </tr>
 
-  {{-- Name: colspan=3 label so it fits on one line --}}
   <tr>
     <td colspan="4">Name of faculty member / employee</td>
     <td colspan="6">{{ $record->faculty_name ?? '' }}</td>
@@ -186,15 +192,15 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-brea
   </tr>
   <tr>
     <td colspan="2" style="border:none;vertical-align:middle;">Check one</td>
-    <td colspan="3" style="border:none;vertical-align:middle;">{!! $chk($sMedium('Print') || $sMedium('Print journal')) !!} Print journal</td>
-    <td colspan="3" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($sMedium('Online') || $sMedium('Online journal')) !!} Online journal</td>
+    <td colspan="2" style="border:none;vertical-align:middle;">{!! $chk($sMedium('Print') || $sMedium('Print journal')) !!} Print journal</td>
+    <td colspan="4" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($sMedium('Online') || $sMedium('Online journal')) !!} Online journal</td>
   </tr>
 
   <tr>
     <td colspan="2">Website</td>
     <td colspan="3">{{ $record->website ?? '' }}</td>
-    <td colspan="3">Email address</td>
-    <td colspan="2">{{ $record->email_address ?? '' }}</td>
+    <td colspan="2">Email address</td>
+    <td colspan="3">{{ $record->email_address ?? '' }}</td>
   </tr>
 
   {{-- Nature --}}
@@ -217,7 +223,7 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-brea
     <td colspan="7">Has the faculty/ employee previously claimed research publication incentive for paper published in CHED accredited journal within current year?</td>
     <td colspan="3" class="center">
       {!! $chk($record->has_previous_claim ?? false) !!} Yes
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       {!! $chk(!($record->has_previous_claim ?? false)) !!} No
     </td>
   </tr>
@@ -278,15 +284,15 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-brea
   </tr>
   <tr>
     <td colspan="2" style="border:none;vertical-align:middle;">Check one</td>
-    <td colspan="3" style="border:none;vertical-align:middle;">{!! $chk($pMedium('Print') || $pMedium('Print journal')) !!} Print journal</td>
-    <td colspan="3" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($pMedium('Online') || $pMedium('Online journal')) !!} Online journal</td>
+    <td colspan="2" style="border:none;vertical-align:middle;">{!! $chk($pMedium('Print') || $pMedium('Print journal')) !!} Print journal</td>
+    <td colspan="4" style="border:none;border-right:1px solid #000;vertical-align:middle;">{!! $chk($pMedium('Online') || $pMedium('Online journal')) !!} Online journal</td>
   </tr>
 
   <tr>
     <td colspan="2">Website</td>
     <td colspan="3">{{ $record->prev_website ?? '' }}</td>
-    <td colspan="3">Email address</td>
-    <td colspan="2">{{ $record->prev_email ?? '' }}</td>
+    <td colspan="2">Email address</td>
+    <td colspan="3">{{ $record->prev_email ?? '' }}</td>
   </tr>
 
   {{-- Signatories --}}
@@ -294,7 +300,7 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-brea
     <td colspan="5" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:10pt;">Requested by:</div>
       <div style="height:0.62cm;"></div>
-      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ $fmtName($record->sig_requested_name ?? 'DR. BRYAN JOHN A. MAGOLING') }}</div>
+      <div style="text-align:center;font-weight:bold;font-size:10pt;margin-top:15pt;">{{ $fmtName($record->sig_requested_name ?? 'DR. BRYAN JOHN A. MAGOLING') }}</div>
       <div style="text-align:center;font-size:10pt;">{{ $record->sig_requested_position ?? 'Director, Research Management Services' }}</div>
       <div style="font-size:10pt;margin-top:3pt;">Date Signed:</div>
     </td>
@@ -326,14 +332,15 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; word-brea
 
 </table>
 
-<p style="margin-top:8pt;font-size:9pt;font-style:italic;line-height:1.35;">
+<p style="margin-top:0pt;font-size:8pt;font-style:italic;line-height:1.35;">
   Required Attachments: (1) Certificate/Notice of Paper Acceptance; (2) Certificate of Authorship,
-  (3) Copy of the page in the Research Manual; (4) Hard Copy of the Research Journal;
+  (3) Copy of the page in the Research Manual;<br>
+  (4) Hard Copy of the Research Journal;
   (5) Proof of the Peer Review Process; (6) Copy of the Journal Title and Table of Contents bearing
-  the Names and Affiliation of the Requester
+  the <br>Names and Affiliation of the Requester
 </p>
 <div style="margin-top:8pt;font-size:8pt;font-style:italic;">cc: HRMO/ FTDC</div>
-<div style="text-align:right;margin-top:30pt;font-size:8pt;font-style:italic;">
+<div style="text-align:right;margin-top:2pt;font-size:8pt;font-style:italic;">
   Tracking Number:
   <span style="display:inline-block;width:130px;border-bottom:1px solid #000;margin-left:5pt;height:10pt;vertical-align:bottom;">{{ $record->tracking_number ?? '' }}</span>
 </div>

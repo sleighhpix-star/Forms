@@ -36,7 +36,7 @@
         <tbody>
           @foreach($publicationRecords as $i => $r)
           <tr>
-            <td class="idx-muted">{{ $publicationRecords->firstItem()+$i }}</td>
+            <td class="idx-muted">{{ $loop->iteration }}</td>
             <td><strong style="font-weight:600">{{ $r->faculty_name }}</strong><div class="idx-muted">{{ $r->campus }}</div></td>
             <td><span class="idx-trunc" title="{{ $r->paper_title }}">{{ $r->paper_title }}</span></td>
             <td><span class="idx-trunc" title="{{ $r->journal_title }}">{{ $r->journal_title }}</span></td>
@@ -56,7 +56,7 @@
         </tbody>
       </table>
     </div>
-    @if($publicationRecords->hasPages())<div class="idx-pagination">{{ $publicationRecords->appends(['tab'=>'publication'])->links('ld.partials.pagination') }}</div>@endif
+    
   @else
     <div class="idx-empty"><span class="idx-empty-icon">📰</span><p>No publication requests yet.</p><button class="btn btn-primary btn-sm" onclick="openFormModal('publication','📰 New Publication Request')">＋ Create First Request</button></div>
   @endif

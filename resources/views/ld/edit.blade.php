@@ -1,5 +1,37 @@
 @php
   $employmentStatuses = ['Permanent', 'Temporary', 'Casual', 'Contractual', 'Part-time'];
+
+  // ── Standard signatory defaults ──────────────────────────────────────────
+  $signatories = [
+    [
+      'role'           => 'Requested by',
+      'name_field'     => 'sig_requested_name',
+      'position_field' => 'sig_requested_position',
+      'default_name'   => 'Dr. Bryan John A. Magoling',
+      'default_pos'    => 'Director, Research Management Services',
+    ],
+    [
+      'role'           => 'Reviewed by',
+      'name_field'     => 'sig_reviewed_name',
+      'position_field' => 'sig_reviewed_position',
+      'default_name'   => 'Engr. Albertson D. Amante',
+      'default_pos'    => 'VP for Research, Development and Extension Services',
+    ],
+    [
+      'role'           => 'Recommending Approval',
+      'name_field'     => 'sig_recommending_name',
+      'position_field' => 'sig_recommending_position',
+      'default_name'   => 'Atty. Noel Alberto S. Omandap',
+      'default_pos'    => 'VP for Administration and Finance',
+    ],
+    [
+      'role'           => 'Approved by',
+      'name_field'     => 'sig_approved_name',
+      'position_field' => 'sig_approved_position',
+      'default_name'   => 'Dr. Tirso A. Ronquillo',
+      'default_pos'    => 'University President',
+    ],
+  ];
   $types    = ['Seminar', 'Convention', 'Conference', 'Training', 'Symposium', 'Workshop', 'Immersion'];
   $levels   = ['Local', 'Regional', 'National', 'International'];
   $natures  = ['Learner', 'Presenter', 'Officer', 'Speaker', 'Facilitator', 'Organizer'];
@@ -212,9 +244,60 @@
             <span>Others:</span>
           </label>
           <input type="text" class="others-input" name="coverage_others" id="e_cov_others_txt"
-                 value="{{ $record->coverage_others }}" placeholder="specify..." {{ $record->coverage_others ? '' : 'disabled' }}>
+                 value="{{ $record->coverage_others }}" placeholder="specify..." {{ $record->coverage_others ? 'required' : 'disabled' }}>
+          {{-- Hidden: keeps coverage[] non-empty when only Others is chosen --}}
+          @if($record->coverage_others)<input type="hidden" name="coverage[]" value="Others" id="hidden_e_cov_others_txt">@endif
         </div>
       </div>
+    </div>
+  </div>
+
+  {{-- SIGNATORIES --}}
+  <div class="card-section">
+    <div class="section-label">
+      Signatories
+      <span style="font-size:.68rem;font-weight:400;color:#9ca3af;margin-left:.5rem;">
+        — pre-filled with standard names, click any field to edit
+      </span>
+    </div>
+
+    <div class="sig-grid">
+      @foreach($signatories as $sig)
+      <div class="sig-box">
+        <div class="sig-role">{{ $sig['role'] }}</div>
+
+        <div class="sig-field-wrap">
+          <input
+            type="text"
+            class="sig-name-input"
+            name="{{ $sig['name_field'] }}"
+            value="{{ old($sig['name_field'], $record->{$sig['name_field']} ?? $sig['default_name']) }}"
+            placeholder="{{ $sig['default_name'] }}"
+            data-default="{{ $sig['default_name'] }}"
+          >
+          <span class="sig-edit-icon">✎</span>
+        </div>
+
+        <div class="sig-field-wrap">
+          <input
+            type="text"
+            class="sig-pos-input"
+            name="{{ $sig['position_field'] }}"
+            value="{{ old($sig['position_field'], $record->{$sig['position_field']} ?? $sig['default_pos']) }}"
+            placeholder="{{ $sig['default_pos'] }}"
+            data-default="{{ $sig['default_pos'] }}"
+          >
+          <span class="sig-edit-icon" style="font-size:.55rem;">✎</span>
+        </div>
+
+        <button
+          type="button"
+          class="sig-reset-btn"
+          onclick="resetEditSignatory(this)"
+          title="Reset to default"
+        >↺ Reset to default</button>
+      </div>
+      @endforeach
     </div>
   </div>
 
@@ -224,4 +307,40 @@
     <button type="submit" class="btn btn-primary">💾 Update Request</button>
   </div>
 
+<script>
+// Signatory reset for edit form
+function resetEditSignatory(btn) {
+  const box = btn.closest('.sig-box');
+  const nameInput = box.querySelector('.sig-name-input');
+  const posInput  = box.querySelector('.sig-pos-input');
+  if (nameInput) nameInput.value = nameInput.dataset.default || '';
+  if (posInput)  posInput.value  = posInput.dataset.default  || '';
+}
+
+// "Others" checkbox toggles for edit form — injects hidden array value so required|array|min:1 passes
+function _editToggleOthers(chk, txtId, arrayName, hiddenId) {
+  const txt = document.getElementById(txtId);
+  if (chk.checked) {
+    txt.disabled = false; txt.required = true; txt.focus();
+    if (!document.getElementById(hiddenId)) {
+      const h = document.createElement('input');
+      h.type = 'hidden'; h.name = arrayName; h.value = 'Others'; h.id = hiddenId;
+      txt.parentNode.appendChild(h);
+    }
+  } else {
+    txt.disabled = true; txt.required = false; txt.value = '';
+    const h = document.getElementById(hiddenId);
+    if (h) h.remove();
+  }
+}
+document.getElementById('e_type_others_chk')?.addEventListener('change', function() {
+  _editToggleOthers(this, 'e_type_others_txt', 'types[]', 'hidden_e_type_others_txt');
+});
+document.getElementById('e_nature_others_chk')?.addEventListener('change', function() {
+  _editToggleOthers(this, 'e_nature_others_txt', 'natures[]', 'hidden_e_nature_others_txt');
+});
+document.getElementById('e_cov_others_chk')?.addEventListener('change', function() {
+  _editToggleOthers(this, 'e_cov_others_txt', 'coverage[]', 'hidden_e_cov_others_txt');
+});
+</script>
 </form>

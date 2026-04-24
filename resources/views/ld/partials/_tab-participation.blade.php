@@ -83,7 +83,7 @@
         <tbody>
           @foreach($records as $i => $r)
           <tr>
-            <td class="idx-muted">{{ $records->firstItem() + $i }}</td>
+            <td class="idx-muted">{{ $loop->iteration }}</td>
             <td>
               <strong style="font-weight:600">{{ $r->participant_name }}</strong>
               <div class="idx-muted">{{ $r->position }}</div>
@@ -124,9 +124,7 @@
         </tbody>
       </table>
     </div>
-    @if($records->hasPages())
-      <div class="idx-pagination">{{ $records->appends(['tab'=>'participation'])->links('ld.partials.pagination') }}</div>
-    @endif
+    
   @else
     <div class="idx-empty">
       <span class="idx-empty-icon">📋</span>

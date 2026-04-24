@@ -56,7 +56,7 @@
         <tbody>
           @foreach($attendanceRecords as $i => $r)
           <tr>
-            <td class="idx-muted">{{ $attendanceRecords->firstItem()+$i }}</td>
+            <td class="idx-muted">{{ $loop->iteration }}</td>
             <td><strong style="font-weight:600">{{ $r->attendee_name }}</strong><div class="idx-muted">{{ $r->position }}</div></td>
             <td class="idx-muted">{{ $r->campus }}<div style="font-size:.72rem">{{ $r->college_office }}</div></td>
             <td class="idx-nowrap">@foreach(($r->activity_types??[]) as $t)<span class="badge badge-crimson" style="font-size:.6rem">{{ $t }}</span>@endforeach</td>
@@ -78,7 +78,7 @@
         </tbody>
       </table>
     </div>
-    @if($attendanceRecords->hasPages())<div class="idx-pagination">{{ $attendanceRecords->appends(['tab'=>'attendance'])->links('ld.partials.pagination') }}</div>@endif
+    
   @else
     <div class="idx-empty"><span class="idx-empty-icon">📅</span><p>No attendance requests yet.</p><button class="btn btn-primary btn-sm" onclick="openFormModal('attendance','📅 New Attendance Request')">＋ Create First Request</button></div>
   @endif

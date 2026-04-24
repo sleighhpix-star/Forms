@@ -150,7 +150,9 @@
               </label>
               <input type="text" class="others-input" name="type_others" id="type_others_txt"
                      value="{{ old('type_others') }}" placeholder="specify..."
-                     {{ old('type_others') ? '' : 'disabled' }}>
+                     {{ old('type_others') ? 'required' : 'disabled' }}>
+              {{-- Hidden: keeps types[] non-empty when only Others is chosen --}}
+              @if(old('type_others'))<input type="hidden" name="types[]" value="Others" id="hidden_type_others_txt">@endif
             </div>
             @error('types') <span class="field-error">{{ $message }}</span> @enderror
           </div>
@@ -188,7 +190,9 @@
               </label>
               <input type="text" class="others-input" name="nature_others" id="nature_others_txt"
                      value="{{ old('nature_others') }}" placeholder="specify..."
-                     {{ old('nature_others') ? '' : 'disabled' }}>
+                     {{ old('nature_others') ? 'required' : 'disabled' }}>
+              {{-- Hidden: keeps natures[] non-empty when only Others is chosen --}}
+              @if(old('nature_others'))<input type="hidden" name="natures[]" value="Others" id="hidden_nature_others_txt">@endif
             </div>
             @error('natures') <span class="field-error">{{ $message }}</span> @enderror
           </div>
@@ -315,7 +319,9 @@
               </label>
               <input type="text" class="others-input" name="coverage_others" id="cov_others_txt"
                      value="{{ old('coverage_others') }}" placeholder="specify..."
-                     {{ old('coverage_others') ? '' : 'disabled' }}>
+                     {{ old('coverage_others') ? 'required' : 'disabled' }}>
+              {{-- Hidden: keeps coverage[] non-empty when only Others is chosen --}}
+              @if(old('coverage_others'))<input type="hidden" name="coverage[]" value="Others" id="hidden_cov_others_txt">@endif
             </div>
           </div>
 
@@ -395,21 +401,30 @@ function toggleFinance(show) {
   document.getElementById('fin_section').style.display = show ? '' : 'none';
 }
 
-// Checkbox "Others" toggles
+// Checkbox "Others" toggles — also injects hidden array value so required|array|min:1 passes
+function _toggleOthers(chk, txtId, arrayName, hiddenId) {
+  const txt = document.getElementById(txtId);
+  if (chk.checked) {
+    txt.disabled = false; txt.required = true; txt.focus();
+    if (!document.getElementById(hiddenId)) {
+      const h = document.createElement('input');
+      h.type = 'hidden'; h.name = arrayName; h.value = 'Others'; h.id = hiddenId;
+      txt.parentNode.appendChild(h);
+    }
+  } else {
+    txt.disabled = true; txt.required = false; txt.value = '';
+    const h = document.getElementById(hiddenId);
+    if (h) h.remove();
+  }
+}
 document.getElementById('type_others_chk')?.addEventListener('change', function() {
-  const txt = document.getElementById('type_others_txt');
-  txt.disabled = !this.checked;
-  if (!this.checked) txt.value = '';
+  _toggleOthers(this, 'type_others_txt', 'types[]', 'hidden_type_others_txt');
 });
 document.getElementById('nature_others_chk')?.addEventListener('change', function() {
-  const txt = document.getElementById('nature_others_txt');
-  txt.disabled = !this.checked;
-  if (!this.checked) txt.value = '';
+  _toggleOthers(this, 'nature_others_txt', 'natures[]', 'hidden_nature_others_txt');
 });
 document.getElementById('cov_others_chk')?.addEventListener('change', function() {
-  const txt = document.getElementById('cov_others_txt');
-  txt.disabled = !this.checked;
-  if (!this.checked) txt.value = '';
+  _toggleOthers(this, 'cov_others_txt', 'coverage[]', 'hidden_cov_others_txt');
 });
 
 /* ── Signatory helpers ── */

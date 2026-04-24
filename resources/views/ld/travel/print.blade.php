@@ -40,7 +40,7 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; font-size
 
 @media print {
   .pbar { display: none !important; }
-  @page { size: 8.5in 13in; margin: 0.394in 0.920in 0.295in 0.787in; }
+  @page { size: 8.5in 13in; margin: 0.5in 0.5in 0.5in 0.5in; }
   html, body { margin: 0; padding: 0; background: #fff !important; }
   .wrap { padding: 0 !important; display: block !important; }
   .sheet { width: 100% !important; padding: 0 !important; box-shadow: none !important; }
@@ -75,8 +75,8 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; font-size
   $empNames     = array_values(array_filter(array_map('trim', explode("\n", $r?->employee_names ?? ''))));
   $empPositions = array_values(array_filter(array_map('trim', explode("\n", $r?->positions ?? ''))));
 
-  // Places to be visited — split by comma or newline for multi-row display
-  $places = array_values(array_filter(array_map('trim', preg_split('/[\n,]+/', $r?->places_visited ?? ''))));
+  // Places — newline-delimited only (commas are part of place names, e.g. "Manila, Metro Manila")
+  $places = array_values(array_filter(array_map('trim', explode("\n", $r?->places_visited ?? ''))));
   if (empty($places)) $places = ['', '', ''];
   while (count($places) < 3) $places[] = '';
 @endphp
@@ -106,7 +106,7 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; font-size
       @endif
     </td>
     <td style="font-size:9.5pt;">Reference No.: BatStateU-FO-GSO-03-A</td>
-    <td style="font-size:9.5pt;"><span style="text-decoration:underline;">Effectivity</span> Date: May 18, 2022</td>
+    <td style="font-size:9.5pt;">Effectivity Date: May 18, 2022</td>
     <td style="font-size:9.5pt;">Revision No.: 02</td>
   </tr>
 </table>
@@ -114,9 +114,9 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; font-size
 {{-- ═══ TITLE ═══ --}}
 <table style="margin-top:-1px;">
   <tr>
-    <td class="center bold" style="font-size:12pt;padding:5pt 4pt;line-height:1.4;border-bottom:none;">
+    <td class="center bold" style="font-size:12pt;padding:5pt 4pt;border-bottom:none;">
       AUTHORITY TO TRAVEL<br>
-      <span style="font-size:11pt;">(Central Administration)</span>
+      <span style="font-size:11pt;">(CENTRAL ADMINISTRATION)</span>
     </td>
   </tr>
 </table>
@@ -125,25 +125,18 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; font-size
 <table style="margin-top:-1px;">
   <colgroup>
     <col style="width:20%">{{-- 1: label --}}
-    <col style="width:30%">{{-- 2: value left --}}
-    <col style="width:14%">{{-- 3: label right --}}
-    <col style="width:36%">{{-- 4: value right --}}
+    <col style="width:38%">{{-- 2: value left (names — wider) --}}
+    <col style="width:10%">{{-- 3: label right (Position — narrower) --}}
+    <col style="width:32%">{{-- 4: value right --}}
   </colgroup>
 
-  {{-- Employee Name/s + Position --}}
-  @php $empRows = max(count($empNames), 1); @endphp
-  @for($i = 0; $i < $empRows; $i++)
+  {{-- Employee Name/s + Position — joined into single cells, no lines between names --}}
   <tr style="min-height:0.65cm;">
-    @if($i === 0)
-      <td rowspan="{{ $empRows }}" style="vertical-align:middle;">Employee Name/s:</td>
-    @endif
-    <td>{{ $empNames[$i] ?? '' }}</td>
-    @if($i === 0)
-      <td rowspan="{{ $empRows }}" style="vertical-align:middle;">Position:</td>
-    @endif
-    <td>{{ $empPositions[$i] ?? '' }}</td>
+    <td style="vertical-align:middle;">Employee Name/s:</td>
+    <td style="vertical-align:middle;">{!! implode('<br>', array_filter($empNames)) !!}</td>
+    <td style="vertical-align:middle;">Position:</td>
+    <td style="vertical-align:middle;">{!! implode('<br>', array_filter($empPositions)) !!}</td>
   </tr>
-  @endfor
 
   {{-- Date/s of Travel + Time --}}
   <tr>
@@ -168,7 +161,7 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; font-size
   {{-- Purpose of Travel --}}
   <tr style="height:1.8cm;">
     <td style="vertical-align:top;padding-top:5px;">Purpose of Travel:</td>
-    <td colspan="3" style="vertical-align:top;padding-top:5px;">{{ $r?->purpose ?? '' }}</td>
+    <td colspan="3" style="vertical-align:top;padding-top:5px;">{!! $r?->purpose ?? '' !!}</td>
   </tr>
 
   {{-- Chargeable Against --}}
@@ -182,7 +175,7 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; font-size
     <td colspan="2" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:11pt;">Requested by:</div>
       <div style="height:0.7cm;"></div>
-      <div style="text-align:center;font-weight:bold;font-size:11pt;">{{ $fmtName($r?->sig_requested_name ?? 'DR. BRYAN JOHN A. MAGOLING') }}</div>
+      <div style="text-align:center;font-weight:bold;font-size:11pt;margin-top:15pt">{{ $fmtName($r?->sig_requested_name ?? 'DR. BRYAN JOHN A. MAGOLING') }}</div>
       <div style="text-align:center;font-size:10pt;">{{ $r?->sig_requested_position ?? 'Director, Research Management Services' }}</div>
       <div style="font-size:11pt;margin-top:4pt;">Date:</div>
     </td>
@@ -203,7 +196,7 @@ td { border: 1px solid #000; padding: 4px 6px; vertical-align: middle; font-size
       <div style="height:0.7cm;"></div>
       <div style="text-align:center;font-weight:bold;font-size:11pt;">{{ $fmtName($r?->sig_recommending_name ?? 'ATTY. NOEL ALBERTO S. OMANDAP') }}</div>
       <div style="text-align:center;font-size:10pt;">{{ $r?->sig_recommending_position ?? 'Vice President for Administration and Finance' }}</div>
-      <div style="font-size:11pt;margin-top:4pt;">Date:</div>
+      <div style="font-size:11pt;margin-top:4pt;margin-left:185pt;">Date:</div>
     </td>
   </tr>
 

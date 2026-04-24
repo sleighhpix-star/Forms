@@ -26,12 +26,37 @@
 function attToggleOthers(chk, txtId) {
   const t = document.getElementById(txtId);
   if (!t) return;
+
+  // Each "Others" text input belongs to a group array (activity_types[], natures[], coverage[]).
+  // When checked we inject a hidden input with value "Others" into that array so the
+  // server-side `required|array|min:1` rule is satisfied even when no regular option is chosen.
+  const arrayMap = {
+    'att_type_others_txt':  'activity_types[]',
+    'att_nature_others_txt': 'natures[]',
+    'att_cov_others_txt':   'coverage[]',
+  };
+  const arrayName = arrayMap[txtId];
+
   if (chk.checked) {
     t.removeAttribute('disabled');
+    t.required = true;
     t.focus();
+    // Inject hidden "Others" value into the corresponding array if not already present
+    if (arrayName && !document.getElementById('hidden_' + txtId)) {
+      const h = document.createElement('input');
+      h.type  = 'hidden';
+      h.name  = arrayName;
+      h.value = 'Others';
+      h.id    = 'hidden_' + txtId;
+      t.parentNode.appendChild(h);
+    }
   } else {
     t.setAttribute('disabled', 'disabled');
+    t.required = false;
     t.value = '';
+    // Remove the injected hidden input
+    const h = document.getElementById('hidden_' + txtId);
+    if (h) h.remove();
   }
 }
 
@@ -133,7 +158,9 @@ function resetSignatory(btn) {
               <input type="text" class="others-input" name="activity_type_others" id="att_type_others_txt"
                      value="{{ old('activity_type_others', $record?->activity_type_others) }}"
                      placeholder="specify..."
-                     @if(!$hasTypeOthers) disabled @endif>
+                     @if(!$hasTypeOthers) disabled @else required @endif>
+              {{-- Hidden: keeps activity_types[] non-empty when only Others is chosen --}}
+              @if($hasTypeOthers)<input type="hidden" name="activity_types[]" value="Others" id="hidden_att_type_others_txt">@endif
             </div>
           </div>
 
@@ -157,7 +184,9 @@ function resetSignatory(btn) {
               <input type="text" class="others-input" name="nature_others" id="att_nature_others_txt"
                      value="{{ old('nature_others', $record?->nature_others) }}"
                      placeholder="specify..."
-                     @if(!$hasNatureOthers) disabled @endif>
+                     @if(!$hasNatureOthers) disabled @else required @endif>
+              {{-- Hidden: keeps natures[] non-empty when only Others is chosen --}}
+              @if($hasNatureOthers)<input type="hidden" name="natures[]" value="Others" id="hidden_att_nature_others_txt">@endif
             </div>
           </div>
 
@@ -258,7 +287,9 @@ function resetSignatory(btn) {
                 <input type="text" class="others-input" name="coverage_others" id="att_cov_others_txt"
                        value="{{ old('coverage_others', $record?->coverage_others) }}"
                        placeholder="specify..."
-                       @if(!$hasCovOthers) disabled @endif>
+                       @if(!$hasCovOthers) disabled @else required @endif>
+                {{-- Hidden: keeps coverage[] non-empty when only Others is chosen --}}
+                @if($hasCovOthers)<input type="hidden" name="coverage[]" value="Others" id="hidden_att_cov_others_txt">@endif
               </div>
             </div>
           </div>
@@ -269,8 +300,8 @@ function resetSignatory(btn) {
       @php
         $signatories = [
           ['role'=>'Requested by',         'name_field'=>'sig_requested_name',    'position_field'=>'sig_requested_position',    'default_name'=>'Dr. Bryan John A. Magoling',    'default_pos'=>'Director, Research Management Services'],
-          ['role'=>'Reviewed by',          'name_field'=>'sig_reviewed_name',     'position_field'=>'sig_reviewed_position',     'default_name'=>'Engr. Albertson D. Amante',     'default_pos'=>'VP for Research, Development and Extension Services'],
-          ['role'=>'Recommending Approval','name_field'=>'sig_recommending_name', 'position_field'=>'sig_recommending_position', 'default_name'=>'Atty. Noel Alberto S. Omandap', 'default_pos'=>'VP for Administration and Finance'],
+          ['role'=>'Reviewed by',          'name_field'=>'sig_reviewed_name',     'position_field'=>'sig_reviewed_position',     'default_name'=>'Engr. Albertson D. Amante',     'default_pos'=>'Vice President for Research, Development and Extension Services'],
+          ['role'=>'Recommending Approval','name_field'=>'sig_recommending_name', 'position_field'=>'sig_recommending_position', 'default_name'=>'Atty. Noel Alberto S. Omandap', 'default_pos'=>'Vice President for Administration and Finance'],
           ['role'=>'Approved by',          'name_field'=>'sig_approved_name',     'position_field'=>'sig_approved_position',     'default_name'=>'Dr. Tirso A. Ronquillo',        'default_pos'=>'University President'],
         ];
       @endphp

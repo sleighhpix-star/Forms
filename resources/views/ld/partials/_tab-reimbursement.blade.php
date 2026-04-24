@@ -31,7 +31,7 @@
           @foreach($reimbursementRecords as $i => $r)
           @php $tot = collect($r->expense_items??[])->sum(fn($x)=>(float)($x['amount']??0)); @endphp
           <tr>
-            <td class="idx-muted">{{ $reimbursementRecords->firstItem()+$i }}</td>
+            <td class="idx-muted">{{ $loop->iteration }}</td>
             <td><strong style="font-weight:600">{{ $r->department }}</strong></td>
             <td class="idx-nowrap">@foreach(($r->activity_types??[]) as $t)<span class="badge badge-crimson" style="font-size:.6rem">{{ $t }}</span>@endforeach</td>
             <td class="idx-muted">{{ $r->venue }}</td>
@@ -51,7 +51,7 @@
         </tbody>
       </table>
     </div>
-    @if($reimbursementRecords->hasPages())<div class="idx-pagination">{{ $reimbursementRecords->appends(['tab'=>'reimbursement'])->links('ld.partials.pagination') }}</div>@endif
+    
   @else
     <div class="idx-empty"><span class="idx-empty-icon">💰</span><p>No reimbursement requests yet.</p><button class="btn btn-primary btn-sm" onclick="openFormModal('reimbursement','💰 New Reimbursement Request')">＋ Create First Request</button></div>
   @endif

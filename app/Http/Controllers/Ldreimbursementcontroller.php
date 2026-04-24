@@ -95,7 +95,7 @@ class LdReimbursementController extends Controller
             'department'                => 'required|string|max:255',
             'activity_types'            => 'required|array|min:1',
             'activity_types.*'          => 'string',
-            'activity_type_others'      => 'nullable|string|max:255',
+            'activity_type_others'      => 'required_if:activity_types.*,Others|nullable|string|max:255',
             'venue'                     => 'nullable|string|max:255',
             'activity_date'             => 'nullable|string|max:100',
             'reason'                    => 'nullable|string',

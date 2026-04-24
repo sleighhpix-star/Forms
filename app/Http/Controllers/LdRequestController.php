@@ -52,7 +52,7 @@ class LdRequestController extends Controller
         }
         if ($t = $request->input('type'))  $query->ofType($t);
         if ($l = $request->input('level')) $query->ofLevel($l);
-        $records = $query->latest()->paginate(20)->withQueryString();
+        $records = $query->latest()->get();
 
         // Tab 2: Attendance
         $attQuery = LdAttendance::query();
@@ -67,7 +67,7 @@ class LdRequestController extends Controller
             $attQuery->whereRaw('activity_types::jsonb @> ?::jsonb', [json_encode([$t])]);
         }
         if ($l = $request->input('att_level')) $attQuery->where('level', $l);
-        $attendanceRecords = $attQuery->latest()->paginate(20, ['*'], 'att_page')->withQueryString();
+        $attendanceRecords = $attQuery->latest()->get();
 
         // Tab 3: Publication
         $pubQuery = LdPublication::query();
@@ -80,14 +80,14 @@ class LdRequestController extends Controller
         }
         if ($sc = $request->input('pub_scope'))  $pubQuery->where('pub_scope', $sc);
         if ($n  = $request->input('pub_nature')) $pubQuery->where('nature', $n);
-        $publicationRecords = $pubQuery->latest()->paginate(20, ['*'], 'pub_page')->withQueryString();
+        $publicationRecords = $pubQuery->latest()->get();
 
         // Tab 4: Reimbursement
         $reiQuery = LdReimbursement::query();
         if ($s = $request->input('rei_q')) {
             $reiQuery->whereRaw('department ILIKE ?', ["%{$s}%"]);
         }
-        $reimbursementRecords = $reiQuery->latest()->paginate(20, ['*'], 'rei_page')->withQueryString();
+        $reimbursementRecords = $reiQuery->latest()->get();
 
         // Tab 5: Travel
         $trvQuery = LdTravel::query();
@@ -98,7 +98,7 @@ class LdRequestController extends Controller
                   ->orWhereRaw('purpose ILIKE ?',        ["%{$s}%"]);
             });
         }
-        $travelRecords = $trvQuery->latest()->paginate(20, ['*'], 'trv_page')->withQueryString();
+        $travelRecords = $trvQuery->latest()->get();
 
         $counts = [
             'participation' => LdRequest::count(),
@@ -244,11 +244,11 @@ class LdRequestController extends Controller
             'title'                     => 'required|string|max:500',
             'types'                     => 'required|array|min:1',
             'types.*'                   => 'string',
-            'type_others'               => 'nullable|string|max:255',
+            'type_others'               => 'required_if:types.*,Others|nullable|string|max:255',
             'level'                     => 'required|string',
             'natures'                   => 'required|array|min:1',
             'natures.*'                 => 'string',
-            'nature_others'             => 'nullable|string|max:255',
+            'nature_others'             => 'required_if:natures.*,Others|nullable|string|max:255',
             'competency'                => 'nullable|string',
             'intervention_date'         => 'required|string|max:255',
             'hours'                     => 'nullable|integer|min:1',
@@ -262,7 +262,7 @@ class LdRequestController extends Controller
             'amount_requested'          => 'nullable|numeric|min:0',
             'coverage'                  => 'nullable|array',
             'coverage.*'                => 'string',
-            'coverage_others'           => 'nullable|string|max:255',
+            'coverage_others'           => 'required_if:coverage.*,Others|nullable|string|max:255',
             'sig_requested_name'        => 'nullable|string|max:255',
             'sig_requested_position'    => 'nullable|string|max:255',
             'sig_reviewed_name'         => 'nullable|string|max:255',

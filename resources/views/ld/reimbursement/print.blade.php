@@ -32,7 +32,14 @@ body { font-family: "Times New Roman", Times, serif; font-size: 11pt; color: #00
 }
 
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size: 10pt; font-family: "Times New Roman", Times, serif; word-break: break-word; }
+td {
+  border: 1px solid #000;
+  padding: 3px 5px;
+  vertical-align: middle;
+  font-size: 11pt;
+  font-family: "Times New Roman", Times, serif;
+  word-break: break-word;
+}
 .center { text-align: center; }
 .bold   { font-weight: bold; }
 .nb     { border: none; }
@@ -42,10 +49,11 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
 
 @media print {
   .pbar { display: none !important; }
-  @page { size: 8.5in 13in; margin: 0.394in 0.920in 0.295in 0.787in; }
+  @page { size: 8.5in 13in; margin: 0.5in 0.5in 0.5in 0.5in; }
   html, body { margin: 0; padding: 0; background: #fff !important; }
   .wrap { padding: 0 !important; display: block !important; }
   .sheet { width: 100% !important; padding: 0 !important; box-shadow: none !important; }
+  td { font-size: 11pt !important; }
 }
 </style>
 </head>
@@ -76,9 +84,11 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
   $actTypes = is_array($r?->activity_types) ? $r->activity_types : (json_decode($r?->activity_types ?? '[]', true) ?: []);
   $total = collect($items)->sum(fn($i) => (float)($i['amount'] ?? 0));
 
-  $chk = fn($v) => $v
-    ? '<span style="display:inline-block;width:11px;height:11px;background:#C00000;border:1px solid #900;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
-    : '<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;vertical-align:middle;"></span>';
+
+
+ $chk = fn($v) => $v
+  ? '<span style="display:inline-block;width:15pt;height:15pt;background:#C00000;border:1px solid #900;flex-shrink:0;vertical-align:middle;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;"></span>'
+  : '<span style="display:inline-block;width:15pt;height:15pt;border:1px solid #000;flex-shrink:0;vertical-align:middle;"></span>';
 
   $inTypes = fn($t) => in_array($t, $actTypes);
 @endphp
@@ -94,9 +104,9 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
 <table>
   <colgroup>
     <col style="width:9%">
-    <col style="width:35%">
+    <col style="width:42%">
     <col style="width:32%">
-    <col style="width:24%">
+    <col style="width:17%">
   </colgroup>
   <tr style="height:0.90cm">
     <td class="center" style="padding:2pt;">
@@ -107,9 +117,9 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
         <div style="width:1.2cm;height:1.2cm;border:1px dashed #aaa;margin:0 auto"></div>
       @endif
     </td>
-    <td style="font-size:9.5pt;">Reference No.: BatStateU-FO-REQ-08-A</td>
-    <td style="font-size:9.5pt;"><span style="text-decoration:underline;">Effectivity</span> Date: May 18, 2022</td>
-    <td style="font-size:9.5pt;">Revision No.: 02</td>
+    <td style="font-size:10pt;">Reference No.: BatStateU-FO-REQ-08-A</td>
+    <td style="font-size:10pt;">Effectivity Date: May 18, 2022</td>
+    <td style="font-size:10pt;">Revision No.: 02</td>
   </tr>
 </table>
 
@@ -118,7 +128,7 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
   <tr>
     <td colspan="1" class="center bold" style="font-size:12pt;padding:5pt 4pt;line-height:1.4;border-bottom:none;">
       REQUEST FOR REIMBURSEMENT OF EXPENSES<br>
-      <span style="font-size:11pt;">(Central Administration)</span>
+      <span style="font-size:12pt;">(Central Administration)</span>
     </td>
   </tr>
 </table>
@@ -133,16 +143,16 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
     <col style="width:8%"> {{-- 4 --}}
     <col style="width:8%"> {{-- 5 --}}
     <col style="width:8%"> {{-- 6 --}}
-    <col style="width:8%"> {{-- 7 --}}
-    <col style="width:10%">{{-- 8 --}}
-    <col style="width:10%">{{-- 9 --}}
-    <col style="width:14%">{{-- 10 --}}
+    <col style="width:6%"> {{-- 7 --}}
+    <col style="width:6%"> {{-- 8 --}}
+    <col style="width:13%">{{-- 9 --}}
+    <col style="width:17%">{{-- 10 --}}
   </colgroup>
 
   {{-- Department --}}
   <tr>
-    <td colspan="4">Department/ Office: {{ $r?->department ?? '' }}</td>
-    <td colspan="6"></td>
+    <td colspan="2">Department/ Office:</td>
+    <td colspan="8">{{ $r?->department ?? '' }}</td>
   </tr>
 
   {{-- Expense table header --}}
@@ -162,44 +172,76 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
       <td colspan="2">{{ $item['payee'] ?? '' }}</td>
       <td colspan="4">{{ $item['description'] ?? '' }}</td>
       <td colspan="2" class="center">{{ $item['quantity'] ?? '' }}</td>
-      <td class="center">{{ isset($item['unit_cost']) && $item['unit_cost'] !== '' ? number_format((float)$item['unit_cost'], 2) : '' }}</td>
-      <td class="center">{{ isset($item['amount']) && $item['amount'] !== '' ? number_format((float)$item['amount'], 2) : '' }}</td>
+      <td class="center">{{ isset($item['unit_cost']) && $item['unit_cost'] !== '' ? 'Php '.number_format((float)$item['unit_cost'], 2) : '' }}</td>
+      <td class="center">{{ isset($item['amount']) && $item['amount'] !== '' ? 'Php '.number_format((float)$item['amount'], 2) : '' }}</td>
     </tr>
   @endfor
 
   {{-- Total --}}
   <tr>
-    <td colspan="8" style="border:none;"></td>
-    <td class="center bold s">Total Amount</td>
-    <td class="center">Php {{ $total > 0 ? number_format($total, 2) : '' }}</td>
+    <td colspan="9" style="text-align: right;">Total Amount</td>
+    <td colspan="1"class="center">Php {{ $total > 0 ? number_format($total, 2) : '' }}</td>
   </tr>
 
-  {{-- Nature of Activity --}}
-  <tr>
-    <td colspan="3" rowspan="2" style="vertical-align:middle;font-size:9.5pt;line-height:1.3;">Nature of the Activity where<br>Expenses were Incurred:</td>
-    <td colspan="7" style="border:none;font-size:9.5pt;padding:2pt 4pt;">
-      <span style="margin-right:12pt;">{!! $chk($inTypes('Seminar/Training')) !!} Seminar/Training</span>
-      <span style="margin-right:12pt;">{!! $chk($inTypes('Meeting')) !!} Meeting</span>
-      <span>{!! $chk($inTypes('Seminar/Conference')) !!} Seminar/Conference</span>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="7" style="border:none;font-size:9.5pt;padding:2pt 4pt;">
-      <span style="margin-right:12pt;">{!! $chk($inTypes('Accreditation')) !!} Accreditation</span>
-      <span style="margin-right:12pt;">{!! $chk($inTypes('Program')) !!} Program</span>
-      <span>{!! $chk(!empty($r?->activity_type_others)) !!} Others, specify: {{ $r?->activity_type_others ?? '' }}</span>
-    </td>
-  </tr>
+{{-- Nature of Activity --}}
+<tr>
+  <td colspan="3" rowspan="2" style="vertical-align:middle;line-height:1.3;">
+    Nature of the Activity where<br>Expenses were Incurred:
+  </td>
+  <td colspan="7" style="padding:0;border-bottom:none;">
+    <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin:0;">
+      <colgroup>
+         <col style="width:35%">
+        <col style="width:20%">
+        <col style="width:45%">
+      </colgroup>
+      <tr>
+        <td style="border:none;border-right:1px solid #000;padding:3pt 6pt;">
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2pt;">{!! $chk($inTypes('Seminar/Training')) !!} <span>Seminar/Training</span></div>
+        </td>
+        <td style="border:none;border-right:1px solid #000;padding:3pt 6pt;">
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2pt;">{!! $chk($inTypes('Meeting')) !!} <span>Meeting</span></div>
+        </td>
+        <td style="border:none;padding:3pt 6pt;">
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2pt;">{!! $chk($inTypes('Seminar/Conference')) !!} <span>Seminar/Conference</span></div>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td colspan="7" style="padding:0;border-top:1px solid #000;">
+    <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin:0;">
+      <colgroup>
+        <col style="width:35%">
+        <col style="width:20%">
+        <col style="width:45%">
+      </colgroup>
+      <tr>
+        <td style="border:none;border-right:1px solid #000;padding:3pt 6pt;">
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2pt;">{!! $chk($inTypes('Accreditation')) !!} <span>Accreditation</span></div>
+        </td>
+        <td style="border:none;border-right:1px solid #000;padding:3pt 6pt;">
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2pt;">{!! $chk($inTypes('Program')) !!} <span>Program</span></div>
+        </td>
+        <td style="border:none;padding:3pt 6pt;">
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2pt;">{!! $chk(!empty($r?->activity_type_others)) !!} <span>Others, specify: {{ $r?->activity_type_others ?? '' }}</span></div>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+      
 
   {{-- Details of Activity --}}
   <tr>
     <td colspan="3" rowspan="2" style="vertical-align:middle;">Details of the Activity:</td>
-    <td colspan="2" style="font-size:9.5pt;">Venue:</td>
-    <td colspan="5">{{ $r?->venue ?? '' }}</td>
+    <td colspan="1">Venue:</td>
+    <td colspan="6">{{ $r?->venue ?? '' }}</td>
   </tr>
   <tr>
-    <td colspan="2" style="font-size:9.5pt;">Date:</td>
-    <td colspan="5">{{ $r?->activity_date ?? '' }}</td>
+    <td colspan="1">Date:</td>
+    <td colspan="6">{{ $r?->activity_date ?? '' }}</td>
   </tr>
 
   {{-- Reason --}}
@@ -212,14 +254,14 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
   <tr style="height:2.2cm">
     <td colspan="5" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:10pt;">Requested by:</div>
-      <div style="height:0.7cm;"></div>
-      <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ $fmtName($r?->sig_requested_name ?? 'DR. BRYAN JOHN A. MAGOLING') }}</div>
+      <div style="height:1cm;"></div>
+      <div style="text-align:center;font-weight:bold;font-size:10pt;margin-top:15pt">{{ $fmtName($r?->sig_requested_name ?? 'DR. BRYAN JOHN A. MAGOLING') }}</div>
       <div style="text-align:center;font-size:9.5pt;">{{ $r?->sig_requested_position ?? 'Director, Research Management Services' }}</div>
       <div style="font-size:10pt;margin-top:3pt;">Date Signed:</div>
     </td>
     <td colspan="5" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:10pt;">Recommending Approval:</div>
-      <div style="height:0.7cm;"></div>
+      <div style="height:1cm;"></div>
       <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ $fmtName($r?->sig_reviewed_name ?? 'ENGR. ALBERTSON D. AMANTE') }}</div>
       <div style="text-align:center;font-size:9.5pt;">Vice President for Research, Development, and</div>
       <div style="text-align:center;font-size:9.5pt;">Extension Services</div>
@@ -231,7 +273,7 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
   <tr style="height:2.0cm">
     <td colspan="5" style="vertical-align:top;padding:4pt 10pt;line-height:1.35;">
       <div style="font-size:10pt;">Approved by:</div>
-      <div style="height:0.7cm;"></div>
+      <div style="height:1cm;"></div>
       <div style="text-align:center;font-weight:bold;font-size:10pt;">{{ $fmtName($r?->sig_recommending_name ?? 'ATTY. NOEL ALBERTO S. OMANDAP') }}</div>
       <div style="text-align:center;font-size:9.5pt;">{{ $r?->sig_recommending_position ?? 'Vice President for Administration and Finance' }}</div>
       <div style="font-size:10pt;margin-top:3pt;">Date Signed:</div>
@@ -245,12 +287,12 @@ td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; font-size
 </table>
 
 {{-- Footer --}}
-<p style="margin-top:6pt;font-size:8pt;font-style:italic;line-height:1.3;">
+<p style="margin-top:6pt;font-size:9pt;font-style:italic;line-height:1.3;">
   <em>Attachments: Official Receipts, Accomplished Canvass Forms, Approval for the Conduct of the Activity, Signed Acceptance Form*, Travel Authority*, Attendance Sheet* (*if applicable)</em>
 </p>
-<p style="margin-top:6pt;font-size:8.5pt;">Notes:</p>
-<p style="font-size:8.5pt;margin-left:1em;text-indent:-1em;margin-top:2pt;">1.&nbsp; For reimbursements amounting not over Php 500,000.00, the VPAF shall approve/disapprove the request.</p>
-<p style="font-size:8.5pt;margin-left:1em;text-indent:-1em;margin-top:2pt;">2.&nbsp; For reimbursements amounting over Php 500,000.00, the University President shall approve/disapprove the request with initial of the VPAF</p>
+<p style="margin-top:6pt;font-size:9pt;font-style:italic;">Notes:</p>
+<p style="font-size:9pt;margin-left:1em;text-indent:-1em;margin-top:2pt;font-style:italic;">1.&nbsp; For reimbursements amounting not over Php 500,000.00, the VPAF shall approve/disapprove the request.</p>
+<p style="font-size:9pt;margin-left:1em;text-indent:-1em;margin-top:2pt;font-style:italic;">2.&nbsp; For reimbursements amounting over Php 500,000.00, the University President shall approve/disapprove the request with initial of the VPAF</p>
 
 <div style="text-align:right;margin-top:20pt;font-size:8pt;font-style:italic;">
   Tracking Number:

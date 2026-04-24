@@ -64,7 +64,9 @@
               </label>
               <input type="text" class="others-input" name="activity_type_others" id="rei_type_others_txt"
                      value="{{ old('activity_type_others', $record?->activity_type_others) }}" placeholder="specify..."
-                     {{ old('activity_type_others', $record?->activity_type_others) ? '' : 'disabled' }}>
+                     {{ old('activity_type_others', $record?->activity_type_others) ? 'required' : 'disabled' }}>
+              {{-- Hidden: keeps activity_types[] non-empty when only Others is chosen --}}
+              @if(old('activity_type_others', $record?->activity_type_others))<input type="hidden" name="activity_types[]" value="Others" id="hidden_rei_type_others_txt">@endif
             </div>
           </div>
 
@@ -138,8 +140,8 @@
       @php
         $signatories = [
           ['role'=>'Requested by',         'name_field'=>'sig_requested_name',        'position_field'=>'sig_requested_position',        'default_name'=>'Dr. Bryan John A. Magoling',       'default_pos'=>'Director, Research Management Services'],
-          ['role'=>'Reviewed by',          'name_field'=>'sig_reviewed_name',         'position_field'=>'sig_reviewed_position',         'default_name'=>'Engr. Albertson D. Amante',        'default_pos'=>'VP for Research, Development and Extension Services'],
-          ['role'=>'Recommending Approval','name_field'=>'sig_recommending_name',     'position_field'=>'sig_recommending_position',     'default_name'=>'Atty. Noel Alberto S. Omandap',    'default_pos'=>'VP for Administration and Finance'],
+          ['role'=>'Reviewed by',          'name_field'=>'sig_reviewed_name',         'position_field'=>'sig_reviewed_position',         'default_name'=>'Engr. Albertson D. Amante',        'default_pos'=>'Vice President for Research, Development and Extension Services'],
+          ['role'=>'Recommending Approval','name_field'=>'sig_recommending_name',     'position_field'=>'sig_recommending_position',     'default_name'=>'Atty. Noel Alberto S. Omandap',    'default_pos'=>'Vice President for Administration and Finance'],
           ['role'=>'Approved by',          'name_field'=>'sig_approved_name',         'position_field'=>'sig_approved_position',         'default_name'=>'Dr. Tirso A. Ronquillo',           'default_pos'=>'University President'],
         ];
       @endphp
@@ -181,7 +183,20 @@
 // ── "Others" checkbox toggles
 document.getElementById('rei_type_others_chk')?.addEventListener('change', function() {
   const t = document.getElementById('rei_type_others_txt');
-  t.disabled = !this.checked; if (!this.checked) t.value = '';
+  if (this.checked) {
+    t.disabled = false;
+    t.required = true;
+    t.focus();
+    if (!document.getElementById('hidden_rei_type_others_txt')) {
+      const h = document.createElement('input');
+      h.type = 'hidden'; h.name = 'activity_types[]'; h.value = 'Others'; h.id = 'hidden_rei_type_others_txt';
+      t.parentNode.appendChild(h);
+    }
+  } else {
+    t.disabled = true; t.required = false; t.value = '';
+    const h = document.getElementById('hidden_rei_type_others_txt');
+    if (h) h.remove();
+  }
 });
 
 // ── Expense row auto-calculate
