@@ -6,6 +6,113 @@
   $p_lvls   = \App\Models\LdRequest::selectRaw('level, count(*) as n')->groupBy('level')->pluck('n','level')->toArray();
 @endphp
 
+<style>
+/* ── Participation table fixes ────────────────────────────────────── */
+#idx-p-participation .idx-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Column widths */
+#idx-p-participation .idx-table colgroup col:nth-child(1) { width: 36px; }   /* # */
+#idx-p-participation .idx-table colgroup col:nth-child(2) { width: 150px; }  /* Participant */
+#idx-p-participation .idx-table colgroup col:nth-child(3) { width: 110px; }  /* Campus */
+#idx-p-participation .idx-table colgroup col:nth-child(4) { width: auto; }   /* Intervention — takes remaining */
+#idx-p-participation .idx-table colgroup col:nth-child(5) { width: 150px; }  /* Type */
+#idx-p-participation .idx-table colgroup col:nth-child(6) { width: 110px; }  /* Level */
+#idx-p-participation .idx-table colgroup col:nth-child(7) { width: 210px; }  /* Date — wide for date ranges */
+#idx-p-participation .idx-table colgroup col:nth-child(8) { width: 82px; }   /* Financial */
+#idx-p-participation .idx-table colgroup col:nth-child(9) { width: 130px; }  /* Actions */
+
+/* All cells: consistent vertical rhythm */
+#idx-p-participation .idx-table td,
+#idx-p-participation .idx-table th {
+  vertical-align: middle;
+  padding: 7px 10px;
+}
+
+/* Participant name + position */
+#idx-p-participation .par-name {
+  font-weight: 500;
+  font-size: .82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 130px;
+}
+#idx-p-participation .par-sub {
+  font-size: .70rem;
+  color: var(--color-text-secondary, #888);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 130px;
+}
+
+/* Campus */
+#idx-p-participation .par-campus {
+  font-size: .78rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100px;
+}
+
+/* Intervention title + office */
+#idx-p-participation .par-title {
+  font-size: .78rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+#idx-p-participation .par-office {
+  font-size: .68rem;
+  color: var(--color-text-secondary, #888);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* Type badges — pill complete, text truncates with tooltip */
+#idx-p-participation .par-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+#idx-p-participation .par-types .badge {
+  display: inline-block;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+/* Actions */
+#idx-p-participation .idx-act {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  align-items: center;
+}
+#idx-p-participation .idx-act .btn {
+  padding: 2px 6px;
+  font-size: .72rem;
+  flex-shrink: 0;
+}
+#idx-p-participation .par-actions-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap;
+}
+</style>
+
 <div class="idx-panel {{ request('tab', 'participation') === 'participation' ? 'active' : '' }}" id="idx-p-participation" role="tabpanel">
 <div class="idx-panel-body">
 
@@ -50,13 +157,13 @@
         <select name="type" onchange="this.form.submit()" class="filter-select">
           <option value="">All Types</option>
           @foreach($types ?? [] as $t)
-            <option value="{{ $t }}" {{ request('type')===$t?'selected':'' }}>{{ $t }}</option>
+            <option value="{{ $t }}" {{ request('type')===$t ? 'selected' : '' }}>{{ $t }}</option>
           @endforeach
         </select>
         <select name="level" onchange="this.form.submit()" class="filter-select">
           <option value="">All Levels</option>
           @foreach($levels ?? [] as $l)
-            <option value="{{ $l }}" {{ request('level')===$l?'selected':'' }}>{{ $l }}</option>
+            <option value="{{ $l }}" {{ request('level')===$l ? 'selected' : '' }}>{{ $l }}</option>
           @endforeach
         </select>
         <button class="btn btn-primary btn-sm" type="submit">Search</button>
@@ -75,56 +182,84 @@
   @if(isset($records) && $records->count())
     <div class="idx-table-wrap">
       <table class="idx-table">
-        <thead><tr>
-          <th>#</th><th>Participant</th><th>Campus</th>
-          <th>Intervention</th><th>Type</th><th>Level</th>
-          <th>Date</th><th>Financial</th><th>Actions</th>
-        </tr></thead>
+        <colgroup>
+          <col><col><col><col><col><col><col><col><col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Participant</th>
+            <th>Campus</th>
+            <th>Intervention</th>
+            <th>Type</th>
+            <th>Level</th>
+            <th>Date</th>
+            <th>Financial</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
         <tbody>
           @foreach($records as $i => $r)
           <tr>
             <td class="idx-muted">{{ $loop->iteration }}</td>
-            <td>
-              <strong style="font-weight:600">{{ $r->participant_name }}</strong>
-              <div class="idx-muted">{{ $r->position }}</div>
+
+            <td title="{{ $r->participant_name }} — {{ $r->position }}">
+              <span class="par-name">{{ $r->participant_name }}</span>
+              <span class="par-sub">{{ $r->position }}</span>
             </td>
-            <td class="idx-muted">{{ $r->campus }}</td>
-            <td>
-              <span class="idx-trunc" title="{{ $r->title }}">{{ $r->title }}</span>
-              <div class="idx-muted" style="font-size:.73rem">{{ $r->college_office }}</div>
+
+            <td title="{{ $r->campus }}">
+              <span class="par-campus idx-muted">{{ $r->campus }}</span>
             </td>
-            <td class="idx-nowrap">
-              @foreach(($r->types ?? []) as $t)
-                <span class="badge badge-crimson" style="font-size:.6rem">{{ $t }}</span>
-              @endforeach
+
+            <td title="{{ $r->title }} · {{ $r->college_office }}">
+              <span class="par-title">{{ $r->title }}</span>
+              <span class="par-office">{{ $r->college_office }}</span>
             </td>
-            <td class="idx-nowrap"><span class="badge badge-gold" style="font-size:.6rem">{{ $r->level }}</span></td>
-            <td class="idx-muted idx-nowrap">{{ $r->intervention_date }}</td>
+
             <td>
+              <div class="par-types">
+                @foreach(($r->types ?? []) as $t)
+                  <span class="badge badge-crimson" style="font-size:.6rem" title="{{ $t }}">{{ $t }}</span>
+                @endforeach
+              </div>
+            </td>
+
+            <td style="white-space:nowrap">
+              <span class="badge badge-gold" style="font-size:.6rem" title="{{ $r->level }}">{{ $r->level }}</span>
+            </td>
+
+            <td class="idx-muted" style="white-space:nowrap" title="{{ $r->intervention_date }}">{{ $r->intervention_date }}</td>
+
+            <td style="white-space:nowrap">
               @if($r->financial_requested)
                 <span class="badge badge-green" style="font-size:.6rem">Yes</span>
               @else
                 <span class="idx-muted">—</span>
               @endif
             </td>
-            <td class="idx-nowrap">
+
+            <td style="white-space:nowrap">
               <div class="idx-act">
-                <button class="btn btn-ghost btn-sm" onclick="openViewModal({{ $r->id }})">👁</button>
-                <button class="btn btn-outline btn-sm" onclick="openEditModal({{ $r->id }})">✏️</button>
-                <button class="btn btn-gold btn-sm" onclick="openPrintModal('{{ route('ld.print',$r->id) }}')">🖨</button>
-                <button class="btn btn-primary btn-sm" data-mov="{{ $r->id }}"
+                <button class="btn btn-ghost btn-sm" title="View details" onclick="openViewModal({{ $r->id }})">👁</button>
+                <button class="btn btn-outline btn-sm" title="Edit" onclick="openEditModal({{ $r->id }})">✏️</button>
+                <button class="btn btn-gold btn-sm" title="Print" onclick="openPrintModal('{{ route('ld.print',$r->id) }}')">🖨</button>
+                <button class="btn btn-primary btn-sm" title="Attach MOV" data-mov="{{ $r->id }}"
                   onclick="openMovModal('{{ route('ld.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }})">
                   📎
                 </button>
               </div>
-              @if($r->mov_path)<span class="badge badge-green" style="font-size:.58rem;margin-top:3px;display:inline-block">MOV ✓</span>@endif
+              @if($r->mov_path)
+                <div style="font-size:.62rem;color:#3B6D11;margin-top:2px;white-space:nowrap">✓ mov</div>
+              @endif
             </td>
+
           </tr>
           @endforeach
         </tbody>
       </table>
     </div>
-    
+
   @else
     <div class="idx-empty">
       <span class="idx-empty-icon">📋</span>

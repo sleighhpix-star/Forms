@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=yes">
 <title>BatStateU-FO-HRD-31 &mdash; {{ $record->attendee_name ?? '' }}</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,9 +39,17 @@ body {
 .wrap { padding: .7cm 0 1.2cm; display: flex; justify-content: center; }
 .sheet {
   width: 17.26cm;
+  max-width: 100%;
   background: #fff;
   box-shadow: 0 3px 16px rgba(0,0,0,.15);
   padding: .5cm .82cm .6cm .82cm;
+  overflow-x: hidden;
+}
+
+/* Scale down gracefully inside narrow preview modals */
+@media screen and (max-width: 700px) {
+  .wrap { padding: .3cm 0 .6cm; }
+  .sheet { width: 100%; padding: .3cm .4cm .4cm .4cm; }
 }
 
 /* ── Table base ── */
@@ -96,7 +105,8 @@ td {
 }
 .others-line {
   flex: 1;
-  min-width: 0;
+  min-width: 60px;
+  max-width: 100%;
   font-size: 11pt;
   line-height: 1.4;
   word-break: break-word;
@@ -238,13 +248,13 @@ td {
     <td colspan="3" class="lbl vm">Type of Activity:</td>
     <td colspan="9" style="padding:3pt 5pt;font-size:11pt;vertical-align:middle;">
       <div style="display:flex;flex-direction:column;gap:4pt;">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:6pt;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:4pt;flex-wrap:wrap;row-gap:3pt;">
           <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Meeting',$act)) !!} Meeting</span>
           <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Planning Session',$act)) !!} Planning Session</span>
           <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Benchmarking',$act)) !!} Benchmarking</span>
           <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Project/Product Launch',$act)||in_array('Project/ Product Launch',$act)) !!} Project/ Product Launch</span>
         </div>
-        <div style="display:flex;align-items:flex-start;gap:6pt;min-width:0;">
+        <div style="display:flex;align-items:flex-start;gap:4pt;min-width:0;flex-wrap:wrap;row-gap:3pt;">
           <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Ceremonial/Representational',$act)||in_array('Ceremonial/ Representational Events',$act)) !!} Ceremonial/ Representational Events</span>
           @php $aOther = $r?->activity_type_others ?? null; @endphp
           <span class="others-wrap">
@@ -262,7 +272,7 @@ td {
     <td colspan="3" class="lbl vm">Nature of Participation:</td>
     <td colspan="9" style="padding:4pt 6pt;font-size:11pt;vertical-align:middle;">
       <div style="display:flex;flex-direction:column;gap:4pt;">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:4pt;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:4pt;flex-wrap:wrap;">
           <span style="display:inline-flex;align-items:center;gap:4pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Attendee',$nat)) !!} Attendee</span>
           <span style="display:inline-flex;align-items:center;gap:4pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Presenter',$nat)) !!} Presenter</span>
           <span style="display:inline-flex;align-items:center;gap:4pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Officer',$nat)) !!} Officer</span>
@@ -270,7 +280,7 @@ td {
           <span style="display:inline-flex;align-items:center;gap:4pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Facilitator',$nat)) !!} Facilitator</span>
           <span style="display:inline-flex;align-items:center;gap:4pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Organizer',$nat)) !!} Organizer</span>
         </div>
-        <div style="display:flex;align-items:flex-start;gap:6pt;min-width:0;">
+        <div style="display:flex;align-items:flex-start;gap:4pt;min-width:0;flex-wrap:wrap;row-gap:3pt;">
           <span style="display:inline-flex;align-items:center;gap:4pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Exhibitor',$nat)) !!} Exhibitor</span>
           @php $nOther = $r?->nature_others ?? null; @endphp
           <span class="others-wrap">
@@ -292,8 +302,8 @@ td {
   {{-- R09 Level --}}
   <tr style="height:0.72cm">
     <td colspan="3" class="lbl">Level:</td>
-    <td colspan="9" style="font-size:11pt;padding:0;">
-      <span style="display:flex;justify-content:flex-start;gap:75px;width:100%;height:100%;">
+    <td colspan="9" style="font-size:11pt;padding:0 5pt;">
+      <span style="display:flex;justify-content:flex-start;gap:clamp(12px,5%,75px);width:100%;height:100%;flex-wrap:wrap;align-items:center;">
         <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(($r?->level??'')==='Local') !!} Local</span>
         <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(($r?->level??'')==='Regional') !!} Regional</span>
         <span style="display:inline-flex;align-items:center;gap:4pt;">{!! $chk(($r?->level??'')==='National') !!} National</span>
