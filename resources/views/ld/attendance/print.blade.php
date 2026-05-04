@@ -95,7 +95,7 @@ td {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  margin-top: 2pt; /* key fix */
+
 }
 .others-label {
   white-space: nowrap;
@@ -155,8 +155,8 @@ td {
 
   // Checkbox: red-filled when true, empty box when false
   $chk = fn($v) => $v
-    ? '<span style="display:inline-block;width:15pt;height:15pt;background:#C00000;border:1px solid #900;vertical-align:middle;position:relative;top:-1pt;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
-    : '<span style="display:inline-block;width:15pt;height:15pt;border:1px solid #000;vertical-align:middle;position:relative;top:-1pt;flex-shrink:0;"></span>';
+    ? '<span style="display:inline-block;width:15pt;height:15pt;background:#C00000;border:1px solid #900;vertical-align:middle;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
+    : '<span style="display:inline-block;width:15pt;height:15pt;border:1px solid #000;vertical-align:middle;flex-shrink:0;"></span>';
 
   $v = fn($f, $d = '') => e($r?->$f ?? $d);
 @endphp
@@ -251,7 +251,7 @@ td {
         <div style="display:flex;justify-content:space-between;align-items:center;gap:4pt;flex-wrap:wrap;row-gap:3pt;">
           <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Meeting',$act)) !!} Meeting</span>
           <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Planning Session',$act)) !!} Planning Session</span>
-          <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Benchmarking',$act)) !!} Benchmarking</span>
+          <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;margin-left:10pt;">{!! $chk(in_array('Benchmarking',$act)) !!} Benchmarking</span>
           <span style="display:inline-flex;align-items:center;gap:3pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Project/Product Launch',$act)||in_array('Project/ Product Launch',$act)) !!} Project/ Product Launch</span>
         </div>
         <div style="display:flex;align-items:flex-start;gap:4pt;min-width:0;flex-wrap:wrap;row-gap:3pt;">
@@ -283,7 +283,7 @@ td {
         <div style="display:flex;align-items:flex-start;gap:4pt;min-width:0;flex-wrap:wrap;row-gap:3pt;">
           <span style="display:inline-flex;align-items:center;gap:4pt;white-space:nowrap;flex-shrink:0;">{!! $chk(in_array('Exhibitor',$nat)) !!} Exhibitor</span>
           @php $nOther = $r?->nature_others ?? null; @endphp
-          <span class="others-wrap">
+          <span class="others-wrap" style=margin-left:5pt;>
             <span class="others-chk">{!! $chk(!empty($nOther)) !!}</span>
             <span class="others-label">Others:</span>
             <span class="others-line">{{ !empty($nOther) ? e($nOther) : '' }}</span>
