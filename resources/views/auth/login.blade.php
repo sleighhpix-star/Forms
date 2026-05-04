@@ -39,11 +39,14 @@ body{
   display:flex;flex-direction:column;
 }
 body::before{
-  content:'';position:fixed;inset:0;
+  content:'';
+  position:fixed;
+  inset:0;
   background:
-    radial-gradient(ellipse 900px 600px at 10% 20%,rgba(124,21,51,.055) 0%,transparent 70%),
-    radial-gradient(ellipse 700px 500px at 90% 80%,rgba(181,131,42,.04) 0%,transparent 70%);
-  pointer-events:none;z-index:0;
+    linear-gradient(rgba(247,244,239,0.25), rgba(247,244,239,0.35)),
+    url('{{ asset("images/BatStateU-1.png") }}') center/cover no-repeat;
+  z-index:0;
+  pointer-events:none;
 }
 .app-header{
   position:relative;z-index:10;height:60px;background:var(--c-dk);
@@ -76,9 +79,13 @@ body::before{
 .login-eyebrow h1{font-family:var(--f-display);font-size:1.85rem;color:var(--ink);line-height:1.2;margin-bottom:.35rem;}
 .login-eyebrow p{font-size:.845rem;color:var(--ink-4);}
 .card{
-  background:var(--surface);border-radius:var(--r-2xl);border:1px solid var(--border);
+  background:rgba(255,255,255,0.92);
+  backdrop-filter: blur(6px);
+  border-radius:var(--r-2xl);
+  border:1px solid var(--border);
   box-shadow:0 1px 3px rgba(0,0,0,.04),0 6px 24px rgba(0,0,0,.06),0 24px 64px rgba(0,0,0,.04);
-  overflow:hidden;animation:fadeUp .5s .1s ease both;
+  overflow:hidden;
+  animation:fadeUp .5s .1s ease both;
 }
 .card-accent{height:3px;background:linear-gradient(90deg,var(--c-dk) 0%,var(--c) 35%,var(--g) 65%,var(--g-lt) 100%);}
 .card-body{padding:2rem 2rem 1.75rem;}
@@ -171,15 +178,15 @@ body::before{
 <main class="main">
   <div class="login-wrap">
 
-    <div class="login-eyebrow">
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="card-body">
+
+       <div class="login-eyebrow">
       <div class="sys-label">L&amp;D Request System</div>
       <h1>Welcome back</h1>
       <p>Sign in to manage your learning &amp; development requests.</p>
     </div>
-
-    <div class="card">
-      <div class="card-accent"></div>
-      <div class="card-body">
 
         {{-- Server-side error --}}
         @if ($errors->any())
@@ -257,14 +264,6 @@ body::before{
 
           <button type="submit" class="btn-submit">Sign in</button>
         </form>
-
-      </div>
-
-      <div class="card-footer">
-        Need access? <a href="mailto:rms@batstate-u.edu.ph">Contact the RMS office</a>
-      </div>
-    </div>
-
   </div>
 </main>
 
