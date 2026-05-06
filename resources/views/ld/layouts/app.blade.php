@@ -63,7 +63,7 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.25}
 .header-spacer{flex:1}
 
 /* PAGE CONTAINERS */
-.page{max-width:1080px;margin:0 auto;padding:2.5rem 1.75rem 6rem}
+.page{max-width:1080px;margin:0 auto;padding:2.5rem 1.75rem 8rem}
 .page-lg{max-width:1360px}
 .page-sm{max-width:860px}
 
@@ -183,13 +183,25 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.25}
 /* REF BADGE */
 .ref-badge{display:inline-flex;align-items:center;gap:.3rem;background:var(--g-pale);color:var(--c-dk);border:1px solid rgba(181,131,42,.25);font-size:.68rem;font-weight:600;letter-spacing:.06em;padding:.25rem .8rem;border-radius:20px;font-family:var(--f-body)}
 
+/* FOOTER */
+.app-footer{background:var(--surface);border-top:1px solid var(--border-sm);width:100%;margin-top:2rem}
+.app-footer-bar{height:2px;background:linear-gradient(90deg,transparent 0%,var(--g) 20%,var(--g-lt) 50%,var(--g) 80%,transparent 100%);opacity:.6}
+.app-footer-inner{display:flex;align-items:center;justify-content:center;gap:.6rem;padding:.75rem 2rem;font-family:var(--f-body)}
+.app-footer-dot{width:5px;height:5px;border-radius:50%;background:var(--g);opacity:.5;flex-shrink:0}
+.app-footer-name{font-size:.72rem;font-weight:500;color:var(--ink-2);letter-spacing:.01em}
+.app-footer-pipe{color:var(--ink-5);font-size:.65rem}
+.app-footer-sub{font-size:.68rem;color:var(--ink-4);letter-spacing:.04em}
+.app-footer-sep{width:1px;height:10px;background:var(--border)}
+.app-footer-copy{font-size:.68rem;color:var(--ink-5);letter-spacing:.04em}
+
 @media(max-width:768px){
   .cols-2,.cols-3,.sig-grid,.detail-grid{grid-template-columns:1fr}
   .span-2,.span-3{grid-column:span 1}
-  .page{padding:1.25rem 1rem 4rem}
+  .page{padding:1.25rem 1rem 6rem}
   .app-header{padding:0 1rem}
   .card-section{padding:1.25rem 1.1rem}
   .form-actions{flex-direction:column-reverse}
+  .app-footer-inner{flex-wrap:wrap;padding:.75rem 1rem}
 }
 @media print{
   .no-print{display:none!important}
@@ -203,6 +215,7 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.25}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
+
 <header class="app-header no-print">
   <a class="brand" href="{{ route('ld.index') }}">
     <div class="brand-logo">
@@ -221,10 +234,23 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.25}
 
   <div class="header-spacer"></div>
 </header>
+
 <main>@yield('content')</main>
-<footer class="no-print" style="text-align:center;padding:1.1rem 2rem;font-size:.7rem;color:var(--ink-5);border-top:1px solid var(--border-sm);background:var(--surface);letter-spacing:.04em;">
-  &copy; {{ date('Y') }} &nbsp;&middot;&nbsp; Batangas State University &nbsp;&middot;&nbsp; Research Management Services &nbsp;&middot;&nbsp; Request Form System
+
+<footer class="app-footer no-print">
+  <div class="app-footer-bar"></div>
+  <div class="app-footer-inner">
+    <div class="app-footer-dot"></div>
+    <span class="app-footer-name">Batangas State University</span>
+    <span class="app-footer-pipe">&middot;</span>
+    <span class="app-footer-sub">Research Management Services</span>
+    <span class="app-footer-pipe">&middot;</span>
+    <span class="app-footer-sub">Request Form System</span>
+    <div class="app-footer-sep"></div>
+    <span class="app-footer-copy">&copy; {{ date('Y') }}</span>
+  </div>
 </footer>
+
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
