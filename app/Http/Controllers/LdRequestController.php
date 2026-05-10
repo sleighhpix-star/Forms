@@ -59,7 +59,6 @@ class LdRequestController extends Controller
         if ($s = $request->input('att_q')) {
             $attQuery->where(function ($q) use ($s) {
                 $q->whereRaw('attendee_name ILIKE ?', ["%{$s}%"])
-                  ->orWhereRaw('campus ILIKE ?',       ["%{$s}%"])
                   ->orWhereRaw('purpose ILIKE ?',      ["%{$s}%"]);
             });
         }
@@ -93,9 +92,8 @@ class LdRequestController extends Controller
         $trvQuery = LdTravel::query();
         if ($s = $request->input('trv_q')) {
             $trvQuery->where(function ($q) use ($s) {
-                $q->whereRaw('employee_names ILIKE ?',  ["%{$s}%"])
-                  ->orWhereRaw('places_visited ILIKE ?', ["%{$s}%"])
-                  ->orWhereRaw('purpose ILIKE ?',        ["%{$s}%"]);
+                $q->whereRaw('employee_names ILIKE ?', ["%{$s}%"])
+                  ->orWhereRaw('purpose ILIKE ?',       ["%{$s}%"]);
             });
         }
         $travelRecords = $trvQuery->latest()->get();

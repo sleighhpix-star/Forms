@@ -141,11 +141,16 @@ body::before{
 }
 .card-footer a{color:var(--c);font-weight:500;text-decoration:none;}
 .card-footer a:hover{text-decoration:underline;}
-.page-footer{
-  text-align:center;padding:1.1rem 2rem;font-size:.7rem;color:var(--ink-5);
-  border-top:1px solid var(--border-sm);background:var(--surface);
-  letter-spacing:.04em;position:relative;z-index:1;
-}
+/* FOOTER */
+.app-footer{background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);border-top:1px solid var(--border-sm);width:100%;margin-top:2rem}
+.app-footer-bar{height:2px;background:linear-gradient(90deg,transparent 0%,var(--g) 20%,var(--g-lt) 50%,var(--g) 80%,transparent 100%);opacity:.6}
+.app-footer-inner{display:flex;align-items:center;justify-content:center;gap:.6rem;padding:.75rem 2rem;font-family:var(--f-body)}
+.app-footer-dot{width:5px;height:5px;border-radius:50%;background:var(--g);opacity:.5;flex-shrink:0}
+.app-footer-name{font-size:.72rem;font-weight:500;color:var(--ink-2);letter-spacing:.01em}
+.app-footer-pipe{color:var(--ink-5);font-size:.65rem}
+.app-footer-sub{font-size:.68rem;color:var(--ink-4);letter-spacing:.04em}
+.app-footer-sep{width:1px;height:10px;background:var(--border)}
+.app-footer-copy{font-size:.68rem;color:var(--ink-5);letter-spacing:.04em}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:480px){
   .main{padding:2rem 1rem;align-items:flex-start;}
@@ -153,6 +158,7 @@ body::before{
   .card-footer{padding:.85rem 1.25rem;}
   .login-eyebrow h1{font-size:1.6rem;}
   .form-meta{flex-direction:column;align-items:flex-start;gap:.5rem;}
+  .app-footer-inner{flex-wrap:wrap;padding:.75rem 1rem}
 }
 </style>
 </head>
@@ -267,8 +273,18 @@ body::before{
   </div>
 </main>
 
-<footer class="page-footer">
-  &copy; {{ date('Y') }} &nbsp;&middot;&nbsp; Batangas State University &nbsp;&middot;&nbsp; Research Management Services &nbsp;&middot;&nbsp; Request Form System
+<footer class="app-footer no-print">
+  <div class="app-footer-bar"></div>
+  <div class="app-footer-inner">
+    <div class="app-footer-dot"></div>
+    <span class="app-footer-name">Batangas State University</span>
+    <span class="app-footer-pipe">&middot;</span>
+    <span class="app-footer-sub">Research Management Services</span>
+    <span class="app-footer-pipe">&middot;</span>
+    <span class="app-footer-sub">Request Form System</span>
+    <div class="app-footer-sep"></div>
+    <span class="app-footer-copy">&copy; {{ date('Y') }}</span>
+  </div>
 </footer>
 
 <script>

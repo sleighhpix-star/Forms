@@ -75,7 +75,7 @@
     <div class="idx-toolbar-l">
       <form method="GET" action="{{ route('ld.index') }}" style="display:contents">
         <input type="hidden" name="tab" value="travel">
-        <input type="text" name="trv_q" value="{{ request('trv_q') }}" placeholder="🔍 Search employee, place…">
+        <input type="text" name="trv_q" value="{{ request('trv_q') }}" placeholder="🔍 Search employee, purpose…">
         <button class="btn btn-primary btn-sm" type="submit">Search</button>
         @if(request('trv_q'))
           <a href="{{ route('ld.index') }}?tab=travel" class="btn btn-ghost btn-sm">✕ Clear</a>

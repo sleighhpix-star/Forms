@@ -55,7 +55,7 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
 
 @media print {
   .pbar { display: none !important; }
-  @page { size: 8.5in 13in; margin: 0.394in 0.920in 0.295in 0.787in; }
+  @page { size: 8.5in 13in; margin: 0.5in 0.5in 0.5in 0.5in; }
   html, body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   
   .wrap { padding: 0 !important; display: block !important; }

@@ -153,7 +153,7 @@
     <div class="idx-toolbar-l">
       <form method="GET" action="{{ route('ld.index') }}" style="display:contents">
         <input type="hidden" name="tab" value="participation">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="🔍 Search name, title…">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="🔍 Search name, intervention…">
         <select name="type" onchange="this.form.submit()" class="filter-select">
           <option value="">All Types</option>
           @foreach($types ?? [] as $t)

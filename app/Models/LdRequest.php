@@ -80,14 +80,7 @@ class LdRequest extends Model
 
         return $query->where(function ($q) use ($like) {
             $q->whereRaw('participant_name ILIKE ?', [$like])
-              ->orWhereRaw('title ILIKE ?', [$like])
-              ->orWhereRaw('college_office ILIKE ?', [$like])
-              ->orWhereRaw('campus ILIKE ?', [$like])
-              ->orWhereRaw('position ILIKE ?', [$like])
-              ->orWhereRaw('venue ILIKE ?', [$like])
-              ->orWhereRaw('organizer ILIKE ?', [$like])
-              ->orWhereRaw('type_others ILIKE ?', [$like])
-              ->orWhereRaw('nature_others ILIKE ?', [$like]);
+              ->orWhereRaw('title ILIKE ?', [$like]);
         });
     }
 

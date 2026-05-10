@@ -4,12 +4,24 @@ use App\Http\Controllers\LdRequestController;
 use App\Http\Controllers\LdAttendanceController;
 use App\Http\Controllers\LdPublicationController;
 use App\Http\Controllers\LdReimbursementController;
-use App\Http\Controllers\LdTravelController;    
+use App\Http\Controllers\LdTravelController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
-Route::get('/', fn() => redirect()->route('ld.index'));
+// Auth routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::prefix('ld-requests')->name('ld.')->group(function () {
+Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('ld.index');
+    }
+    return redirect()->route('login');
+});
+
+Route::middleware('auth')->prefix('ld-requests')->name('ld.')->group(function () {
 
     // Records JSON — MUST be BEFORE /{ld} wildcard routes
     Route::get('/records/participation',  [LdRequestController::class,      'recordsParticipation'])->name('records.participation');
@@ -78,8 +90,8 @@ Route::prefix('ld-requests')->name('ld.')->group(function () {
     Route::post('/travel/{travel}/mov',       [LdTravelController::class, 'uploadMov'])->name('travel.mov.upload');
     Route::get('/travel/{travel}/mov/view',   [LdTravelController::class, 'viewMov'])->name('travel.mov.view');
 
-});
+    // Settings
+    Route::get('/settings',  [\App\Http\Controllers\SettingsController::class, 'edit'])->name('settings.edit');
+    Route::put('/settings',  [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
 
-// Settings
-Route::get('/settings',  [\App\Http\Controllers\SettingsController::class, 'edit'])->name('settings.edit');
-Route::put('/settings',  [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
+});

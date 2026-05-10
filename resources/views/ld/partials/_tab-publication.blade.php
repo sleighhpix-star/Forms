@@ -94,7 +94,7 @@
     <div class="idx-toolbar-l">
       <form method="GET" action="{{ route('ld.index') }}" style="display:contents">
         <input type="hidden" name="tab" value="publication">
-        <input type="text" name="pub_q" value="{{ request('pub_q') }}" placeholder="🔍 Search name, paper…">
+        <input type="text" name="pub_q" value="{{ request('pub_q') }}" placeholder="🔍 Search faculty, paper, journal…">
         <select name="pub_scope" onchange="this.form.submit()" class="filter-select">
           <option value="">All Scopes</option>
           @foreach(['Regional','National','International'] as $s)

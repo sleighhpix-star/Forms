@@ -61,6 +61,9 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.25}
 .h-nav-link:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9)}
 .h-nav-link.active{background:rgba(255,255,255,.12);color:#fff}
 .header-spacer{flex:1}
+.logout-form{margin:0;padding:0;display:flex;align-items:center}
+.btn-logout{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);padding:.32rem .78rem;border-radius:var(--r-sm);font-size:.76rem;font-weight:500;letter-spacing:.01em;cursor:pointer;transition:all .15s}
+.btn-logout:hover{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.4);color:#fff}
 
 /* PAGE CONTAINERS */
 .page{max-width:1080px;margin:0 auto;padding:2.5rem 1.75rem 8rem}
@@ -233,6 +236,11 @@ h1,h2,h3{font-family:var(--f-display);line-height:1.25}
   </a>
 
   <div class="header-spacer"></div>
+
+  <form method="POST" action="{{ route('logout') }}" class="logout-form">
+    @csrf
+    <button type="submit" class="btn-logout">Logout</button>
+  </form>
 </header>
 
 <main>@yield('content')</main>
