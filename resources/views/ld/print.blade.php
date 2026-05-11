@@ -21,29 +21,25 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: "Times New Roman", Times, serif; font-size: 11pt; color: #000; background: #e5e7eb; }
 
-
-
-
-
 .wrap { padding: 0.2cm 0; display: flex; justify-content: center; }
 .sheet {
   width: 17.26cm;
   background: #fff;
   box-shadow: 0 3px 16px rgba(0,0,0,.15);
-  padding: .5cm .82cm .6cm .82cm;
+  padding: .5cm .82cm 1cm .82cm;
 }
 
-  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size: 10pt;
   font-family: "Times New Roman", Times, serif; line-height: 1.2; }
 .s   { background: #edeaea; }
 .smallText{ font-size: 10pt; line-height: 1.15; }
 .foot{ border: none; padding: 0; margin: 0; font-size: 9pt; font-style: italic; line-height: 1.25; }
 .noteItem{ margin-left: 2.0em; text-indent: -1.0em; margin-top: 2pt; }
-.footBottom{ margin-top: 18pt; position: relative; }
+.footBottom{ margin-top: 18pt; position: relative; background: #fff; }
 .ccLine{ font-size: 8pt; font-style: italic; }
-.trackLineWrap{ font-size: 8pt; font-style: italic; text-align: right; margin-top: 60pt; }
-.trackLine{ display: inline-block; width: 130px; border-bottom: 1px solid #000; margin-left: 6pt; }
+.trackLineWrap{ font-size: 8pt; font-style: italic; text-align: right; margin-top: 10pt; background: #fff; }
+.trackLine{ display: inline-block; width: 130px; border-bottom: 1px solid #000; margin-left: 6pt; background: transparent; }
 .c   { text-align: center; }
 .vt  { vertical-align: top; padding-top: 4pt; }
 .vm  { vertical-align: middle; }
@@ -56,18 +52,19 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
 @media print {
   .pbar { display: none !important; }
   @page { size: 8.5in 13in; margin: 0.5in 0.5in 0.5in 0.5in; }
-  html, body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html, body { margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff !important; }
   
-  .wrap { padding: 0 !important; display: block !important; }
-  .sheet { width: 100% !important; padding: 0 !important; box-shadow: none !important; }
+  .wrap { padding: 0 !important; display: block !important; background: #fff !important; }
+  .sheet { width: 100% !important; padding: 0 0 1cm 0 !important; box-shadow: none !important; background: #fff !important; }
+  .footBottom { background: #fff !important; }
+  .trackLineWrap { background: #fff !important; margin-top:10pt !important; }
+  .trackLine { background: transparent !important; width: 130px !important; border-bottom: 1px solid #000 !important; }
   table { width: 100% !important; table-layout: fixed !important; }
   td { padding: 2pt 4pt !important; font-size: 10.5pt !important; line-height: 1.2 !important; }
   .foot { font-size: 8pt !important; line-height: 1.25 !important; }
   .noteItem { margin-left: 2.0em !important; text-indent: -1.0em !important; }
   .ccLine, .trackLineWrap { font-size: 8pt !important; }
-  .trackLineWrap { margin-top: 60pt !important; }
   td.moneyVal { font-size: 10pt !important; }
-  .trackLine { width: 130px !important; border-bottom: 1px solid #000 !important; }
 }
 </style>
 </head>
@@ -136,7 +133,7 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
 
   {{-- R01 Title --}}
   <tr style="height:0.9cm">
-    <td colspan="16" class="c bold" style="font-size:12pt;text-transform:uppercase;">
+    <td colspan="16" class="c bold" style="font-size:11pt;text-transform:uppercase;">
       REQUEST FOR PARTICIPATION IN EXTERNAL LEARNING AND DEVELOPMENT INTERVENTIONS
     </td>
   </tr>
@@ -256,7 +253,7 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
     <td colspan="12">{{ $record->competency ?? '' }}</td>
   </tr>
 
-  {{-- R10 Date / Hours — Date value widened (colspan 5), Hours label/value narrowed (4+5) --}}
+  {{-- R10 Date / Hours --}}
   <tr style="height:0.67cm">
     <td colspan="2" class="s">Date:</td>
     <td colspan="5">{{ $record->intervention_date ?? '' }}</td>
@@ -264,7 +261,7 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
     <td colspan="5">{{ $record->hours ?? '' }}</td>
   </tr>
 
-  {{-- R11 Venue / Organizer — Venue value widened (colspan 5), Organizer label/value narrowed (4+5) --}}
+  {{-- R11 Venue / Organizer --}}
   <tr style="height:0.69cm">
     <td colspan="2" class="s">Venue:</td>
     <td colspan="5">{{ $record->venue ?? '' }}</td>
@@ -309,24 +306,20 @@ td { border: 1px solid #000; padding: 2pt 5pt; vertical-align: middle; font-size
 
   {{-- R17 Amount --}}
   <tr style="height:0.66cm">
-  <td colspan="11" class="s">
-    If yes, how much is the <span class="ul">total amount</span> being requested?
-  </td>
-
-  {{-- make Php narrower --}}
-  <td colspan="1" class="c" style="border-right:none; white-space:nowrap;">Php</td>
-
-  {{-- make value wider + prevent overlap --}}
-  <td colspan="4" class="moneyVal"
-    style="border-left:none;text-align:center;white-space:nowrap;
-           padding-right:8pt;font-variant-numeric:tabular-nums;">
-    @if(($record->financial_requested ?? false) && ($record->amount_requested ?? null) !== null && $record->amount_requested !== '')
-      {{ number_format((float) $record->amount_requested, 2) }}
-    @else
-      _____________.00
-    @endif
-  </td>
-</tr>
+    <td colspan="11" class="s">
+      If yes, how much is the <span class="ul">total amount</span> being requested?
+    </td>
+    <td colspan="1" class="c" style="border-right:none; white-space:nowrap;">Php</td>
+    <td colspan="4" class="moneyVal"
+      style="border-left:none;text-align:center;white-space:nowrap;
+             padding-right:8pt;font-variant-numeric:tabular-nums;">
+      @if(($record->financial_requested ?? false) && ($record->amount_requested ?? null) !== null && $record->amount_requested !== '')
+        {{ number_format((float) $record->amount_requested, 2) }}
+      @else
+        _____________.00
+      @endif
+    </td>
+  </tr>
 
   {{-- R18-R20 Coverage --}}
   <tr style="height:0.40cm">

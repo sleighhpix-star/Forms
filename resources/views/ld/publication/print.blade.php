@@ -47,7 +47,7 @@ td {
 
 @media print {
   .pbar { display: none !important; }
-  @page { size: 8.5in 13in; margin: 0.5in 0.5in 0.5in 0.5in; }
+  @page { size: 8.5in 13in; margin: 0.5in 0.5in 0.1in 0.5in; }
   html, body { margin: 0; padding: 0; }
   .wrap { padding: 0 !important; display: block !important; }
   .sheet { width: 100% !important; padding: 0 !important; box-shadow: none !important; }
@@ -78,8 +78,8 @@ td {
     return implode(' ', $result);
   };
   $chk = fn($v) => $v
- ? '<span style="display:inline-block;width:15pt;height:15pt;background:#C00000;border:1px solid #900;vertical-align:middle;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
- : '<span style="display:inline-block;width:15pt;height:15pt;border:1px solid #000;vertical-align:middle;flex-shrink:0;"></span>';
+ ? '<span style="display:inline-block;width:11pt;height:11pt;background:#C00000;border:1px solid #900;vertical-align:middle;flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></span>'
+ : '<span style="display:inline-block;width:11pt;height:11pt;border:1px solid #000;vertical-align:middle;flex-shrink:0;"></span>';
   $norm = fn($v) => is_string($v) ? strtolower(trim($v)) : $v;
 
   $sScope  = fn($v) => $norm($record->pub_scope  ?? null) == $norm($v);
