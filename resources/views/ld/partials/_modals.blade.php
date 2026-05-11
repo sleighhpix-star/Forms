@@ -146,8 +146,16 @@
         </div>
         <div style="display:flex;justify-content:space-between;gap:12px">
           <button type="button" class="btn btn-ghost" onclick="closeModal('movModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Upload</button>
+          <div style="display:flex;gap:8px">
+            <button type="button" id="movRemoveBtn" class="btn btn-danger btn-sm" style="display:none" onclick="confirmRemoveMov()">🗑 Remove</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </div>
         </div>
+      </form>
+      {{-- Hidden form for DELETE remove action --}}
+      <form id="movRemoveForm" method="POST" action="" style="display:none">
+        @csrf
+        @method('DELETE')
       </form>
     </div>
   </div>

@@ -166,7 +166,7 @@
                 <button class="btn btn-ghost btn-sm" title="View details" onclick="openGenericView('publication',{{ $r->id }},'📰 Publication Details')">👁</button>
                 <button class="btn btn-outline btn-sm" title="Edit" onclick="openFormModal('publication-edit','✏️ Edit',{{ $r->id }})">✏️</button>
                 <button class="btn btn-gold btn-sm" title="Print" onclick="openPrintModal('{{ route('ld.publication.print',$r->id) }}')">🖨</button>
-                <button class="btn btn-primary btn-sm" title="Attach MOV" onclick="openMovModal('{{ route('ld.publication.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.publication.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }})">📎</button>
+                <button class="btn btn-primary btn-sm" title="Attach MOV" onclick="openMovModal('{{ route('ld.publication.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.publication.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }},'{{ $r->mov_path ? route('ld.publication.mov.remove',$r->id) : '' }}')">📎</button>
               </div>
               @if($r->mov_path)
                 <div style="font-size:.62rem;color:#3B6D11;margin-top:2px;white-space:nowrap">✓ mov</div>

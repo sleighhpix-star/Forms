@@ -245,7 +245,7 @@
                 <button class="btn btn-outline btn-sm" title="Edit" onclick="openEditModal({{ $r->id }})">✏️</button>
                 <button class="btn btn-gold btn-sm" title="Print" onclick="openPrintModal('{{ route('ld.print',$r->id) }}')">🖨</button>
                 <button class="btn btn-primary btn-sm" title="Attach MOV" data-mov="{{ $r->id }}"
-                  onclick="openMovModal('{{ route('ld.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }})">
+                  onclick="openMovModal('{{ route('ld.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }},'{{ $r->mov_path ? route('ld.mov.remove',$r->id) : '' }}')">
                   📎
                 </button>
               </div>

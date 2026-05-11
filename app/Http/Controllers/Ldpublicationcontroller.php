@@ -84,6 +84,11 @@ class LdPublicationController extends Controller
         return $this->handleMovView($publication);
     }
 
+    public function removeMov(LdPublication $publication)
+    {
+        return $this->handleMovRemove($publication, 'publication');
+    }
+
     // ── Private ───────────────────────────────────────────────────────────────
 
     private function validateForm(Request $request): array

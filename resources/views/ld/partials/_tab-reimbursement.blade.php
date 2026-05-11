@@ -158,7 +158,7 @@
                 <button class="btn btn-ghost btn-sm" title="View details" onclick="openGenericView('reimbursement',{{ $r->id }},'💰 Reimbursement Details')">👁</button>
                 <button class="btn btn-outline btn-sm" title="Edit" onclick="openFormModal('reimbursement-edit','✏️ Edit',{{ $r->id }})">✏️</button>
                 <button class="btn btn-gold btn-sm" title="Print" onclick="openPrintModal('{{ route('ld.reimbursement.print',$r->id) }}')">🖨</button>
-                <button class="btn btn-primary btn-sm" title="Attach MOV" onclick="openMovModal('{{ route('ld.reimbursement.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.reimbursement.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }})">📎</button>
+                <button class="btn btn-primary btn-sm" title="Attach MOV" onclick="openMovModal('{{ route('ld.reimbursement.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.reimbursement.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }},'{{ $r->mov_path ? route('ld.reimbursement.mov.remove',$r->id) : '' }}')">📎</button>
               </div>
               @if($r->mov_path)
                 <div style="font-size:.62rem;color:#3B6D11;margin-top:2px;white-space:nowrap">✓ mov</div>

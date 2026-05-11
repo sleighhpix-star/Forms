@@ -235,7 +235,7 @@
                   <button class="btn btn-ghost btn-sm" title="View details" onclick="openGenericView('attendance',{{ $r->id }},'📅 Attendance Details')">👁</button>
                   <button class="btn btn-outline btn-sm" title="Edit" onclick="openFormModal('attendance-edit','✏️ Edit Attendance',{{ $r->id }})">✏️</button>
                   <button class="btn btn-gold btn-sm" title="Print" onclick="openPrintModal('{{ route('ld.attendance.print',$r->id) }}')">🖨</button>
-                  <button class="btn btn-primary btn-sm" title="Attach MOV" onclick="openMovModal('{{ route('ld.attendance.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.attendance.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }})">📎</button>
+                  <button class="btn btn-primary btn-sm" title="Attach MOV" onclick="openMovModal('{{ route('ld.attendance.mov.upload',$r->id) }}','{{ $r->mov_path ? route('ld.attendance.mov.view',$r->id) : '' }}','{{ $r->mov_original_name ?? '' }}',{{ $r->id }},'{{ $r->mov_path ? route('ld.attendance.mov.remove',$r->id) : '' }}')">📎</button>
                 </div>
                 @if($r->mov_path)
                   <div style="font-size:.62rem;color:#3B6D11;margin-top:2px;white-space:nowrap">✓ mov</div>

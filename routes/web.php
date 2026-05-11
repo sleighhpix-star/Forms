@@ -49,6 +49,7 @@ Route::middleware('auth')->prefix('ld-requests')->name('ld.')->group(function ()
     Route::delete('/{ld}',        [LdRequestController::class, 'destroy'])->name('destroy');
     Route::post('/{ld}/mov',      [LdRequestController::class, 'uploadMov'])->name('mov.upload');
     Route::get('/{ld}/mov/view',  [LdRequestController::class, 'viewMov'])->name('mov.view');
+    Route::delete('/{ld}/mov',    [LdRequestController::class, 'removeMov'])->name('mov.remove');
 
     // Attendance
     Route::post('/attendance',                        [LdAttendanceController::class, 'store'])->name('attendance.store');
@@ -59,6 +60,7 @@ Route::middleware('auth')->prefix('ld-requests')->name('ld.')->group(function ()
     Route::get('/attendance/{attendance}/print',      [LdAttendanceController::class, 'print'])->name('attendance.print');
     Route::post('/attendance/{attendance}/mov',       [LdAttendanceController::class, 'uploadMov'])->name('attendance.mov.upload');
     Route::get('/attendance/{attendance}/mov/view',   [LdAttendanceController::class, 'viewMov'])->name('attendance.mov.view');
+    Route::delete('/attendance/{attendance}/mov',     [LdAttendanceController::class, 'removeMov'])->name('attendance.mov.remove');
 
     // Publication
     Route::post('/publication',                         [LdPublicationController::class, 'store'])->name('publication.store');
@@ -69,6 +71,7 @@ Route::middleware('auth')->prefix('ld-requests')->name('ld.')->group(function ()
     Route::get('/publication/{publication}/print',      [LdPublicationController::class, 'print'])->name('publication.print');
     Route::post('/publication/{publication}/mov',       [LdPublicationController::class, 'uploadMov'])->name('publication.mov.upload');
     Route::get('/publication/{publication}/mov/view',   [LdPublicationController::class, 'viewMov'])->name('publication.mov.view');
+    Route::delete('/publication/{publication}/mov',     [LdPublicationController::class, 'removeMov'])->name('publication.mov.remove');
 
     // Reimbursement
     Route::post('/reimbursement',                           [LdReimbursementController::class, 'store'])->name('reimbursement.store');
@@ -79,6 +82,7 @@ Route::middleware('auth')->prefix('ld-requests')->name('ld.')->group(function ()
     Route::get('/reimbursement/{reimbursement}/print',      [LdReimbursementController::class, 'print'])->name('reimbursement.print');
     Route::post('/reimbursement/{reimbursement}/mov',       [LdReimbursementController::class, 'uploadMov'])->name('reimbursement.mov.upload');
     Route::get('/reimbursement/{reimbursement}/mov/view',   [LdReimbursementController::class, 'viewMov'])->name('reimbursement.mov.view');
+    Route::delete('/reimbursement/{reimbursement}/mov',     [LdReimbursementController::class, 'removeMov'])->name('reimbursement.mov.remove');
 
     // Travel
     Route::post('/travel',                    [LdTravelController::class, 'store'])->name('travel.store');
@@ -89,6 +93,7 @@ Route::middleware('auth')->prefix('ld-requests')->name('ld.')->group(function ()
     Route::get('/travel/{travel}/print',      [LdTravelController::class, 'print'])->name('travel.print');
     Route::post('/travel/{travel}/mov',       [LdTravelController::class, 'uploadMov'])->name('travel.mov.upload');
     Route::get('/travel/{travel}/mov/view',   [LdTravelController::class, 'viewMov'])->name('travel.mov.view');
+    Route::delete('/travel/{travel}/mov',     [LdTravelController::class, 'removeMov'])->name('travel.mov.remove');
 
     // Settings
     Route::get('/settings',  [\App\Http\Controllers\SettingsController::class, 'edit'])->name('settings.edit');

@@ -63,6 +63,29 @@ trait HandlesMovUpload
     }
 
     /**
+     * Delete the stored MOV file and clear its columns.
+     *
+     * @param  Model   $record  Eloquent model with mov_* columns.
+     * @param  string  $tab     Tab name used for the post-remove redirect.
+     */
+    protected function handleMovRemove(Model $record, string $tab): RedirectResponse
+    {
+        if ($record->mov_path && Storage::disk('public')->exists($record->mov_path)) {
+            Storage::disk('public')->delete($record->mov_path);
+        }
+
+        $record->forceFill([
+            'mov_path'          => null,
+            'mov_original_name' => null,
+            'mov_size'          => null,
+            'mov_mime'          => null,
+        ])->save();
+
+        return redirect()->route('ld.index', ['tab' => $tab])
+            ->with('success', 'MOV removed successfully.');
+    }
+
+    /**
      * Stream a stored MOV file to the browser.
      *
      * @param  Model  $record  Eloquent model with mov_* columns.

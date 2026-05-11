@@ -228,6 +228,11 @@ class LdRequestController extends Controller
         return $this->handleMovView($ld);
     }
 
+    public function removeMov(LdRequest $ld)
+    {
+        return $this->handleMovRemove($ld, 'participation');
+    }
+
     // ── Private ───────────────────────────────────────────────────────────────
 
     private function validateForm(Request $request): array

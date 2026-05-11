@@ -426,23 +426,38 @@ function downloadCSV(mode) {
 /* ── MOV MODAL ── */
 let _movUrl = null, _movName = null;
 
-function openMovModal(upUrl, fileUrl, fileName, recordId) {
+function openMovModal(upUrl, fileUrl, fileName, recordId, removeUrl) {
     document.getElementById('movForm').action = upUrl;
     document.getElementById('movRecordId').value = recordId;
-    const ex = document.getElementById('movExisting');
-    const nm = document.getElementById('movName');
-    const pb = document.getElementById('movPreviewBtn');
+    const ex       = document.getElementById('movExisting');
+    const nm       = document.getElementById('movName');
+    const pb       = document.getElementById('movPreviewBtn');
+    const removeBtn= document.getElementById('movRemoveBtn');
+    const removeForm = document.getElementById('movRemoveForm');
     if (fileUrl) {
-        ex.style.display = 'block';
-        nm.textContent   = fileName || '';
+        ex.style.display     = 'block';
+        nm.textContent       = fileName || '';
         _movUrl  = fileUrl;
         _movName = fileName || '';
         pb.onclick = () => openMovPreview(_movUrl, _movName);
+        if (removeUrl) {
+            removeForm.action    = removeUrl;
+            removeBtn.style.display = '';
+        } else {
+            removeBtn.style.display = 'none';
+        }
     } else {
-        ex.style.display = 'none';
+        ex.style.display    = 'none';
+        removeBtn.style.display = 'none';
         _movUrl = null; _movName = null; pb.onclick = null;
     }
     openModal('movModal');
+}
+
+function confirmRemoveMov() {
+    if (confirm('Remove this MOV file? This cannot be undone.')) {
+        document.getElementById('movRemoveForm').submit();
+    }
 }
 
 function openMovPreview(url, fileName) {

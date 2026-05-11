@@ -84,6 +84,11 @@ class LdTravelController extends Controller
         return $this->handleMovView($travel);
     }
 
+    public function removeMov(LdTravel $travel)
+    {
+        return $this->handleMovRemove($travel, 'travel');
+    }
+
     // ── Private ───────────────────────────────────────────────────────────────
 
     private function validateForm(Request $request): array

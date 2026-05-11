@@ -86,6 +86,11 @@ class LdReimbursementController extends Controller
         return $this->handleMovView($reimbursement);
     }
 
+    public function removeMov(LdReimbursement $reimbursement)
+    {
+        return $this->handleMovRemove($reimbursement, 'reimbursement');
+    }
+
     // ── Private ───────────────────────────────────────────────────────────────
 
     private function validateForm(Request $request): array

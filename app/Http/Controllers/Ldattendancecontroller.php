@@ -84,6 +84,11 @@ class LdAttendanceController extends Controller
         return $this->handleMovView($attendance);
     }
 
+    public function removeMov(LdAttendance $attendance)
+    {
+        return $this->handleMovRemove($attendance, 'attendance');
+    }
+
     // ── Private ───────────────────────────────────────────────────────────────
 
     private function validateForm(Request $request): array
